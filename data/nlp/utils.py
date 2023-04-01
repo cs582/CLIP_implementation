@@ -22,8 +22,13 @@ def get_words_from(url):
         pattern = re.compile(r'<body.*?>(.*?)</body>', re.DOTALL | re.IGNORECASE)
         body_html = pattern.search(html).group(1)
 
-        # Remove all HTML tags from the body HTML using the regex pattern
-        body_text = re.sub(r'<.*?>', '', body_html)
+        # Remove all content inside HTML tags from the body HTML using the regex pattern
+        body_text = re.sub(r'<[^>]*>', '', body_html)
+
+        # Remove all HTML syntax words from the body text using the regex pattern
+        syntax_words = ['id', 'class', 'style', 'href', 'src', 'alt', 'title', 'rel', 'type']
+        syntax_regex = r'\b(' + '|'.join(syntax_words) + r')\b'
+        body_text = re.sub(syntax_regex, '', body_text)
 
         # Extract all words from the body text using the regex pattern
         words = re.findall(r'\b\w+\b', body_text)
