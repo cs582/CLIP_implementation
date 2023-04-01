@@ -4,7 +4,6 @@ import nltk
 from nltk.corpus import stopwords
 
 def remove_stopwords(word_list):
-
     # Get the set of English stop words
     stop_words = set(stopwords.words('english'))
 

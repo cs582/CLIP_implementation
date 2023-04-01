@@ -1,9 +1,12 @@
 import json
+import nltk
 import pandas as pd
 from utils import get_words_from
 
 def wikipedia_page(name):
     return f"https://en.wikipedia.org/wiki/{name}".replace(" ", "_")
+
+nltk.download('stopwords')
 
 # CSV with the most viewed articles
 file = "data/top-wikipedia-articles-2023_02.csv"
