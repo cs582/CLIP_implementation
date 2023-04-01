@@ -1,10 +1,18 @@
 import urllib.request
 import re
+import json
 from lxml import etree
 from nltk.corpus import stopwords
 
+
 def wikipedia_page(name):
     return f"https://en.wikipedia.org/wiki/{name}".replace(" ", "_")
+
+
+def save_to_json(file, data):
+    with open(file, "w") as f:
+        json.dump(data, f)
+        print(f"Successfully saved json file as {file}")
 
 
 def remove_stopwords(word_list):
@@ -50,7 +58,10 @@ def get_words_from(url):
         return []
 
 
-def read_dump_file(dump_file):
+def extract_words_from_pages_in_dump_file(dump_file):
+    # Initialize word counter
+    word_counts = {}
+
     # create an XML parser
     parser = etree.iterparse(dump_file, events=("start", "end"))
 
@@ -63,11 +74,23 @@ def read_dump_file(dump_file):
 
             # Get wikipedia title
             page_url = wikipedia_page(title)
-            # do something with the title
-            print(page_url)
 
+            # Get words from wikipedia page
             words = get_words_from(page_url)
-            print("got", len(words), "from the page")
+
+            # Count word occurrence
+            for word in words:
+                word_counts[word] = word_counts.get(word, 0) + 1
 
             # clear the element to save memory
             elem.clear()
+
+    # Keep only those words that appeared at least 100 times
+    useful_words = []
+    for key in word_counts.keys():
+        if word_counts[key] >= 100:
+            useful_words.append(key)
+
+    # Save useful words into a json file
+    save_to_json("data/nlp/words.json", useful_words)
+

@@ -1,39 +1,17 @@
 import json
 import nltk
 import pandas as pd
-from utils import get_words_from
+from utils import extract_words_from_pages_in_dump_file
 
-
-
+# Download stopwords
 nltk.download('stopwords')
 
 # CSV with the most viewed articles
-file = "data/nlp/top-wikipedia-articles-2023_02.csv"
+file = "data/nlp/wkpages/enwiki-latest-pages-articles-multistream10.xml-p4045403p5399366"
 
-# Get all most searched wikipedia pages urls
-pages_names = pd.read_csv(file)['Page'].tolist()
-pages_urls = [wikipedia_page(x) for x in pages_names]
-
-# Initialize word counts dictionary
-word_counts = {}
-
-# Count all occurrences of words in all pages
-for page_url in pages_urls:
-    words = get_words_from(page_url)
-    for word in words:
-        word_counts[word] = word_counts.get(word, 0) + 1
-
-# Keep only those words that appeared at least 100 times
-useful_words = []
-for key in word_counts.keys():
-    if word_counts[key] >= 20:
-        useful_words.append(key)
-
-# Save useful words into a json file
-with open("data/nlp/words.json", "w") as f:
-    json.dump(useful_words, f)
-    print(f"Successfully saved json file as data/nlp/words.json")
+# Extract words from pages in the dumpfile
+words = extract_words_from_pages_in_dump_file(file)
 
 # Final console message
-print(f"finished scrapping with {len(useful_words)} words.")
+print(f"finished scrapping with {len(words)} words.")
 
