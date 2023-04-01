@@ -19,7 +19,7 @@ pages_urls = [wikipedia_page(x) for x in pages_names]
 word_counts = {}
 
 # Count all occurrences of words in all pages
-for page_url in pages_urls[:1]:
+for page_url in pages_urls:
     words = get_words_from(page_url)
     for word in words:
         word_counts[word] = word_counts.get(word, 0) + 1
