@@ -31,6 +31,9 @@ for key in word_counts.keys():
         useful_words.append(key)
 
 # Save useful words into a json file
-with open("data/queries.json", "w") as f:
+with open("data/nlp/words.json", "w") as f:
     json.dump(useful_words, f)
+
+# Final console message
+print(f"finished scrappring with {len(useful_words)} words.")
 
