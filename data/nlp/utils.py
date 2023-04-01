@@ -1,6 +1,6 @@
 import urllib.request
 import re
-import nltk
+from lxml import etree
 from nltk.corpus import stopwords
 
 def remove_stopwords(word_list):
@@ -46,3 +46,19 @@ def get_words_from(url):
         return []
 
 
+def read_dump_file(dump_file):
+    # create an XML parser
+    parser = etree.iterparse(dump_file, events=("start", "end"))
+
+    # iterate through the XML elements
+    for event, elem in parser:
+        # check if the element is a page
+        if event == "end" and elem.tag.endswith("page"):
+            # extract the title of the page
+            title = elem.findtext("{http://www.mediawiki.org/xml/export-0.10/}title")
+            # do something with the title
+            print(title)
+
+            # clear the element to save memory
+            elem.clear()
+            break
