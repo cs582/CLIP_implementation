@@ -27,7 +27,7 @@ for page_url in pages_urls[:1]:
 # Keep only those words that appeared at least 100 times
 useful_words = []
 for key in word_counts.keys():
-    if word_counts[key] >= 25:
+    if word_counts[key] >= 20:
         useful_words.append(key)
 
 # Save useful words into a json file
@@ -35,5 +35,5 @@ with open("data/nlp/words.json", "w") as f:
     json.dump(useful_words, f)
 
 # Final console message
-print(f"finished scrappring with {len(useful_words)} words.")
+print(f"finished scrapping with {len(useful_words)} words.")
 

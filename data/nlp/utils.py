@@ -23,10 +23,10 @@ def get_words_from(url):
         body_html = pattern.search(html).group(1)
 
         # Remove all content inside HTML tags from the body HTML using the regex pattern
-        body_text = re.sub(r'<[^>]*>', '', body_html)
+        body_text = re.sub(r'<[^>]*>|\b\w*(?:_\w+|\w*[A-Z]\w*)\b', '', body_html)
 
         # Remove all HTML syntax words from the body text using the regex pattern
-        syntax_words = ['id', 'class', 'style', 'href', 'src', 'alt', 'title', 'rel', 'type']
+        syntax_words = ['id', 'class', 'style', 'href', 'src', 'alt', 'title', 'rel', 'type', 'li']
         syntax_regex = r'\b(' + '|'.join(syntax_words) + r')\b'
         body_text = re.sub(syntax_regex, '', body_text)
 
