@@ -9,7 +9,7 @@ def wikipedia_page(name):
 nltk.download('stopwords')
 
 # CSV with the most viewed articles
-file = "data/top-wikipedia-articles-2023_02.csv"
+file = "data/nlp/top-wikipedia-articles-2023_02.csv"
 
 # Get all most searched wikipedia pages urls
 pages_names = pd.read_csv(file)['Page'].tolist()
