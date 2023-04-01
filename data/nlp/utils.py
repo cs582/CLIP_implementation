@@ -3,6 +3,10 @@ import re
 from lxml import etree
 from nltk.corpus import stopwords
 
+def wikipedia_page(name):
+    return f"https://en.wikipedia.org/wiki/{name}".replace(" ", "_")
+
+
 def remove_stopwords(word_list):
     # Get the set of English stop words
     stop_words = set(stopwords.words('english'))
@@ -56,9 +60,14 @@ def read_dump_file(dump_file):
         if event == "end" and elem.tag.endswith("page"):
             # extract the title of the page
             title = elem.findtext("{http://www.mediawiki.org/xml/export-0.10/}title")
+
+            # Get wikipedia title
+            page_url = wikipedia_page(title)
             # do something with the title
-            print(title)
+            print(page_url)
+
+            words = get_words_from(page_url)
+            print("got", len(words), "from the page")
 
             # clear the element to save memory
             elem.clear()
-            break

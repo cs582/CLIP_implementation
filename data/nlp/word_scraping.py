@@ -3,8 +3,7 @@ import nltk
 import pandas as pd
 from utils import get_words_from
 
-def wikipedia_page(name):
-    return f"https://en.wikipedia.org/wiki/{name}".replace(" ", "_")
+
 
 nltk.download('stopwords')
 
