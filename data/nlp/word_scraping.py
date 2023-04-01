@@ -27,7 +27,7 @@ for page_url in pages_urls:
 # Keep only those words that appeared at least 100 times
 useful_words = []
 for key in word_counts.keys():
-    if word_counts[key] >= 100:
+    if word_counts[key] >= 25:
         useful_words.append(key)
 
 # Save useful words into a json file
