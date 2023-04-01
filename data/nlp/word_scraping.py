@@ -33,6 +33,7 @@ for key in word_counts.keys():
 # Save useful words into a json file
 with open("data/nlp/words.json", "w") as f:
     json.dump(useful_words, f)
+    print(f"Successfully saved json file as data/nlp/words.json")
 
 # Final console message
 print(f"finished scrapping with {len(useful_words)} words.")
