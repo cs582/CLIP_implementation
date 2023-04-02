@@ -77,7 +77,7 @@ def get_words_from(url, index_number, total):
         return []
 
 
-def extract_words_from_pages_in_dump_file(dump_file):
+def extract_words_from_pages_in_dump_file(dump_file, start_from):
     # Initialize word counter
     word_counts = {}
 
@@ -90,6 +90,9 @@ def extract_words_from_pages_in_dump_file(dump_file):
     # iterate through the XML elements
     index_number = 0
     for event, elem in parser:
+        if index_number < start_from:
+            index_number += 1
+            continue
         # check if the element is a page
         if event == "end" and elem.tag.endswith("page"):
             # extract the title of the page
