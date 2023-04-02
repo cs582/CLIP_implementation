@@ -111,6 +111,6 @@ def extract_words_from_pages_in_dump_file(dump_file):
         # Update index counter
         index_number += 1
 
-        if index_number % 10000 == 0:
+        if index_number % 100000 == 0:
             save_to_json(word_counts, "data/nlp/words", f"snap_at_{index_number}.json")
 
