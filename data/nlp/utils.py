@@ -34,6 +34,12 @@ def save_to_json(word_counts, path, file_name):
         print(f"Successfully saved json file as {file2}")
 
 
+def read_from_json(file):
+    with open(file, "r") as f:
+        data = json.load(f)
+    return data
+
+
 def remove_stopwords(word_list):
     # Get the set of English stop words
     stop_words = set(stopwords.words('english'))
@@ -78,8 +84,11 @@ def get_words_from(url, index_number, total):
 
 
 def extract_words_from_pages_in_dump_file(dump_file, start_from):
-    # Initialize word counter
-    word_counts = {}
+    if start_from > 0:
+        word_counts = read_from_json(f"data/nlp/words/counts_snap_at_{start_from}.json")
+    else:
+        # Initialize word counter
+        word_counts = {}
 
     # create an XML parser
     parser = etree.iterparse(dump_file, events=("start", "end"))
@@ -116,4 +125,6 @@ def extract_words_from_pages_in_dump_file(dump_file, start_from):
 
         if index_number % 100000 == 0:
             save_to_json(word_counts, "data/nlp/words", f"snap_at_{index_number}.json")
+
+    save_to_json(word_counts, "data/nlp/words", f"snap_at_{index_number}_DONE.json")
 
