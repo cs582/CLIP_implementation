@@ -2,6 +2,7 @@ import urllib.request
 import re
 import json
 import tqdm
+import numpy as np
 from lxml import etree
 from nltk.corpus import stopwords
 
@@ -50,7 +51,7 @@ def get_words_from(url, index_number, total):
         filtered_words = remove_stopwords(words)
 
         # Print the words
-        print(f"{index_number} / {total} : Retrieved {len(words)}. Remaining {len(filtered_words)} filtered words. Page: {url}")
+        print(f"{np.round(index_number/total, 3)} : Retrieved {len(words)}. Remaining {len(filtered_words)} filtered words. Page: {url}")
 
         return filtered_words
 
