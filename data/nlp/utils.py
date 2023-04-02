@@ -67,7 +67,7 @@ def extract_words_from_pages_in_dump_file(dump_file):
     parser = etree.iterparse(dump_file, events=("start", "end"))
 
     # iterate through the XML elements
-    for event, elem in tqdm(parser, total=len(parser)):
+    for event, elem in tqdm(parser, total=len(list(parser))):
         # check if the element is a page
         if event == "end" and elem.tag.endswith("page"):
             # extract the title of the page
