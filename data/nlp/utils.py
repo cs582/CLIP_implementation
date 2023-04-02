@@ -1,4 +1,5 @@
 import urllib.request
+import os
 import re
 import json
 import tqdm
@@ -11,10 +12,26 @@ def wikipedia_page(name):
     return f"https://en.wikipedia.org/wiki/{name}".replace(" ", "_")
 
 
-def save_to_json(file, data):
-    with open(file, "w") as f:
-        json.dump(data, f)
-        print(f"Successfully saved json file as {file}")
+def save_to_json(word_counts, path, file_name):
+    # Keep only those words that appeared at least 100 times
+    useful_words = []
+    for key in word_counts.keys():
+        if word_counts[key] >= 100:
+            useful_words.append(key)
+
+    if os.path.exists(path):
+        os.makedirs(path)
+
+    file1 = f"{path}/words_{file_name}"
+    file2 = f"{path}/counts_{file_name}"
+
+    with open(file1, "w") as f:
+        json.dump(useful_words, f)
+        print(f"Successfully saved json file as {file1}")
+
+    with open(file2, "w") as f:
+        json.dump(word_counts, f)
+        print(f"Successfully saved json file as {file2}")
 
 
 def remove_stopwords(word_list):
@@ -51,7 +68,7 @@ def get_words_from(url, index_number, total):
         filtered_words = remove_stopwords(words)
 
         # Print the words
-        print(f"{np.round(index_number/total, 3)} : Retrieved {len(words)}. Remaining {len(filtered_words)} filtered words. Page: {url}")
+        print(f"{np.round(index_number/total, 4)} : Retrieved {len(words)}. Remaining {len(filtered_words)} filtered words. Page: {url}")
 
         return filtered_words
 
@@ -94,12 +111,6 @@ def extract_words_from_pages_in_dump_file(dump_file):
         # Update index counter
         index_number += 1
 
-    # Keep only those words that appeared at least 100 times
-    useful_words = []
-    for key in word_counts.keys():
-        if word_counts[key] >= 100:
-            useful_words.append(key)
-
-    # Save useful words into a json file
-    save_to_json("data/nlp/words.json", useful_words)
+        if index_number % 10000 == 0:
+            save_to_json(word_counts, "data/nlp/words", f"snap_at_{index_number}.json")
 
