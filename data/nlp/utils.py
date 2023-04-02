@@ -1,6 +1,7 @@
 import urllib.request
 import re
 import json
+import tqdm
 from lxml import etree
 from nltk.corpus import stopwords
 
@@ -49,7 +50,7 @@ def get_words_from(url):
         filtered_words = remove_stopwords(words)
 
         # Print the words
-        print(f"Retrieved {len(words)}. Remaining {len(filtered_words)} filtered words. Page: {url}")
+        print(f"\rRetrieved {len(words)}. Remaining {len(filtered_words)} filtered words. Page: {url}", end="")
 
         return filtered_words
 
@@ -66,7 +67,7 @@ def extract_words_from_pages_in_dump_file(dump_file):
     parser = etree.iterparse(dump_file, events=("start", "end"))
 
     # iterate through the XML elements
-    for event, elem in parser:
+    for event, elem in tqdm(parser, total=len(parser)):
         # check if the element is a page
         if event == "end" and elem.tag.endswith("page"):
             # extract the title of the page
