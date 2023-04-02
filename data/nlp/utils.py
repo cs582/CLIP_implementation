@@ -26,7 +26,7 @@ def remove_stopwords(word_list):
     return filtered_words
 
 
-def get_words_from(url):
+def get_words_from(url, index_number, total):
     try:
         response = urllib.request.urlopen(url) # Download the HTML
         html = response.read().decode() # Decode the HTML from bytes to string
@@ -50,7 +50,7 @@ def get_words_from(url):
         filtered_words = remove_stopwords(words)
 
         # Print the words
-        print(f"\rRetrieved {len(words)}. Remaining {len(filtered_words)} filtered words. Page: {url}", end="")
+        print(f"{index_number} / {total} : Retrieved {len(words)}. Remaining {len(filtered_words)} filtered words. Page: {url}")
 
         return filtered_words
 
@@ -66,8 +66,12 @@ def extract_words_from_pages_in_dump_file(dump_file):
     # create an XML parser
     parser = etree.iterparse(dump_file, events=("start", "end"))
 
+    # Length of parser file
+    size = len(list(parser))
+
     # iterate through the XML elements
-    for event, elem in tqdm(parser, total=len(list(parser))):
+    index_number = 0
+    for event, elem in parser:
         # check if the element is a page
         if event == "end" and elem.tag.endswith("page"):
             # extract the title of the page
@@ -77,7 +81,7 @@ def extract_words_from_pages_in_dump_file(dump_file):
             page_url = wikipedia_page(title)
 
             # Get words from wikipedia page
-            words = get_words_from(page_url)
+            words = get_words_from(page_url, index_number, size)
 
             # Count word occurrence
             for word in words:
@@ -85,6 +89,9 @@ def extract_words_from_pages_in_dump_file(dump_file):
 
             # clear the element to save memory
             elem.clear()
+
+            # Update index counter
+            index_number += 1
 
     # Keep only those words that appeared at least 100 times
     useful_words = []
