@@ -19,7 +19,7 @@ def save_to_json(word_counts, path, file_name):
         if word_counts[key] >= 100:
             useful_words.append(key)
 
-    if os.path.exists(path):
+    if not os.path.exists(path):
         os.makedirs(path)
 
     file1 = f"{path}/words_{file_name}"
