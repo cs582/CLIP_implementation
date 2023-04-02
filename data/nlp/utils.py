@@ -67,7 +67,7 @@ def extract_words_from_pages_in_dump_file(dump_file):
     parser = etree.iterparse(dump_file, events=("start", "end"))
 
     # Length of parser file
-    size = len(list(parser))
+    size = 14840164
 
     # iterate through the XML elements
     index_number = 0
@@ -90,8 +90,8 @@ def extract_words_from_pages_in_dump_file(dump_file):
             # clear the element to save memory
             elem.clear()
 
-            # Update index counter
-            index_number += 1
+        # Update index counter
+        index_number += 1
 
     # Keep only those words that appeared at least 100 times
     useful_words = []
