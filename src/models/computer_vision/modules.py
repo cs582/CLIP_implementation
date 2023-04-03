@@ -55,3 +55,21 @@ class BlurPool2d(torch.nn.Module):
         x = F.max_pool2d(x, kernel_size=2, stride=2)
 
         return x
+    
+    
+class TransformerEncoderBlock(nn.Module):
+    def __init__(self, nhead, mlp_dim, vector_size):
+        super(TransformerEncoderBlock, self).__init__()
+
+        self.encoder1 = nn.TransformerEncoderLayer(d_model=vector_size, nhead=nhead, activation='gelu', dim_feedforward=mlp_dim)
+        self.encoder2 = nn.TransformerEncoderLayer(d_model=vector_size, nhead=nhead, activation='gelu', dim_feedforward=mlp_dim)
+        self.encoder3 = nn.TransformerEncoderLayer(d_model=vector_size, nhead=nhead, activation='gelu', dim_feedforward=mlp_dim)
+        self.encoder4 = nn.TransformerEncoderLayer(d_model=vector_size, nhead=nhead, activation='gelu', dim_feedforward=mlp_dim)
+
+    def forward(self, x):
+        x = self.encoder1(x)
+        x = self.encoder2(x)
+        x = self.encoder3(x)
+        x = self.encoder4(x)
+        return x
+

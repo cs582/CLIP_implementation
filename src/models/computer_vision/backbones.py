@@ -1,11 +1,14 @@
 import torch
 import torch.nn as nn
-from modules import Convolution1, ConvolutionX
+
+from einops.layers.torch import Rearrange
+
+from modules import Convolution1, ConvolutionX, TransformerEncoderBlock
 
 
-class Resnet50D(nn.Module):
+class Resnet50D_CLIP(nn.Module):
     def __init__(self, n_classes):
-        super(Resnet50D, self).__init__()
+        super(Resnet50D_CLIP, self).__init__()
         # Stage 1
         self.conv1 = Convolution1()
 
@@ -75,46 +78,67 @@ class Resnet50D(nn.Module):
         x = self.softmax(x)
         return x
 
+# ViT (Dosovitskiy et. al. 2020)
+class ViT_CLIP_Large(nn.Module):
+    def __init__(self, patch_resolution, img_size, n_classes):
+        super(ViT_CLIP_Large, self).__init__()
+        self.h, self.w = img_size
+        self.p = patch_resolution
 
-class ViT(nn.Module):
-    def __init__(self, in_size, n_channels, n_classes, dropout, vector_size, nhead=1):
-        super(ViT, self).__init__()
-        n_embeddings, row_dim = in_size
+        self.n_channels = 3
 
-        self.patch_embedding_encoder = nn.Parameter(torch.randn(1, row_dim, vector_size))
+        # Number of patches
+        self.n_embeddings = (self.h * self.w) // (self.p**2)
+
+        # Latent vector size D
+        vector_size = 1024
+
+        nhead = 16
+        mlp_size = 4096
+
+        # Get patches
+        self.rearrange = Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)', p1=self.p, p2=self.p)
+
+        # Embedding encoder
+        self.patch_embedding_encoder = nn.Parameter(torch.randn(1, self.n_embeddings, vector_size))
+        # Class embedding
         self.class_token = nn.Parameter(torch.randn(1, 1, vector_size))
-        self.pos_embedding = nn.Parameter(torch.randn(1, n_embeddings + 1, vector_size))
-        self.dropout = nn.Dropout(dropout)
+        # Position embedding
+        self.pos_embedding = nn.Parameter(torch.randn(1, self.n_embeddings + 1, vector_size))
 
-        self.transformer = nn.Sequential(
-            nn.TransformerEncoderLayer(d_model=vector_size, activation='gelu', nhead=nhead, dim_feedforward=vector_size),
-            nn.TransformerEncoderLayer(d_model=vector_size, activation='gelu', nhead=nhead, dim_feedforward=vector_size),
-            nn.TransformerEncoderLayer(d_model=vector_size, activation='gelu', nhead=nhead, dim_feedforward=vector_size),
-            nn.TransformerEncoderLayer(d_model=vector_size, activation='gelu', nhead=nhead, dim_feedforward=vector_size)
-        )
+        # Layer normalization as in CLIP (Radford et al. 2021)
+        self.layer_norm = nn.LayerNorm(vector_size)
 
+        # Transformer Encoder Hidden Layers
+        self.t_encoder1 = TransformerEncoderBlock(vector_size=vector_size, nhead=nhead, mlp_dim=mlp_size)
+        self.t_encoder2 = TransformerEncoderBlock(vector_size=vector_size, nhead=nhead, mlp_dim=mlp_size)
+        self.t_encoder3 = TransformerEncoderBlock(vector_size=vector_size, nhead=nhead, mlp_dim=mlp_size)
         self.to_latent = nn.Identity()
 
+        # Out MLP head with one
         self.mlp_head = nn.Sequential(
             nn.LayerNorm(vector_size),
-            nn.Linear(vector_size, n_classes)
+            nn.Linear(vector_size, mlp_size),
+            nn.Linear(mlp_size, n_classes),
         )
 
     def forward(self, x):
-        N, n_channels, n_vectors, vector_dim = x.shape
+        N, c, h, w = x.shape
 
-        # Since this considers the case when n_channels = 1, simply reshape
-        x = x.view(N, n_vectors, vector_dim)
+        # Convert image to patches
+        x = self.rearrange(x)
 
         # Patch Embedding
         x = torch.matmul(x, self.patch_embedding_encoder)
         class_token = self.class_token.expand(N, -1, -1)
         x = torch.cat((class_token, x), dim=1)
         x += self.pos_embedding
-        x = self.dropout(x)
+        x = self.layer_norm(x)
 
         # Transformer Encoder Layers
-        x = self.transformer(x)
+        x = self.t_encoder1(x)
+        x = self.t_encoder2(x)
+        x = self.t_encoder3(x)
 
         # Getting class token
         x = x[:, 0]
