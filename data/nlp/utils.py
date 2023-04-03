@@ -128,3 +128,4 @@ def extract_words_from_pages_in_dump_file(dump_file, start_from):
 
     save_to_json(word_counts, "data/nlp/words", f"snap_at_{index_number}_DONE.json")
 
+
