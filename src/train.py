@@ -1,6 +1,5 @@
 import torch
 import torch.nn.functional as F
-from src.models.backbones import Resnet50D, ViT
 
 
 def CLIP(images, texts, image_encoder, text_encoder, image_projection, text_projection, temperature, loss_function):
