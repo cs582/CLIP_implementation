@@ -2,4 +2,5 @@ nltk
 tqdm
 numpy
 pandas
+einops
 matplotlib
