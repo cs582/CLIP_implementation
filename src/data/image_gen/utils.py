@@ -1,3 +1,4 @@
+import os
 import re
 import json
 import numpy as np
@@ -8,6 +9,25 @@ import urllib.request
 # Global Variables Patterns
 image_src_pattern = re.compile(r'srcSet="[^"]+"', re.DOTALL | re.IGNORECASE)
 alt_pattern = re.compile(r'alt="[^"]+"', re.DOTALL | re.IGNORECASE)
+
+
+def save_pairs_to_json(pairs, path, filename):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+    file = f"{path}/{filename}.json"
+    with open(file, 'w') as f:
+        json.dump(pairs, f)
+        print(f"Successfully saved pairs as {file}")
+
+
+def load_pairs_from_json(path, filename):
+    file = f"{path}/{filename}.json"
+    with open(file, 'r') as f:
+        pairs = json.load(f)
+    return pairs
+
+
 
 
 def filter_out_words(words_file):
@@ -76,8 +96,11 @@ def get_img_label_pairs(img_tag):
 
 
 def retrieve_pairs(words_file, from_ith_word=0):
+    path = "src/data/image_gen/pairs"
+    filename = f"{from_ith_word}_pairs"
+
     # Filter out useless words
-    words = sorted(filter_out_words(words_file))[from_ith_word:]
+    words = sorted(filter_out_words(words_file))[from_ith_word+1:]
 
     # Total number of words
     num_words = len(words)
@@ -85,7 +108,11 @@ def retrieve_pairs(words_file, from_ith_word=0):
     # Set page to extract images from
     page = "https://unsplash.com/s/photos"
 
+    # Initialize pairs
     pairs = []
+    # Load pairs from json if starting from a word != 0
+    if from_ith_word > 0:
+        pairs = load_pairs_from_json(path, filename)
 
     # Image scraping loop
     curr_image_number = 0
@@ -100,7 +127,7 @@ def retrieve_pairs(words_file, from_ith_word=0):
         for img_tag in img_tags:
             img, query = get_img_label_pairs(img_tag)
             if len(img) > 1:
-                pairs.append((img, query, word))
+                pairs.append([img, query, word])
 
         progress = np.round(100*curr_image_number/len(words), 3)
 
@@ -113,6 +140,8 @@ def retrieve_pairs(words_file, from_ith_word=0):
         string += f" ::: Total pairs so far {curr_pairs_length}"
         print(string)
 
-
+        # Save every 5% of the progress
+        if curr_image_number % (num_words//20) == 0:
+            save_pairs_to_json(pairs, path, filename)
 
     return pairs

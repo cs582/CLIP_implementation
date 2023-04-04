@@ -3,7 +3,7 @@ from utils import retrieve_pairs
 
 filename = "src/data/nlp/words/words_snap_at_14840164_DONE.json"
 
-pairs = retrieve_pairs(filename)
+pairs = retrieve_pairs(filename, from_ith_word=0)
 
 rd1, rd2, rd3 = np.random.randint(0, len(pairs)), np.random.randint(0, len(pairs)), np.random.randint(0, len(pairs))
 
