@@ -97,10 +97,10 @@ def get_img_label_pairs(img_tag):
 
 def retrieve_pairs(words_file, from_ith_word=0):
     path = "src/data/image_gen/pairs"
-    filename = f"{from_ith_word}_pairs"
+    filename = f"{from_ith_word-1}_pairs"
 
     # Filter out useless words
-    words = sorted(filter_out_words(words_file))[from_ith_word+1:]
+    words = sorted(filter_out_words(words_file))[from_ith_word:]
 
     # Total number of words
     num_words = len(words)
@@ -135,7 +135,7 @@ def retrieve_pairs(words_file, from_ith_word=0):
 
         # Image scraping loop message
         string = f"{curr_image_number}/{num_words} {progress}%. "
-        string += f"{len(img_tags)} img tags, but only {prev_pairs_length-curr_pairs_length} "
+        string += f"{len(img_tags)} img tags, but only {curr_pairs_length-prev_pairs_length} "
         string += f"valid image/query pairs found for word {word}"
         string += f" ::: Total pairs so far {curr_pairs_length}"
         print(string)
