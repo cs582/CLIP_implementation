@@ -1,5 +1,5 @@
-# CLIP: Contrastive Language-Image Pre-Training Implementation
-> From scratch implementation of CLIP. CLIP is an AI tool developed by OpenAI that connects images to text with zero-shot capabilities similar to those of GPT-2 and GPT-3. It uses Natural Language Processing for zero-shot classification.
+# CLIP mini: Contrastive Language-Image Pre-Training mini Implementation
+> From scratch implementation (at smaller scale due to limited resources) of CLIP. CLIP is an AI tool developed by OpenAI that connects images to text with zero-shot capabilities similar to those of GPT-2 and GPT-3. It uses Natural Language Processing for zero-shot classification.
 
 ![Python version][python-image]
 ![PyTorch version][pytorch-image]
