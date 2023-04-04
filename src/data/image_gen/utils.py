@@ -75,9 +75,9 @@ def get_img_label_pairs(img_tag):
 
 
 
-def retrieve_pairs(words_file):
+def retrieve_pairs(words_file, from_ith_word=0):
     # Filter out useless words
-    words = sorted(filter_out_words(words_file))[:2]
+    words = sorted(filter_out_words(words_file))[from_ith_word:]
 
     # Total number of words
     num_words = len(words)
@@ -98,16 +98,16 @@ def retrieve_pairs(words_file):
 
         # Retrieve the image sources and alt text from the img tag
         for img_tag in img_tags:
-            img, label = get_img_label_pairs(img_tag)
+            img, query = get_img_label_pairs(img_tag)
             if len(img) > 1:
-                pairs.append((img, label))
+                pairs.append((img, query, word))
 
         progress = np.round(100*curr_image_number/len(words), 3)
 
         curr_pairs_length = len(pairs)
 
         # Image scraping loop message
-        string = f"{curr_image_number}/{num_words} {progress}"
+        string = f"{curr_image_number}/{num_words} {progress}%. "
         string += f"{len(img_tags)} img tags, but only {prev_pairs_length-curr_pairs_length} "
         string += f"valid image/query pairs found for word {word}"
         string += f" ::: Total pairs so far {curr_pairs_length}"
