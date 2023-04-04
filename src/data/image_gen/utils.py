@@ -142,6 +142,7 @@ def retrieve_pairs(words_file, from_ith_word=0):
 
         # Save every 5% of the progress
         if curr_image_number % (num_words//20) == 0:
+            filename = f"{curr_image_number}_pairs"
             save_pairs_to_json(pairs, path, filename)
 
     return pairs
