@@ -83,9 +83,3 @@ def retrieve_image_label_pairs(words_file):
             print(f"{len(curr_word_pairs)} pairs found")
 
     return pairs
-
-
-
-def retrieve_pairs(queries):
-    return
-
