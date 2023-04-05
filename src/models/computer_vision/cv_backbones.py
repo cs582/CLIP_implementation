@@ -3,12 +3,12 @@ import torch.nn as nn
 
 from einops.layers.torch import Rearrange
 
-from modules import Convolution1, ConvolutionX, TransformerEncoderBlock
+from cv_modules import Convolution1, ConvolutionX, TransformerEncoderBlock
 
 
-class Resnet50D_CLIP(nn.Module):
+class Resnet34D(nn.Module):
     def __init__(self, n_classes):
-        super(Resnet50D_CLIP, self).__init__()
+        super(Resnet34D, self).__init__()
         # Stage 1
         self.conv1 = Convolution1()
 
@@ -79,9 +79,9 @@ class Resnet50D_CLIP(nn.Module):
         return x
 
 # ViT (Dosovitskiy et. al. 2020)
-class ViT_CLIP_Large(nn.Module):
+class ViT(nn.Module):
     def __init__(self, patch_resolution, img_size, n_classes):
-        super(ViT_CLIP_Large, self).__init__()
+        super(ViT, self).__init__()
         self.h, self.w = img_size
         self.p = patch_resolution
 
@@ -91,10 +91,10 @@ class ViT_CLIP_Large(nn.Module):
         self.n_embeddings = (self.h * self.w) // (self.p**2)
 
         # Latent vector size D
-        vector_size = 1024
+        vector_size = 512
 
         nhead = 16
-        mlp_size = 4096
+        mlp_size = 2048
 
         # Get patches
         self.rearrange = Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)', p1=self.p, p2=self.p)
@@ -112,7 +112,6 @@ class ViT_CLIP_Large(nn.Module):
         # Transformer Encoder Hidden Layers
         self.t_encoder1 = TransformerEncoderBlock(vector_size=vector_size, nhead=nhead, mlp_dim=mlp_size)
         self.t_encoder2 = TransformerEncoderBlock(vector_size=vector_size, nhead=nhead, mlp_dim=mlp_size)
-        self.t_encoder3 = TransformerEncoderBlock(vector_size=vector_size, nhead=nhead, mlp_dim=mlp_size)
         self.to_latent = nn.Identity()
 
         # Out MLP head with one
