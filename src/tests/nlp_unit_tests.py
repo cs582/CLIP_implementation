@@ -5,6 +5,7 @@ import numpy as np
 
 from src.models.natural_language_processing.utils import ScaledDotProductAttention
 from src.models.natural_language_processing.utils import MultiHeadSelfAttention
+from src.models.natural_language_processing.utils import TransformerRadford
 
 
 class TransformerRadfordUnitTest(unittest.TestCase):
@@ -38,9 +39,7 @@ class TransformerRadfordUnitTest(unittest.TestCase):
         # nhead
         nhead = 8
 
-        q = torch.rand(batch_size, num_words, embedding_dim)
-        k = torch.rand(batch_size, num_words, embedding_dim)
-        v = torch.rand(batch_size, num_words, embedding_dim)
+        x = torch.rand(batch_size, num_words, embedding_dim)
 
         # Fake a mask of words
         mask = torch.ones(batch_size, num_words, dtype=torch.bool)
@@ -51,6 +50,32 @@ class TransformerRadfordUnitTest(unittest.TestCase):
         model = MultiHeadSelfAttention(embedd_dim=embedding_dim, vector_size=latent_vector_size, nhead=nhead)
         end = time.time()
 
-        self.assertEqual(model(q, k, v, mask).shape, (batch_size, num_words, latent_vector_size), msg="Self Attention Failed")
+        self.assertEqual(model(x, mask).shape, (batch_size, num_words, latent_vector_size), msg="Self Attention Failed")
 
         print(f"Multi-head Masked Self-Attention finished in {end-start} seconds")
+
+    def test_transformer_radford(self):
+        # batch of 8 with 75 words embedded on 25 dim
+        num_words = 75
+        batch_size = 32
+        embedding_dim = 25
+        forward_dim = 1024
+        latent_vector_size = 512
+
+        # nhead
+        nhead = 8
+
+        x = torch.rand(batch_size, num_words, embedding_dim)
+
+        # Fake a mask of words
+        mask = torch.ones(batch_size, num_words, dtype=torch.bool)
+        for w in range(0, num_words):
+            mask[:, np.random.randint(low=num_words//2, high=num_words):] = 0.0
+
+        start = time.time()
+        model = TransformerRadford(embedding_dim=embedding_dim, latent_vector_size=latent_vector_size, forward_dim=forward_dim, nhead=nhead)
+        end = time.time()
+
+        self.assertEqual(model(x, mask).shape, (batch_size, num_words, latent_vector_size), msg="Transformer Radford")
+
+        print(f"Transformer Radford forward finished in {end-start} seconds")
