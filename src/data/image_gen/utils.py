@@ -64,6 +64,7 @@ def make_pair(full_info):
     new_dict = {}
     new_dict['query'] = full_info['alt_description']
     new_dict['image'] = full_info['urls']['small']
+    return new_dict
 
 
 def retrieve_pairs(words_file, from_ith_word=0, test_mode=False):
