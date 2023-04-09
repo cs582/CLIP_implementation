@@ -13,8 +13,8 @@ image_src_pattern = re.compile(r'srcSet="[^"]+"', re.DOTALL | re.IGNORECASE)
 alt_pattern = re.compile(r'alt="[^"]+"', re.DOTALL | re.IGNORECASE)
 
 
-def query(word):
-    return f"https://unsplash.com/napi/search/photos?query={word}&per_page=MAX&page=1&xp=search-quality-boosting%3Acontrol"
+def query(word, page):
+    return f"https://unsplash.com/napi/search/photos?query={word}&per_page=30&page={page}&xp=search-quality-boosting%3Acontrol"
 
 
 def save_pairs_to_json(pairs, path, filename):
@@ -52,6 +52,22 @@ def filter_out_words(words_file):
     return filtered_words
 
 
+def make_GET_request(word, page):
+    # Make GET Request
+    start = time.time()
+    response = requests.get(query(word, page))
+    end = time.time()
+
+    print(f"WORD: {word} PAGE: {page}. RESPONSE: {response.status_code}. TIME: {end-start} seconds")
+    return response
+
+
+def make_pair(full_info):
+    new_dict = {}
+    new_dict['query'] = full_info['alt_description']
+    new_dict['image'] = full_info['urls']['small']
+
+
 def retrieve_pairs(words_file, from_ith_word=0, test_mode=False):
     path = "src/data/image_gen/pairs"
     filename = f"{from_ith_word-1}_pairs"
@@ -68,6 +84,7 @@ def retrieve_pairs(words_file, from_ith_word=0, test_mode=False):
 
     # Initialize pairs
     pairs = []
+    curr_n_pairs = 0
 
     # Load pairs from json if starting from a word != 0
     if not test_mode and from_ith_word > 0:
@@ -76,28 +93,42 @@ def retrieve_pairs(words_file, from_ith_word=0, test_mode=False):
     # Image scraping loop
     curr_image_number = 0
 
+    # Iterate through each word
     for word in words:
-        # Make GET Request
-        start = time.time()
-        response = requests.get(query(word))
-        end = time.time()
 
-        print(f"WORD: {word}. RESPONSE: {response.status_code}. TIME: {end-start} seconds")
+        # Make initial response to estimate number of pages
+        response = make_GET_request(word, 1)
 
+        # Proceed if STATUS CODE = 200
         if response.status_code == 200:
-            # Store number of pairs before data retrieval
-            prev_n_pairs = len(pairs)
+            # Store prev total number of pairs
+            prev_n_pairs = curr_n_pairs
 
             # Load data into json file
             data_json = json.loads(response.text)
-            results = data_json['results']
-            total_available = data_json['total']
 
-            for result in results:
-                new_dict = {}
-                new_dict['query'] = result['alt_description']
-                new_dict['image'] = result['urls']['small']
-                pairs.append(new_dict)
+            # Obtain information about the query
+            results = data_json['results']
+            total_images_av = data_json['total']
+            total_pages_av = data_json['total_pages']
+
+            # Iterate through all pages
+            for page in range(1, min(total_pages_av+1, 334)):
+                if page > 1:
+                    # Make GET Request
+                    response = make_GET_request(word, page)
+
+                    # Load data into json file
+                    data_json = json.loads(response.text)
+
+                    # Get results
+                    results = data_json['results']
+
+                # Get query image pairs for the current request
+                new_pairs = [make_pair(res) for res in results]
+
+                # Append new pairs to list of pairs
+                pairs += new_pairs
 
             # Calculate number of pairs afterwards
             curr_n_pairs = len(pairs)
@@ -107,7 +138,7 @@ def retrieve_pairs(words_file, from_ith_word=0, test_mode=False):
 
             # Image scraping loop message
             string = f"{curr_image_number}/{num_words} {progress}% | "
-            string += f"Retrieved {curr_n_pairs-prev_n_pairs} of {total_available} for the word '{word}'"
+            string += f"Retrieved {curr_n_pairs-prev_n_pairs} of {total_images_av} for the word '{word}'"
             string += f" ::: N PAIRS is {curr_n_pairs}."
             print(string)
 
