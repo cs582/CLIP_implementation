@@ -70,7 +70,7 @@ def make_pair(full_info):
 
 def retrieve_pairs(words_file, from_ith_word=0, test_mode=False):
     path = "src/data/image_gen/pairs"
-    filename = f"{from_ith_word-1}_pairs"
+    filename = f"{from_ith_word-1}th_word"
 
     # Filter out useless words
     words = sorted(filter_out_words(words_file))
@@ -145,8 +145,8 @@ def retrieve_pairs(words_file, from_ith_word=0, test_mode=False):
             print(string)
 
         # Save every 5% of the progress
-        if num_words > 1000 and curr_image_number % (num_words//20) == 0:
-            filename = f"{curr_image_number}_pairs"
+        if num_words > 1000 and curr_word_number % (num_words//20) == 0:
+            filename = f"{curr_word_number}th_word"
             save_pairs_to_json(pairs, path, filename)
 
     return pairs
