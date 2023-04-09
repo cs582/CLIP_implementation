@@ -4,8 +4,6 @@ import json
 import time
 import requests
 import numpy as np
-from tqdm import tqdm
-import urllib.request
 
 
 # Global Variables Patterns
@@ -144,8 +142,8 @@ def retrieve_pairs(words_file, from_ith_word=0, test_mode=False):
             string += f" ::: N PAIRS is {curr_n_pairs}."
             print(string)
 
-        # Save every 5% of the progress
-        if num_words > 1000 and curr_word_number % (num_words//20) == 0:
+        # Save every 2% of the progress
+        if num_words > 1000 and curr_word_number % (num_words//50) == 0:
             filename = f"{curr_word_number}th_word"
             save_pairs_to_json(pairs, path, filename)
 
