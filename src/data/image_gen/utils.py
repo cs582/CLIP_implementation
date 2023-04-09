@@ -91,10 +91,12 @@ def retrieve_pairs(words_file, from_ith_word=0, test_mode=False):
         pairs = load_pairs_from_json(path, filename)
 
     # Image scraping loop
-    curr_image_number = 0
+    curr_word_number = 0
 
     # Iterate through each word
     for word in words:
+        # Update image number
+        curr_word_number += 1
 
         # Make initial response to estimate number of pages
         response = make_GET_request(word, 1)
@@ -134,10 +136,10 @@ def retrieve_pairs(words_file, from_ith_word=0, test_mode=False):
             curr_n_pairs = len(pairs)
 
             # Calculate progress in %
-            progress = 100 * np.round(curr_image_number / num_words, 4)
+            progress = 100 * np.round(curr_word_number / num_words, 4)
 
             # Image scraping loop message
-            string = f"{curr_image_number}/{num_words} {progress}% | "
+            string = f"{curr_word_number}/{num_words} {progress}% | "
             string += f"Retrieved {curr_n_pairs-prev_n_pairs} of {total_images_av} for the word '{word}'"
             string += f" ::: N PAIRS is {curr_n_pairs}."
             print(string)
