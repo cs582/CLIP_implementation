@@ -1,6 +1,8 @@
 import os
 import re
 import json
+import time
+import requests
 import numpy as np
 from tqdm import tqdm
 import urllib.request
@@ -9,6 +11,10 @@ import urllib.request
 # Global Variables Patterns
 image_src_pattern = re.compile(r'srcSet="[^"]+"', re.DOTALL | re.IGNORECASE)
 alt_pattern = re.compile(r'alt="[^"]+"', re.DOTALL | re.IGNORECASE)
+
+
+def query(word):
+    return f"https://unsplash.com/napi/search/photos?query={word}&per_page=MAX&page=1&xp=search-quality-boosting%3Acontrol"
 
 
 def save_pairs_to_json(pairs, path, filename):
@@ -26,8 +32,6 @@ def load_pairs_from_json(path, filename):
     with open(file, 'r') as f:
         pairs = json.load(f)
     return pairs
-
-
 
 
 def filter_out_words(words_file):
@@ -48,100 +52,67 @@ def filter_out_words(words_file):
     return filtered_words
 
 
-def get_img_tags_from_with_label(webpage, label):
-    try:
-        url = f"{webpage}/{label}"
-        response = urllib.request.urlopen(url) # Download the HTML
-        html = response.read().decode() # Decode the HTML from bytes to string
-        #print("response received")
-    except:
-        #print("Not able to retrieve data from", url)
-        return []
-
-    # Focus solely on the grid requested
-    pattern = re.compile(r'<div\s+data-test="search-photos-route">.*<div\s+class="dvFt2">', re.DOTALL | re.IGNORECASE)
-    string = pattern.findall(html)[0]
-
-    #print("string searching over", string[:25], "...", string[-25:])
-
-    # Match all img tags
-    pattern = re.compile(r'<img[^>]+>', re.DOTALL | re.IGNORECASE)
-    img_tags = pattern.findall(string)
-
-    # Remove all content inside HTML tags from the body HTML using the regex pattern
-    return img_tags
-
-
-def get_img_label_pairs(img_tag):
-    # Get Image
-    try:
-        # Stay only with the first img hyperlink
-        img_src = image_src_pattern.findall(img_tag)[0]
-        # Split the string in case there are many images and just keep the first one
-        img_src = img_src.split(" ")[0]
-        # Delete the first part ' srcSet=" ' of the string
-        img_src = img_src[8:]
-    except:
-        return "", ""
-
-    try:
-        alt_text = alt_pattern.findall(img_tag)[0]
-        # Delete the first part ' alt=" '  and the last ' " ' of the string
-        alt_text = alt_text[5:-1]
-    except:
-        return "", ""
-
-    return img_src, alt_text
-
-
-
-def retrieve_pairs(words_file, from_ith_word=0):
+def retrieve_pairs(words_file, from_ith_word=0, test_mode=False):
     path = "src/data/image_gen/pairs"
     filename = f"{from_ith_word-1}_pairs"
 
     # Filter out useless words
-    words = sorted(filter_out_words(words_file))[from_ith_word:]
+    words = sorted(filter_out_words(words_file))
+    if test_mode:
+        words = words[from_ith_word:from_ith_word+3]
+    else:
+        words = words[from_ith_word:]
 
     # Total number of words
     num_words = len(words)
 
-    # Set page to extract images from
-    page = "https://unsplash.com/s/photos"
-
     # Initialize pairs
     pairs = []
+
     # Load pairs from json if starting from a word != 0
-    if from_ith_word > 0:
+    if not test_mode and from_ith_word > 0:
         pairs = load_pairs_from_json(path, filename)
 
     # Image scraping loop
     curr_image_number = 0
+
     for word in words:
-        prev_pairs_length = len(pairs)
-        curr_image_number += 1
+        # Make GET Request
+        start = time.time()
+        response = requests.get(query(word))
+        end = time.time()
 
-        # Retrieve img tags
-        img_tags = get_img_tags_from_with_label(webpage=page, label=word)
+        print(f"WORD: {word}. RESPONSE: {response.status_code}. TIME: {end-start} seconds")
 
-        # Retrieve the image sources and alt text from the img tag
-        for img_tag in img_tags:
-            img, query = get_img_label_pairs(img_tag)
-            if len(img) > 1:
-                pairs.append([img, query, word])
+        if response.status_code == 200:
+            # Store number of pairs before data retrieval
+            prev_n_pairs = len(pairs)
 
-        progress = np.round(100*curr_image_number/len(words), 3)
+            # Load data into json file
+            data_json = json.loads(response.text)
+            results = data_json['results']
+            total_available = data_json['total']
 
-        curr_pairs_length = len(pairs)
+            for result in results:
+                new_dict = {}
+                new_dict['query'] = result['alt_description']
+                new_dict['image'] = result['urls']['small']
+                pairs.append(new_dict)
 
-        # Image scraping loop message
-        string = f"{curr_image_number}/{num_words} {progress}%. "
-        string += f"{len(img_tags)} img tags, but only {curr_pairs_length-prev_pairs_length} "
-        string += f"valid image/query pairs found for word {word}"
-        string += f" ::: Total pairs so far {curr_pairs_length}"
-        print(string)
+            # Calculate number of pairs afterwards
+            curr_n_pairs = len(pairs)
+
+            # Calculate progress in %
+            progress = 100 * np.round(curr_image_number / num_words, 4)
+
+            # Image scraping loop message
+            string = f"{curr_image_number}/{num_words} {progress}% | "
+            string += f"Retrieved {curr_n_pairs-prev_n_pairs} of {total_available} for the word '{word}'"
+            string += f" ::: N PAIRS is {curr_n_pairs}."
+            print(string)
 
         # Save every 5% of the progress
-        if curr_image_number % (num_words//20) == 0:
+        if num_words > 1000 and curr_image_number % (num_words//20) == 0:
             filename = f"{curr_image_number}_pairs"
             save_pairs_to_json(pairs, path, filename)
 
