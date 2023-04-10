@@ -134,7 +134,7 @@ def retrieve_pairs(words_file, from_ith_word=0, test_mode=False, load_from_check
 
         # Save every 2% of the progress
         if num_words > 1000 and curr_word_number % (num_words//50) == 0:
-            filename = f"{curr_word_number}th_word_part_{num_words//50}"
+            filename = f"{curr_word_number}th_word_part{curr_word_number//(num_words//50)}"
             save_pairs_to_json(pairs, path, filename)
             pairs = []
 
