@@ -35,7 +35,7 @@ class ResnetModulesUnitTest(unittest.TestCase):
 
     def test_residual_2(self):
         x = torch.rand(32, 3, 56, 56)
-        model = Convolution2(in_channels=3, out_channels=64)
+        model = Convolution2(n_channels=3)
 
         start = time.time()
         out = model(x)
@@ -44,7 +44,7 @@ class ResnetModulesUnitTest(unittest.TestCase):
         message = f"Convolution2 forward time: {end - start} seconds"
         print(message)
 
-        self.assertEqual(out.shape, (32, 64, 56, 56), msg=f"Failed, out size {out.shape} should be (32, 64, 56, 56)")
+        self.assertEqual(out.shape, (32, 3, 56, 56), msg=f"Failed, out size {out.shape} should be (32, 3, 56, 56)")
 
     def test_residual_3(self):
         x = torch.rand(32, 3, 56, 56)

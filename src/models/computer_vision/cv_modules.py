@@ -17,12 +17,12 @@ class Convolution1(nn.Module):
 
 
 class Convolution2(nn.Module):
-    def __init__(self, in_channels=64, out_channels=64):
+    def __init__(self, n_channels=64):
         super(Convolution2, self).__init__()
         # Convolution 2 goes through max pooling already so dim is already reduced
-        self.block1 = ConvolutionBlock(in_channels=in_channels, out_channels=out_channels)
-        self.block2 = ConvolutionBlock(in_channels=out_channels, out_channels=out_channels)
-        self.block3 = ConvolutionBlock(in_channels=out_channels, out_channels=out_channels)
+        self.block1 = ConvolutionBlock(in_channels=n_channels, out_channels=n_channels)
+        self.block2 = ConvolutionBlock(in_channels=n_channels, out_channels=n_channels)
+        self.block3 = ConvolutionBlock(in_channels=n_channels, out_channels=n_channels)
 
     def forward(self, x):
         x = self.block1(x)
