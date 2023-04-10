@@ -98,6 +98,9 @@ def retrieve_pairs(words_file, from_ith_word=0, test_mode=False, load_from_check
             data_json = json.loads(response.text)
 
             # Obtain information about the query
+            if 'results' not in data_json.keys():
+                continue
+
             results = data_json['results']
             total_images_av = data_json['total']
             total_pages_av = data_json['total_pages']
@@ -112,6 +115,9 @@ def retrieve_pairs(words_file, from_ith_word=0, test_mode=False, load_from_check
                     data_json = json.loads(response.text)
 
                     # Get results
+                    if 'results' not in data_json.keys():
+                        continue
+
                     results = data_json['results']
 
                 # Get query image pairs for the current request
