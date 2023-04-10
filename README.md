@@ -8,7 +8,9 @@
 ![Pandas version][pandas-image]
 ![NumPy version][numpy-image]
 
-This project implements the ground breaking papers on Generative Adversarial Networks and Diffusion Networks.
+This project implements the ground-breaking paper by OpenAI on
+test-image connection and zero-shot classification: CLIP.
+This paper is later important for image generation in DALL-E-2.
 
 Based on the orignal work by OpenAi
 > Radford, A., Kim, J. W., Hallacy, C., Ramesh, A., Goh, G., Agarwal, S., ... & Sutskever, I. (2021, July). Learning transferable visual models from natural language supervision. In International conference on machine learning (pp. 8748-8763). PMLR.
