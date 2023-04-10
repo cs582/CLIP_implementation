@@ -3,72 +3,71 @@ import torch.nn as nn
 
 from einops.layers.torch import Rearrange
 
-from cv_modules import Convolution1, ConvolutionX, TransformerEncoderBlock
+from src.models.computer_vision.cv_modules import Convolution1, Convolution2, Convolution3, Convolution4, Convolution5, TransformerEncoderBlock
 
 
-class Resnet34D(nn.Module):
-    def __init__(self, n_classes):
-        super(Resnet34D, self).__init__()
-        # Stage 1
-        self.conv1 = Convolution1()
+class RN34_at224(nn.Module):
+    def __init__(self, embedding_dim):
+        super(RN34_at224, self).__init__()
 
-        # Stage 2
-        self.conv2_1 = ConvolutionX(in_channels=64, hidden_channels=64, out_channels=64)
-        self.conv2_2 = ConvolutionX(in_channels=64, hidden_channels=64, out_channels=64)
-        self.conv2_3 = ConvolutionX(in_channels=64, hidden_channels=64, out_channels=256)
-
-        # Stage 3
-        self.conv3_1 = ConvolutionX(in_channels=256, hidden_channels=128, out_channels=128)
-        self.conv3_2 = ConvolutionX(in_channels=128, hidden_channels=128, out_channels=128)
-        self.conv3_3 = ConvolutionX(in_channels=128, hidden_channels=128, out_channels=128)
-        self.conv3_4 = ConvolutionX(in_channels=128, hidden_channels=128, out_channels=512)
-
-        # Stage 4
-        self.conv4_1 = ConvolutionX(in_channels=512, hidden_channels=256, out_channels=256)
-        self.conv4_2 = ConvolutionX(in_channels=256, hidden_channels=256, out_channels=256)
-        self.conv4_3 = ConvolutionX(in_channels=256, hidden_channels=256, out_channels=256)
-        self.conv4_4 = ConvolutionX(in_channels=256, hidden_channels=256, out_channels=256)
-        self.conv4_5 = ConvolutionX(in_channels=256, hidden_channels=256, out_channels=256)
-        self.conv4_6 = ConvolutionX(in_channels=256, hidden_channels=256, out_channels=1024)
-
-        # Stage 5
-        self.conv5_1 = ConvolutionX(in_channels=1024, hidden_channels=512, out_channels=512)
-        self.conv5_2 = ConvolutionX(in_channels=512, hidden_channels=512, out_channels=512)
-        self.conv5_3 = ConvolutionX(in_channels=512, hidden_channels=512, out_channels=2048)
+        # Convolutional Layers
+        # 224 x 224
+        self.conv1 = Convolution1() # 113 x 113 - > 56 x 56
+        self.conv2 = Convolution2() # 56 x 56
+        self.conv3 = Convolution3() # 28 x 28
+        self.conv4 = Convolution4() # 14 x 14
+        self.conv5 = Convolution5() # 7 x 7
 
         # Final Stage
+        # 7 x 7 x 1024 -> 7*7*1024 -> embedding_dim
         self.avg_pool = nn.AvgPool2d(kernel_size=3)
-        self.attention = nn.TransformerEncoderLayer(d_model=112*112*1024, nhead=8)
-        self.fc = nn.Linear(112*112*1024, n_classes)
+        self.attention = nn.TransformerEncoderLayer(d_model=7*7*1024, nhead=8)
+        self.fc = nn.Linear(7*7*1024, embedding_dim)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
-        # First stage
+        # Convolutional Stage
         x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = self.conv4(x)
+        x = self.conv5(x)
 
-        # Second stage
-        x = self.conv2_1(x)
-        x = self.conv2_2(x)
-        x = self.conv2_3(x)
+        # Sixth stage
+        x = self.avg_pool(x)
+        x = x.view(-1, 1)
+        x = self.attention(x)
+        x = self.fc(x)
+        x = self.softmax(x)
+        return x
 
-        # Third stage
-        x = self.conv3_1(x)
-        x = self.conv3_2(x)
-        x = self.conv3_3(x)
-        x = self.conv3_4(x)
 
-        # Fourth stage
-        x = self.conv4_1(x)
-        x = self.conv4_2(x)
-        x = self.conv4_3(x)
-        x = self.conv4_4(x)
-        x = self.conv4_5(x)
-        x = self.conv4_6(x)
+class RN34_at336(nn.Module):
+    def __init__(self, embedding_dim):
+        super(RN34_at336, self).__init__()
 
-        # Fifth stage
-        x = self.conv5_1(x)
-        x = self.conv5_2(x)
-        x = self.conv5_3(x)
+        # Convolutional Layers
+        # 336 x 336
+        self.conv1 = Convolution1() # 166 x 166 -> 83 x 83
+        self.conv2 = Convolution2() # 83 x 83
+        self.conv3 = Convolution3() # 42 x 42
+        self.conv4 = Convolution4() # 21 x 21
+        self.conv5 = Convolution5() # 11 x 11
+
+        # Final Stage
+        # 11 x 11 x 1024 -> 11*11*1024 -> embedding_dim
+        self.avg_pool = nn.AvgPool2d(kernel_size=3)
+        self.attention = nn.TransformerEncoderLayer(d_model=11*11*1024, nhead=8)
+        self.fc = nn.Linear(11*11*1024, embedding_dim)
+        self.softmax = nn.Softmax(dim=1)
+
+    def forward(self, x):
+        # Convolutional Stage
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = self.conv4(x)
+        x = self.conv5(x)
 
         # Sixth stage
         x = self.avg_pool(x)
