@@ -82,15 +82,9 @@ def retrieve_pairs(words_file, from_ith_word=0, test_mode=False, load_from_check
     pairs = []
     curr_n_pairs = 0
 
-    # Image scraping loop
-    curr_word_number = 0
-
     # Iterate through each word
-    for i in range(from_ith_word, num_words):
-        word = words[i]
-
-        # Update image number
-        curr_word_number += 1
+    for curr_word_number in range(from_ith_word, num_words):
+        word = words[curr_word_number]
 
         # Make initial response to estimate number of pages
         response = make_GET_request(word, 1)
