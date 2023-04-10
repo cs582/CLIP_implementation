@@ -73,9 +73,7 @@ def retrieve_pairs(words_file, from_ith_word=0, test_mode=False, load_from_check
     # Filter out useless words
     words = sorted(filter_out_words(words_file))
     if test_mode:
-        words = words[from_ith_word:from_ith_word+3]
-    else:
-        words = words[from_ith_word:]
+        words = words[from_ith_word+3]
 
     # Total number of words
     num_words = len(words)
@@ -88,7 +86,9 @@ def retrieve_pairs(words_file, from_ith_word=0, test_mode=False, load_from_check
     curr_word_number = 0
 
     # Iterate through each word
-    for word in words:
+    for i in range(from_ith_word, num_words):
+        word = words[i]
+
         # Update image number
         curr_word_number += 1
 
