@@ -5,6 +5,7 @@ from src.models.computer_vision.cv_utils import my_images_to_pathces_implementat
 from src.models.computer_vision.cv_utils import optimized_images_to_patches_implementation as img_to_patches2
 from src.models.computer_vision.cv_utils import eignops_images_to_patches_optimization as img_to_patches3
 
+
 class UtilsTest(unittest.TestCase):
     def test_image_to_patches_1(self):
         p = 16
