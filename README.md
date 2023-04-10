@@ -30,7 +30,7 @@ pip install -r requirements
 Unit tests can be run by using the following command
 
 ```sh
-python unit_test.py
+python unit_tests.py
 ```
 
 ## Usage example
