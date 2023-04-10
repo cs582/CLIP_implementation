@@ -67,9 +67,8 @@ def make_pair(full_info):
     return new_dict
 
 
-def retrieve_pairs(words_file, from_ith_word=0, test_mode=False):
+def retrieve_pairs(words_file, from_ith_word=0, test_mode=False, load_from_checkpoint=False):
     path = "src/data/image_gen/pairs"
-    filename = f"{from_ith_word-1}th_word"
 
     # Filter out useless words
     words = sorted(filter_out_words(words_file))
@@ -84,10 +83,6 @@ def retrieve_pairs(words_file, from_ith_word=0, test_mode=False):
     # Initialize pairs
     pairs = []
     curr_n_pairs = 0
-
-    # Load pairs from json if starting from a word != 0
-    if not test_mode and from_ith_word > 0:
-        pairs = load_pairs_from_json(path, filename)
 
     # Image scraping loop
     curr_word_number = 0
@@ -145,7 +140,8 @@ def retrieve_pairs(words_file, from_ith_word=0, test_mode=False):
 
         # Save every 2% of the progress
         if num_words > 1000 and curr_word_number % (num_words//50) == 0:
-            filename = f"{curr_word_number}th_word"
+            filename = f"{curr_word_number}th_word_part_{num_words//50}"
             save_pairs_to_json(pairs, path, filename)
+            pairs = []
 
     return pairs
