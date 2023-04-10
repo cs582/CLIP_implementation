@@ -111,6 +111,9 @@ def retrieve_pairs(words_file, from_ith_word=0, test_mode=False, load_from_check
                     # Make GET Request
                     response = make_GET_request(word, page)
 
+                    if response.status_code != 200:
+                        continue
+
                     # Load data into json file
                     data_json = json.loads(response.text)
 
