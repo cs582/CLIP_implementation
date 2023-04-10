@@ -34,7 +34,7 @@ class Convolution2(nn.Module):
 class Convolution3(nn.Module):
     def __init__(self, in_channels=64, out_channels=128):
         super(Convolution3, self).__init__()
-        self.block1 = ConvolutionBlock(in_channels=in_channels, out_channels=out_channels, first_block=True)
+        self.block1 = ConvolutionBlock(in_channels=in_channels, out_channels=out_channels, downsampling=True)
         self.block2 = ConvolutionBlock(in_channels=out_channels, out_channels=out_channels)
         self.block3 = ConvolutionBlock(in_channels=out_channels, out_channels=out_channels)
         self.block4 = ConvolutionBlock(in_channels=out_channels, out_channels=out_channels)
@@ -50,7 +50,7 @@ class Convolution3(nn.Module):
 class Convolution4(nn.Module):
     def __init__(self, in_channels=128, out_channels=256):
         super(Convolution4, self).__init__()
-        self.block1 = ConvolutionBlock(in_channels=in_channels, out_channels=out_channels, first_block=True)
+        self.block1 = ConvolutionBlock(in_channels=in_channels, out_channels=out_channels, downsampling=True)
         self.block2 = ConvolutionBlock(in_channels=out_channels, out_channels=out_channels)
         self.block3 = ConvolutionBlock(in_channels=out_channels, out_channels=out_channels)
         self.block4 = ConvolutionBlock(in_channels=out_channels, out_channels=out_channels)
@@ -70,7 +70,7 @@ class Convolution4(nn.Module):
 class Convolution5(nn.Module):
     def __init__(self, in_channels=256, out_channels=512):
         super(Convolution5, self).__init__()
-        self.block1 = ConvolutionBlock(in_channels=in_channels, out_channels=out_channels, first_block=True)
+        self.block1 = ConvolutionBlock(in_channels=in_channels, out_channels=out_channels, downsampling=True)
         self.block2 = ConvolutionBlock(in_channels=out_channels, out_channels=out_channels)
         self.block3 = ConvolutionBlock(in_channels=out_channels, out_channels=out_channels)
         self.block4 = ConvolutionBlock(in_channels=out_channels, out_channels=out_channels)
@@ -88,21 +88,21 @@ class Convolution5(nn.Module):
 
 
 class ConvolutionBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, first_block=False):
+    def __init__(self, in_channels, out_channels, downsampling=False):
         super(ConvolutionBlock, self).__init__()
         # If first block, then set stride = 2
-        self.first_block = first_block
+        self.downsampling = downsampling
 
-        initial_stride = 2 if self.first_block else 1
+        initial_stride = 2 if self.downsampling else 1
         self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=3, padding=1, stride=initial_stride)
         self.conv2 = nn.Conv2d(in_channels=out_channels, out_channels=out_channels, kernel_size=3, padding=1)
 
         self.pool = BlurPool2d(n_channels=in_channels)
-        if self.first_block:
+        if self.downsampling:
             self.convB = nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=1, padding=0)
 
     def forward(self, x):
-        if self.first_block: # Down-sampling only in first block
+        if self.downsampling: # Down-sampling only in first block
             # Path A
             dsA = self.conv1(x) # CNN Down-Sampling
             out1 = self.conv2(dsA)
