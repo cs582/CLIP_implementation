@@ -36,7 +36,8 @@ if __name__ == '__main__':
     # List all tests to run
     tests_to_run = [utils_test, RN_modules_test, radford_test, image_scrapping_test]
 
-    if not args.exclude_backbones:
+    if args.heavy:
+        print("Stacked Backbones Tests to TestSuite...")
         tests_to_run.append(backbones_test)
 
     # Test suite that includes all the tests
