@@ -133,6 +133,7 @@ class BlurPool2d(nn.Module):
             x = F.pad(x, (0, 1, 0, 0))
 
         x = F.max_pool2d(x, kernel_size=2, stride=1)
+        print(x.get_device())
         x = F.conv2d(x, self.blur_kernel, stride=2, padding=1, groups=self.n_channels)
 
         return x
