@@ -79,7 +79,7 @@ class ViTat336(nn.Module):
     def __init__(self, embedding_dim):
         super(ViTat336, self).__init__()
         # ViT Hyper-parameters
-        self.n_channels, self.h, self.w = (3, 336, 336)
+        self.c, self.h, self.w = (3, 336, 336)
         self.p = 14
 
         # Number of layers
