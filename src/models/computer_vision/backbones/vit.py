@@ -124,7 +124,6 @@ class ViTat336(nn.Module):
 
         # Convert image to patches
         x = self.rearrange(x)
-        print(x.shape)
 
         # Patch + Position Embedding
         x = torch.matmul(x, self.patch_embedding)           # b x 576 x 588 * 588 x D -> b x 576 x D
