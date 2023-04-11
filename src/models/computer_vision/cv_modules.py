@@ -122,11 +122,10 @@ class BlurPool2d(nn.Module):
     def __init__(self, n_channels):
         super(BlurPool2d, self).__init__()
         self.n_channels = n_channels
-        self.blur_kernel = torch.tensor([ [1, 2, 1], [2, 4, 2], [1, 2, 1] ], dtype=torch.float32).expand(n_channels, 1, 3, 3)
-        self.blur_kernel = self.blur_kernel / 16  # Normalize the blur kernel
+        blur_kernel = torch.tensor([ [1, 2, 1], [2, 4, 2], [1, 2, 1] ], dtype=torch.float32).expand(n_channels, 1, 3, 3)
+        self.register_buffer('blur_kernel', blur_kernel / 16)
 
     def forward(self, x):
-        print('device at beginning', x.get_device())
         # Pad the input tensor with zeros so that the tensor can be divided evenly into 3x3 regions
         if x.shape[2] % 2 == 1:
             x = F.pad(x, (0, 0, 0, 1))
@@ -134,9 +133,7 @@ class BlurPool2d(nn.Module):
             x = F.pad(x, (0, 1, 0, 0))
 
         x = F.max_pool2d(x, kernel_size=2, stride=1)
-        print('device after pooling', x.get_device())
         x = F.conv2d(x, self.blur_kernel, stride=2, padding=1, groups=self.n_channels)
-        print('device after convolution', x.get_device())
 
         return x
     
