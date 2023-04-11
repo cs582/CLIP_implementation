@@ -2,13 +2,13 @@ import unittest
 import torch
 import time
 
-from src.models.computer_vision.backbones.resnet34 import RN34_at224, RN34_at336
+from src.models.computer_vision.backbones.resnet34 import RN34at224, RN34at336
 
 
 class BackbonesUnitTest(unittest.TestCase):
     def test_RN_at_224(self):
         x = torch.rand(4, 3, 224, 224)
-        model = RN34_at224(embedding_dim=1000)
+        model = RN34at224(embedding_dim=1000)
 
         start = time.time()
         out = model(x)
@@ -21,7 +21,7 @@ class BackbonesUnitTest(unittest.TestCase):
 
     def test_RN_at_336(self):
         x = torch.rand(4, 3, 336, 336)
-        model = RN34_at336(embedding_dim=1000)
+        model = RN34at336(embedding_dim=1000)
 
         start = time.time()
         out = model(x)
@@ -38,7 +38,7 @@ class BackbonesUnitTestGPU(unittest.TestCase):
         device = torch.device('cuda:0')
 
         x = torch.rand(4, 3, 224, 224).to(device)
-        model = RN34_at224(embedding_dim=1000).to(device)
+        model = RN34at224(embedding_dim=1000).to(device)
 
         start = time.time()
         out = model(x)
@@ -53,7 +53,7 @@ class BackbonesUnitTestGPU(unittest.TestCase):
         device = torch.device('cuda:0')
 
         x = torch.rand(4, 3, 336, 336).to(device)
-        model = RN34_at336(embedding_dim=1000).to(device)
+        model = RN34at336(embedding_dim=1000).to(device)
 
         start = time.time()
         out = model(x)
