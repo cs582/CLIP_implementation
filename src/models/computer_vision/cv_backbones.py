@@ -31,17 +31,17 @@ class RN34_at224(nn.Module):
         x = self.conv3(x)
         x = self.conv4(x)
         x = self.conv5(x)
-        print("out after residual nets", x.shape)
+        #print("out after residual nets", x.shape)
 
         # Sixth stage
         x = self.avg_pool(x)
-        print("out after avg pool", x.shape)
+        #print("out after avg pool", x.shape)
         x = x.view(-1, 1)
-        print("out after flattening", x.shape)
+        #print("out after flattening", x.shape)
         x = self.attention(x)
-        print("out after attention", x.shape)
+        #print("out after attention", x.shape)
         x = self.fc(x)
-        print("out after linear projection", x.shape)
+        #print("out after linear projection", x.shape)
         x = self.softmax(x)
         return x
 
