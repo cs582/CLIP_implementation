@@ -39,8 +39,8 @@ class ViTat224(nn.Module):
         self.layer_norm = nn.LayerNorm(self.vector_size)
 
         # Transformer Encoder Hidden Layers
-        self.transformer_layer = nn.TransformerEncoderLayer(d_model=self.vector_size, activation='gelu', nhead=self.nhead, dim_feedforward=self.mlp_size)
-        self.transformer = nn.TransformerEncoder(encoder_layer=self.transformer_layer, num_layers=self.n_layers)
+        transformer_layer = nn.TransformerEncoderLayer(d_model=self.vector_size, activation='gelu', nhead=self.nhead, dim_feedforward=self.mlp_size)
+        self.transformer = nn.TransformerEncoder(encoder_layer=transformer_layer, num_layers=self.n_layers)
         self.to_latent = nn.Identity()
 
         # Out MLP head with one
@@ -55,6 +55,7 @@ class ViTat224(nn.Module):
 
         # Convert image to patches
         x = self.rearrange(x)
+        print(x.shape)
 
         # Patch Embedding
         x = torch.matmul(x, self.patch_embedding_encoder)
@@ -64,9 +65,7 @@ class ViTat224(nn.Module):
         x = self.layer_norm(x)
 
         # Transformer Encoder Layers
-        x = self.t_encoder1(x)
-        x = self.t_encoder2(x)
-        x = self.t_encoder3(x)
+        x = self.transformer(x)
 
         # Getting class token
         x = x[:, 0]
@@ -110,8 +109,8 @@ class ViTat336(nn.Module):
         self.layer_norm = nn.LayerNorm(self.vector_size)
 
         # Transformer Encoder Hidden Layers
-        self.transformer_layer = nn.TransformerEncoderLayer(d_model=self.vector_size, activation='gelu', nhead=self.nhead, dim_feedforward=self.mlp_size)
-        self.transformer = nn.TransformerEncoder(encoder_layer=self.transformer_layer, num_layers=self.n_layers)
+        transformer_layer = nn.TransformerEncoderLayer(d_model=self.vector_size, activation='gelu', nhead=self.nhead, dim_feedforward=self.mlp_size)
+        self.transformer = nn.TransformerEncoder(encoder_layer=transformer_layer, num_layers=self.n_layers)
         self.to_latent = nn.Identity()
 
         # Out MLP head with one
@@ -126,6 +125,7 @@ class ViTat336(nn.Module):
 
         # Convert image to patches
         x = self.rearrange(x)
+        print(x.shape)
 
         # Patch Embedding
         x = torch.matmul(x, self.patch_embedding_encoder)
@@ -135,9 +135,7 @@ class ViTat336(nn.Module):
         x = self.layer_norm(x)
 
         # Transformer Encoder Layers
-        x = self.t_encoder1(x)
-        x = self.t_encoder2(x)
-        x = self.t_encoder3(x)
+        x = self.transformer(x)
 
         # Getting class token
         x = x[:, 0]
