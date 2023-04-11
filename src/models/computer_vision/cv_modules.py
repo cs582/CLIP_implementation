@@ -154,3 +154,44 @@ class TransformerEncoderBlock(nn.Module):
         x = self.encoder4(x)
         return x
 
+
+class AttentionPooling(nn.Module):
+    def __init__(self, in_size, dim_attention=32):
+        super(AttentionPooling, self).__init__()
+        self.vk_size = int(np.prod(in_size))
+        self.q_size = int(np.prod(np.add(in_size, -2)))
+
+        self.dim_attention = dim_attention
+
+        self.pool = nn.AvgPool2d(kernel_size=3, stride=1)
+
+        self.wq = nn.Parameter(torch.rand(1, self.q_size, self.dim_attention))
+        self.wk = nn.Parameter(torch.rand(1, self.vk_size, self.dim_attention))
+        self.wv = nn.Parameter(torch.rand(1, self.vk_size, self.dim_attention))
+
+        self.softmax = nn.Softmax(dim=-1)
+
+    def forward(self, x):
+        x_pool = self.pool(x)
+
+        x = x.flatten(start_dim=2)              # batch_size x n_channels x vk_dim
+        x_pool = x_pool.flatten(start_dim=2)    # batch_size x n_channels x q_dim
+
+        q = torch.matmul(x_pool, self.wq)  # b x c x q_dim * dim_q x dim_att -> b x c x dim_att
+        k = torch.matmul(x, self.wk)       # b x c x vk_dim * dim_vk x dim_att -> b x c x dim_att
+        v = torch.matmul(x, self.wv)       # b x c x vk_dim * dim_vk x dim_att -> b x c x dim_att
+
+        s = torch.bmm(q, k.transpose(1, 2))     # (b x) c x dim_att * (b x) dim_att x c -> (b x) c x c
+        s = s / (self.dim_attention ** 0.5)     # regularization
+        s = self.softmax(s)                     # activation function
+
+        v_hat = torch.bmm(s, v)                 # b x c x c
+        return v_hat
+
+
+
+
+
+
+
+

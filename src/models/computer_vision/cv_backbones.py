@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 from einops.layers.torch import Rearrange
-from src.models.computer_vision.cv_modules import Convolution1, Convolution2, Convolution3, Convolution4, Convolution5, TransformerEncoderBlock
+from src.models.computer_vision.cv_modules import Convolution1, Convolution2, Convolution3, Convolution4, Convolution5, TransformerEncoderBlock, AttentionPooling
 
 
 class RN34_at224(nn.Module):
@@ -18,9 +18,8 @@ class RN34_at224(nn.Module):
         self.conv5 = Convolution5() # 7 x 7
 
         # Final Stage
-        self.avg_pool = nn.AvgPool2d(kernel_size=3) # 5 x 5
-        self.attention = nn.TransformerEncoderLayer(d_model=5*5*512, nhead=8)
-        self.fc = nn.Linear(5*5*512, embedding_dim)
+        self.attention_polling = AttentionPooling(in_size=(7,7), dim_attention=32)
+        self.fc = nn.Linear(32*512, embedding_dim)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
@@ -34,11 +33,9 @@ class RN34_at224(nn.Module):
         print("out after residual nets", x.shape)
 
         # Sixth stage
-        x = self.avg_pool(x)
-        print("out after avg pool", x.shape)
-        x = self.attention(x.flatten(start_dim=1))
-        print("out after attention", x.shape)
-        x = self.fc(x)
+        x = self.attention_polling(x)
+        print("out after attention pooling", x.shape)
+        x = self.fc(x.flatten(start_dim=1))
         print("out after linear projection", x.shape)
         x = self.softmax(x)
         return x
@@ -57,9 +54,8 @@ class RN34_at336(nn.Module):
         self.conv5 = Convolution5() # 11 x 11
 
         # Final Stage
-        self.avg_pool = nn.AvgPool2d(kernel_size=3) # 9 x 9
-        self.attention = nn.TransformerEncoderLayer(d_model=9*9*512, nhead=8)
-        self.fc = nn.Linear(9*9*512, embedding_dim)
+        self.attention_pooling = AttentionPooling(in_size=(7,7), dim_attention=32)
+        self.fc = nn.Linear(32*512, embedding_dim)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
@@ -73,11 +69,9 @@ class RN34_at336(nn.Module):
         print("out after residual nets", x.shape)
 
         # Sixth stage
-        x = self.avg_pool(x)
-        print("out after avg pool", x.shape)
-        x = self.attention(x.flatten(start_dim=1))
-        print("out after attention", x.shape)
-        x = self.fc(x)
+        x = self.attention_polling(x)
+        print("out after attention pooling", x.shape)
+        x = self.fc(x.flatten(start_dim=1))
         print("out after linear projection", x.shape)
         x = self.softmax(x)
         return x

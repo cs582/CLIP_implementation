@@ -2,8 +2,7 @@ import unittest
 import torch
 import time
 
-from src.models.computer_vision.cv_modules import BlurPool2d, Convolution1, Convolution2, Convolution3, Convolution4, Convolution5
-from src.models.computer_vision.cv_backbones import RN34_at224
+from src.models.computer_vision.cv_modules import BlurPool2d, Convolution1, Convolution2, Convolution3, Convolution4, Convolution5, AttentionPooling
 
 
 class ResnetModulesUnitTest(unittest.TestCase):
@@ -19,6 +18,19 @@ class ResnetModulesUnitTest(unittest.TestCase):
         print(message)
 
         self.assertEqual(out.shape, (64, 3, 28, 28), msg=f"Failed, out size {out.shape} should be (64, 3, 28, 28)")
+
+    def test_attention_pooling(self):
+        x = torch.rand(64, 512, 7, 7)
+        model = AttentionPooling(in_size=(7,7), dim_attention=32)
+
+        start = time.time()
+        out = model(x)
+        end = time.time()
+
+        message = f"AttentionPooling forward time: {end - start} seconds"
+        print(message)
+
+        self.assertEqual(out.shape, (64, 512, 32))
 
     def test_residual_1(self):
         x = torch.rand(32, 3, 224, 224)
@@ -86,17 +98,5 @@ class ResnetModulesUnitTest(unittest.TestCase):
         self.assertEqual(out.shape, (32, 64, 7, 7), msg=f"Failed, out size {out.shape} should be (32, 64, 7, 7)")
 
 
-class BackbonesUnitTest(unittest.TestCase):
-    def test_RN_at_224(self):
-        x = torch.rand(4, 3, 224, 224)
-        model = RN34_at224(embedding_dim=1000)
 
-        start = time.time()
-        out = model(x)
-        end = time.time()
-
-        message = f"RN@224 forward time: {end - start} seconds"
-        print(message)
-
-        self.assertEqual(out.shape, (4, 1000), msg=f"Failed, out size {out.shape} should be (2,1000)")
 
