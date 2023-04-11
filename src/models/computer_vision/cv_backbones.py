@@ -64,9 +64,7 @@ class RN34_at336(nn.Module):
 
         # Sixth stage
         x = self.attention_pooling(x)
-        print("out after attention pooling", x.shape)
         x = self.fc(x.flatten(start_dim=1))
-        print("out after linear projection", x.shape)
         x = self.softmax(x)
         return x
 
