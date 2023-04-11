@@ -120,7 +120,7 @@ class ConvolutionBlock(nn.Module):
 
 class BlurPool2d(nn.Module):
     def __init__(self, n_channels):
-        super(BlurPool2d).__init__()
+        super(BlurPool2d, self).__init__()
         self.n_channels = n_channels
         self.blur_kernel = torch.tensor([ [1, 2, 1], [2, 4, 2], [1, 2, 1] ], dtype=torch.float32).expand(n_channels, 1, 3, 3)
         self.blur_kernel = self.blur_kernel / 16  # Normalize the blur kernel
