@@ -14,11 +14,11 @@ class ViTat224(nn.Module):
         self.p = 16
 
         # Number of layers
-        self.n_layers = 18
+        self.n_layers = 14
         # Latent vector size D
         self.vector_size = 768
         # FF dim
-        self.mlp_size = 2048
+        self.mlp_size = 1024
         # Number of heads
         self.nhead = 12
 
