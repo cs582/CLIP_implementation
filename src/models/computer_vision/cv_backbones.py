@@ -18,7 +18,7 @@ class RN34_at224(nn.Module):
         self.conv5 = Convolution5() # 7 x 7
 
         # Final Stage
-        self.attention_polling = AttentionPooling(in_size=(7,7), dim_attention=32)
+        self.attention_pooling = AttentionPooling(in_size=(7,7), dim_attention=32)
         self.fc = nn.Linear(32*512, embedding_dim)
         self.softmax = nn.Softmax(dim=1)
 
@@ -33,7 +33,7 @@ class RN34_at224(nn.Module):
         print("out after residual nets", x.shape)
 
         # Sixth stage
-        x = self.attention_polling(x)
+        x = self.attention_pooling(x)
         print("out after attention pooling", x.shape)
         x = self.fc(x.flatten(start_dim=1))
         print("out after linear projection", x.shape)
@@ -69,7 +69,7 @@ class RN34_at336(nn.Module):
         print("out after residual nets", x.shape)
 
         # Sixth stage
-        x = self.attention_polling(x)
+        x = self.attention_pooling(x)
         print("out after attention pooling", x.shape)
         x = self.fc(x.flatten(start_dim=1))
         print("out after linear projection", x.shape)
