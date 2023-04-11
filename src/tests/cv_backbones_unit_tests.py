@@ -94,7 +94,7 @@ class BackbonesUnitTestGPU(unittest.TestCase):
     def test_ViT_at_224(self):
         device = torch.device('cuda:0')
 
-        x = torch.rand(4, 3, 224, 224).to(device)
+        x = torch.rand(128, 3, 224, 224).to(device)
         model = ViTat224(embedding_dim=768).to(device)
 
         start = time.time()
@@ -109,7 +109,7 @@ class BackbonesUnitTestGPU(unittest.TestCase):
     def test_ViT_at_336(self):
         device = torch.device('cuda:0')
 
-        x = torch.rand(4, 3, 336, 336).to(device)
+        x = torch.rand(128, 3, 336, 336).to(device)
         model = ViTat336(embedding_dim=768).to(device)
 
         start = time.time()
