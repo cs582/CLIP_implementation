@@ -38,7 +38,7 @@ class BackbonesUnitTestGPU(unittest.TestCase):
         device = torch.device('cuda:0')
 
         x = torch.rand(4, 3, 224, 224).to(device)
-        model = RN34at224(embedding_dim=1000).to(device)
+        model = RN34at224(embedding_dim=1000).to(device).eval()
 
         start = time.time()
         out = model(x)
@@ -53,7 +53,7 @@ class BackbonesUnitTestGPU(unittest.TestCase):
         device = torch.device('cuda:0')
 
         x = torch.rand(4, 3, 336, 336).to(device)
-        model = RN34at336(embedding_dim=1000).to(device)
+        model = RN34at336(embedding_dim=1000).to(device).eval()
 
         start = time.time()
         out = model(x)
