@@ -5,22 +5,22 @@ from einops.layers.torch import Rearrange
 
 
 # ViT (Dosovitskiy et. al. 2020) / CLIP (Radford et al. 2021)
-# ViT-L/14 @ 224
+# ViT-L/16 @ 224
 class ViTat224(nn.Module):
     def __init__(self, embedding_dim):
         super(ViTat224, self).__init__()
         # ViT Hyper-parameters
         self.c, self.h, self.w = (3, 224, 224)
-        self.p = 14
+        self.p = 16
 
         # Number of layers
-        self.n_layers = 12
+        self.n_layers = 18
         # Latent vector size D
-        self.vector_size = 512
+        self.vector_size = 768
         # FF dim
         self.mlp_size = 2048
         # Number of heads
-        self.nhead = 16
+        self.nhead = 12
 
         # Number of patches
         self.n_embeddings = (self.h * self.w) // (self.p**2)
