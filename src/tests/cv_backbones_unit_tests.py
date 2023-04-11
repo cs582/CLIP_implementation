@@ -111,7 +111,7 @@ class BackbonesUnitTestGPU(unittest.TestCase):
     def test_ViT_at_336(self):
         device = torch.device('cuda:0')
 
-        batch_size = 8
+        batch_size = 4
 
         x = torch.rand(batch_size, 3, 336, 336).to(device)
         model = ViTat336(embedding_dim=768).to(device)
