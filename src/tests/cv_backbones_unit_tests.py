@@ -94,7 +94,7 @@ class BackbonesUnitTestGPU(unittest.TestCase):
     def test_ViT_at_224(self):
         device = torch.device('cuda:0')
 
-        x = torch.rand(128, 3, 224, 224).to(device)
+        x = torch.rand(64, 3, 224, 224).to(device)
         model = ViTat224(embedding_dim=768).to(device)
 
         start = time.time()
@@ -104,12 +104,12 @@ class BackbonesUnitTestGPU(unittest.TestCase):
         message = f"ViT-L/14@224 [CUDA: {torch.cuda.get_device_name(0)}] forward time: {end - start} seconds"
         print(message)
 
-        self.assertEqual(out.shape, (4, 768), msg=f"ViT-L/14@336 Failed, out size {out.shape} should be (4, 768)")
+        self.assertEqual(out.shape, (64, 768), msg=f"ViT-L/14@336 Failed, out size {out.shape} should be (64, 768)")
 
     def test_ViT_at_336(self):
         device = torch.device('cuda:0')
 
-        x = torch.rand(128, 3, 336, 336).to(device)
+        x = torch.rand(64, 3, 336, 336).to(device)
         model = ViTat336(embedding_dim=768).to(device)
 
         start = time.time()
@@ -119,5 +119,5 @@ class BackbonesUnitTestGPU(unittest.TestCase):
         message = f"ViT-L/14@336 [CUDA: {torch.cuda.get_device_name(0)}] forward time: {end - start} seconds"
         print(message)
 
-        self.assertEqual(out.shape, (4, 768), msg=f"ViT-L/14@336 Failed, out size {out.shape} should be (4, 768)")
+        self.assertEqual(out.shape, (64, 768), msg=f"ViT-L/14@336 Failed, out size {out.shape} should be (64, 768)")
 
