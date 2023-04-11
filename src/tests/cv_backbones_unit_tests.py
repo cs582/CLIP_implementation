@@ -52,7 +52,7 @@ class BackbonesUnitTestGPU(unittest.TestCase):
     def test_RN_at_336(self):
         device = torch.device('cuda:0')
 
-        x = torch.rand(95, 3, 336, 336).to(device)
+        x = torch.rand(64, 3, 336, 336).to(device)
         model = RN34at336(embedding_dim=1000).to(device).eval()
 
         start = time.time()
@@ -62,4 +62,4 @@ class BackbonesUnitTestGPU(unittest.TestCase):
         message = f"RN@336 [CUDA: {torch.cuda.get_device_name(0)}] forward time: {end - start} seconds"
         print(message)
 
-        self.assertEqual(out.shape, (95, 1000), msg=f"RN@336 Failed, out size {out.shape} should be (95, 1000)")
+        self.assertEqual(out.shape, (64, 1000), msg=f"RN@336 Failed, out size {out.shape} should be (64, 1000)")
