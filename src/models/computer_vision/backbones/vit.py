@@ -5,7 +5,7 @@ from einops.layers.torch import Rearrange
 
 
 # ViT (Dosovitskiy et. al. 2020) / CLIP (Radford et al. 2021)
-# ViT-L/16 @ 224
+# ViT-L/14 @ 224
 class ViTat224(nn.Module):
     def __init__(self, embedding_dim):
         super(ViTat224, self).__init__()
@@ -14,11 +14,11 @@ class ViTat224(nn.Module):
         self.p = 14
 
         # Number of layers
-        self.n_layers = 12
+        self.n_layers = 24
         # Latent vector size D
-        self.vector_size = 768
+        self.vector_size = 1024
         # FF dim
-        self.mlp_size = 1024
+        self.mlp_size = 4096
         # Number of heads
         self.nhead = 8
 
@@ -83,13 +83,13 @@ class ViTat336(nn.Module):
         self.p = 14
 
         # Number of layers
-        self.n_layers = 12
+        self.n_layers = 24
         # Latent vector size D
-        self.vector_size = 512
+        self.vector_size = 1024
         # FF dim
-        self.mlp_size = 2048
+        self.mlp_size = 4096
         # Number of heads
-        self.nhead = 16
+        self.nhead = 8
 
         # Number of patches
         self.n_embeddings = (self.h * self.w) // (self.p**2)
