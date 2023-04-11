@@ -23,20 +23,16 @@ class RN34_at224(nn.Module):
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
-        print("RN@224")
         # Convolutional Stage
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)
         x = self.conv4(x)
         x = self.conv5(x)
-        print("out after residual nets", x.shape)
 
         # Sixth stage
         x = self.attention_pooling(x)
-        print("out after attention pooling", x.shape)
         x = self.fc(x.flatten(start_dim=1))
-        print("out after linear projection", x.shape)
         x = self.softmax(x)
         return x
 
@@ -54,19 +50,17 @@ class RN34_at336(nn.Module):
         self.conv5 = Convolution5() # 11 x 11
 
         # Final Stage
-        self.attention_pooling = AttentionPooling(in_size=(7,7), dim_attention=32)
+        self.attention_pooling = AttentionPooling(in_size=(11,11), dim_attention=32)
         self.fc = nn.Linear(32*512, embedding_dim)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
-        print("RN@336")
         # Convolutional Stage
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)
         x = self.conv4(x)
         x = self.conv5(x)
-        print("out after residual nets", x.shape)
 
         # Sixth stage
         x = self.attention_pooling(x)
