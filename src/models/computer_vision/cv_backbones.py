@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 
 from einops.layers.torch import Rearrange
-
 from src.models.computer_vision.cv_modules import Convolution1, Convolution2, Convolution3, Convolution4, Convolution5, TransformerEncoderBlock
 
 
@@ -77,6 +76,7 @@ class RN34_at336(nn.Module):
         x = self.softmax(x)
         return x
 
+
 # ViT (Dosovitskiy et. al. 2020)
 class ViT(nn.Module):
     def __init__(self, patch_resolution, img_size, n_classes):
@@ -98,9 +98,9 @@ class ViT(nn.Module):
         # Get patches
         self.rearrange = Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)', p1=self.p, p2=self.p)
 
-        # Embedding encoder
+        # Patch embedding
         self.patch_embedding_encoder = nn.Parameter(torch.randn(1, self.n_embeddings, vector_size))
-        # Class embedding
+        # Class token
         self.class_token = nn.Parameter(torch.randn(1, 1, vector_size))
         # Position embedding
         self.pos_embedding = nn.Parameter(torch.randn(1, self.n_embeddings + 1, vector_size))
@@ -111,6 +111,7 @@ class ViT(nn.Module):
         # Transformer Encoder Hidden Layers
         self.t_encoder1 = TransformerEncoderBlock(vector_size=vector_size, nhead=nhead, mlp_dim=mlp_size)
         self.t_encoder2 = TransformerEncoderBlock(vector_size=vector_size, nhead=nhead, mlp_dim=mlp_size)
+        self.t_encoder3 = TransformerEncoderBlock(vector_size=vector_size, nhead=nhead, mlp_dim=mlp_size)
         self.to_latent = nn.Identity()
 
         # Out MLP head with one
