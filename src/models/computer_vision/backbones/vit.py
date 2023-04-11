@@ -10,7 +10,7 @@ class ViTat224(nn.Module):
     def __init__(self, embedding_dim):
         super(ViTat224, self).__init__()
         # ViT Hyper-parameters
-        self.n_channels, self.h, self.w = (3, 224, 224)
+        self.c, self.h, self.w = (3, 224, 224)
         self.p = 14
 
         # Number of layers
@@ -29,7 +29,7 @@ class ViTat224(nn.Module):
         self.rearrange = Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)', p1=self.p, p2=self.p)
 
         # Patch embedding
-        self.patch_embedding_encoder = nn.Parameter(torch.randn(1, self.n_embeddings, self.vector_size))
+        self.patch_embedding = nn.Parameter(torch.randn(1, (self.p**2)*self.c, self.vector_size))
         # Class token
         self.class_token = nn.Parameter(torch.randn(1, 1, self.vector_size))
         # Position embedding
@@ -54,14 +54,13 @@ class ViTat224(nn.Module):
         N, c, h, w = x.shape
 
         # Convert image to patches
-        x = self.rearrange(x)
-        print(x.shape)
+        x = self.rearrange(x) # b x 256 x 588
 
-        # Patch Embedding
-        x = torch.matmul(x, self.patch_embedding_encoder)
-        class_token = self.class_token.expand(N, -1, -1)
-        x = torch.cat((class_token, x), dim=1)
-        x += self.pos_embedding
+        # Patch + Position Embedding
+        x = torch.matmul(x, self.patch_embedding)           # b x 256 x 588 * 588 x D -> b x 256 x D
+        class_token = self.class_token.expand(N, -1, -1)    # b x 1 x D
+        x = torch.cat((class_token, x), dim=1)              # cat(b x 256 x D, b x 1 x D) -> b x 257 x D
+        x += self.pos_embedding                             # 257 x D
         x = self.layer_norm(x)
 
         # Transformer Encoder Layers
@@ -99,7 +98,7 @@ class ViTat336(nn.Module):
         self.rearrange = Rearrange('b c (h p1) (w p2) -> b (h w) (p1 p2 c)', p1=self.p, p2=self.p)
 
         # Patch embedding
-        self.patch_embedding_encoder = nn.Parameter(torch.randn(1, self.n_embeddings, self.vector_size))
+        self.patch_embedding = nn.Parameter(torch.randn(1, (self.p**2)*self.c, self.vector_size))
         # Class token
         self.class_token = nn.Parameter(torch.randn(1, 1, self.vector_size))
         # Position embedding
@@ -127,11 +126,11 @@ class ViTat336(nn.Module):
         x = self.rearrange(x)
         print(x.shape)
 
-        # Patch Embedding
-        x = torch.matmul(x, self.patch_embedding_encoder)
-        class_token = self.class_token.expand(N, -1, -1)
-        x = torch.cat((class_token, x), dim=1)
-        x += self.pos_embedding
+        # Patch + Position Embedding
+        x = torch.matmul(x, self.patch_embedding)           # b x 576 x 588 * 588 x D -> b x 576 x D
+        class_token = self.class_token.expand(N, -1, -1)    # b x 1 x D
+        x = torch.cat((class_token, x), dim=1)              # cat(b x 576 x D, b x 1 x D) -> b x 577 x D
+        x += self.pos_embedding                             # 577 x D
         x = self.layer_norm(x)
 
         # Transformer Encoder Layers
