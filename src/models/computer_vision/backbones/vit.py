@@ -39,8 +39,8 @@ class ViTat224(nn.Module):
         self.layer_norm = nn.LayerNorm(self.vector_size)
 
         # Transformer Encoder Hidden Layers
-        self.transformer_layer = nn.TransformerEncoderLayer(d_model=self.vector_size, nhead=self.nhead)
-        self.transformer = nn.TransformerEncoder(encoder_layer=nn.TransformerEncoderLayer(), num_layers=self.n_layers)
+        self.transformer_layer = nn.TransformerEncoderLayer(d_model=self.vector_size, activation='gelu', nhead=self.nhead, dim_feedforward=self.mlp_size)
+        self.transformer = nn.TransformerEncoder(encoder_layer=self.transformer_layer, num_layers=self.n_layers)
         self.to_latent = nn.Identity()
 
         # Out MLP head with one
@@ -110,8 +110,8 @@ class ViTat336(nn.Module):
         self.layer_norm = nn.LayerNorm(self.vector_size)
 
         # Transformer Encoder Hidden Layers
-        self.transformer_layer = nn.TransformerEncoderLayer(d_model=self.vector_size, nhead=self.nhead)
-        self.transformer = nn.TransformerEncoder(encoder_layer=nn.TransformerEncoderLayer(), num_layers=self.n_layers)
+        self.transformer_layer = nn.TransformerEncoderLayer(d_model=self.vector_size, activation='gelu', nhead=self.nhead, dim_feedforward=self.mlp_size)
+        self.transformer = nn.TransformerEncoder(encoder_layer=self.transformer_layer, num_layers=self.n_layers)
         self.to_latent = nn.Identity()
 
         # Out MLP head with one
