@@ -126,16 +126,17 @@ class BlurPool2d(nn.Module):
         self.blur_kernel = self.blur_kernel / 16  # Normalize the blur kernel
 
     def forward(self, x):
-        device = x.get_device()
-
+        print('device at beginning', x.get_device())
         # Pad the input tensor with zeros so that the tensor can be divided evenly into 3x3 regions
         if x.shape[2] % 2 == 1:
             x = F.pad(x, (0, 0, 0, 1))
         if x.shape[3] % 2 == 1:
             x = F.pad(x, (0, 1, 0, 0))
 
-        x = F.max_pool2d(x, kernel_size=2, stride=1).to(device)
-        x = F.conv2d(x, self.blur_kernel, stride=2, padding=1, groups=self.n_channels).to(device)
+        x = F.max_pool2d(x, kernel_size=2, stride=1)
+        print('device after pooling', x.get_device())
+        x = F.conv2d(x, self.blur_kernel, stride=2, padding=1, groups=self.n_channels)
+        print('device after convolution', x.get_device())
 
         return x
     
