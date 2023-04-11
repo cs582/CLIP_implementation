@@ -11,16 +11,16 @@ class ViTat224(nn.Module):
         super(ViTat224, self).__init__()
         # ViT Hyper-parameters
         self.c, self.h, self.w = (3, 224, 224)
-        self.p = 16
+        self.p = 14
 
         # Number of layers
-        self.n_layers = 14
+        self.n_layers = 12
         # Latent vector size D
         self.vector_size = 768
         # FF dim
         self.mlp_size = 1024
         # Number of heads
-        self.nhead = 12
+        self.nhead = 8
 
         # Number of patches
         self.n_embeddings = (self.h * self.w) // (self.p**2)
