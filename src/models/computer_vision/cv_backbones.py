@@ -18,10 +18,9 @@ class RN34_at224(nn.Module):
         self.conv5 = Convolution5() # 7 x 7
 
         # Final Stage
-        # 7 x 7 x 1024 -> 7*7*1024 -> embedding_dim
-        self.avg_pool = nn.AvgPool2d(kernel_size=3)
-        self.attention = nn.TransformerEncoderLayer(d_model=5*5*1024, nhead=8)
-        self.fc = nn.Linear(5*5*1024, embedding_dim)
+        self.avg_pool = nn.AvgPool2d(kernel_size=3) # 5 x 5
+        self.attention = nn.TransformerEncoderLayer(d_model=5*5*512, nhead=8)
+        self.fc = nn.Linear(5*5*512, embedding_dim)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
@@ -37,9 +36,7 @@ class RN34_at224(nn.Module):
         # Sixth stage
         x = self.avg_pool(x)
         print("out after avg pool", x.shape)
-        x = x.view(-1, 1)
-        print("out after flattening", x.shape)
-        x = self.attention(x)
+        x = self.attention(x.flatten(start_dim=1))
         print("out after attention", x.shape)
         x = self.fc(x)
         print("out after linear projection", x.shape)
@@ -60,10 +57,9 @@ class RN34_at336(nn.Module):
         self.conv5 = Convolution5() # 11 x 11
 
         # Final Stage
-        # 11 x 11 x 1024 -> 11*11*1024 -> embedding_dim
-        self.avg_pool = nn.AvgPool2d(kernel_size=3)
-        self.attention = nn.TransformerEncoderLayer(d_model=9*9*1024, nhead=8)
-        self.fc = nn.Linear(9*9*1024, embedding_dim)
+        self.avg_pool = nn.AvgPool2d(kernel_size=3) # 9 x 9
+        self.attention = nn.TransformerEncoderLayer(d_model=9*9*512, nhead=8)
+        self.fc = nn.Linear(9*9*512, embedding_dim)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
@@ -79,9 +75,7 @@ class RN34_at336(nn.Module):
         # Sixth stage
         x = self.avg_pool(x)
         print("out after avg pool", x.shape)
-        x = x.view(-1, 1)
-        print("out after flattening", x.shape)
-        x = self.attention(x)
+        x = self.attention(x.flatten(start_dim=1))
         print("out after attention", x.shape)
         x = self.fc(x)
         print("out after linear projection", x.shape)
