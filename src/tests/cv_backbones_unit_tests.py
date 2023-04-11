@@ -47,7 +47,7 @@ class BackbonesUnitTestGPU(unittest.TestCase):
         message = f"RN@224 [CUDA: {torch.cuda.get_device_name(0)}] forward time: {end - start} seconds"
         print(message)
 
-        self.assertEqual(out.shape, (4, 1000), msg=f"RN@224 Failed, out size {out.shape} should be (2,1000)")
+        self.assertEqual(out.shape, (128, 1000), msg=f"RN@224 Failed, out size {out.shape} should be (128,1000)")
 
     def test_RN_at_336(self):
         device = torch.device('cuda:0')
@@ -62,4 +62,4 @@ class BackbonesUnitTestGPU(unittest.TestCase):
         message = f"RN@336 [CUDA: {torch.cuda.get_device_name(0)}] forward time: {end - start} seconds"
         print(message)
 
-        self.assertEqual(out.shape, (4, 1000), msg=f"RN@336 Failed, out size {out.shape} should be (2,1000)")
+        self.assertEqual(out.shape, (128, 1000), msg=f"RN@336 Failed, out size {out.shape} should be (128, 1000)")
