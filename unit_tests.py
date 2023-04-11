@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser(
     epilog='Unit Tests used to speed up the development of CLIP and ease error traceback before main training.'
 )
 
-parser.add_argument('-exclude_backbones', type=bool, default=True, help='Exclude Backbones from UnitTesting.')
+parser.add_argument('-heavy', type=bool, default=False, help='Include heavy tasks such as backbones in the unit test.')
 
 args = parser.parse_args()
 
