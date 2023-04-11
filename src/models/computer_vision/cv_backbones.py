@@ -20,8 +20,8 @@ class RN34_at224(nn.Module):
         # Final Stage
         # 7 x 7 x 1024 -> 7*7*1024 -> embedding_dim
         self.avg_pool = nn.AvgPool2d(kernel_size=3)
-        self.attention = nn.TransformerEncoderLayer(d_model=7*7*1024, nhead=8)
-        self.fc = nn.Linear(7*7*1024, embedding_dim)
+        self.attention = nn.TransformerEncoderLayer(d_model=5*5*1024, nhead=8)
+        self.fc = nn.Linear(5*5*1024, embedding_dim)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
@@ -31,12 +31,17 @@ class RN34_at224(nn.Module):
         x = self.conv3(x)
         x = self.conv4(x)
         x = self.conv5(x)
+        print("out after residual nets", x.shape)
 
         # Sixth stage
         x = self.avg_pool(x)
+        print("out after avg pool", x.shape)
         x = x.view(-1, 1)
+        print("out after flattening", x.shape)
         x = self.attention(x)
+        print("out after attention", x.shape)
         x = self.fc(x)
+        print("out after linear projection", x.shape)
         x = self.softmax(x)
         return x
 
@@ -56,8 +61,8 @@ class RN34_at336(nn.Module):
         # Final Stage
         # 11 x 11 x 1024 -> 11*11*1024 -> embedding_dim
         self.avg_pool = nn.AvgPool2d(kernel_size=3)
-        self.attention = nn.TransformerEncoderLayer(d_model=11*11*1024, nhead=8)
-        self.fc = nn.Linear(11*11*1024, embedding_dim)
+        self.attention = nn.TransformerEncoderLayer(d_model=9*9*1024, nhead=8)
+        self.fc = nn.Linear(9*9*1024, embedding_dim)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
