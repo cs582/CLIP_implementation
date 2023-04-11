@@ -101,7 +101,7 @@ class BackbonesUnitTestGPU(unittest.TestCase):
         out = model(x)
         end = time.time()
 
-        message = f"ViT-L/14@224 forward time: {end - start} seconds"
+        message = f"ViT-L/14@224 [CUDA: {torch.cuda.get_device_name(0)}] forward time: {end - start} seconds"
         print(message)
 
         self.assertEqual(out.shape, (4, 768), msg=f"ViT-L/14@336 Failed, out size {out.shape} should be (4, 768)")
@@ -116,7 +116,7 @@ class BackbonesUnitTestGPU(unittest.TestCase):
         out = model(x)
         end = time.time()
 
-        message = f"ViT-L/14@336 forward time: {end - start} seconds"
+        message = f"ViT-L/14@336 [CUDA: {torch.cuda.get_device_name(0)}] forward time: {end - start} seconds"
         print(message)
 
         self.assertEqual(out.shape, (4, 768), msg=f"ViT-L/14@336 Failed, out size {out.shape} should be (4, 768)")
