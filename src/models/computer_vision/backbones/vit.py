@@ -20,7 +20,7 @@ class ViTat224(nn.Module):
         # FF dim
         self.mlp_size = 4096
         # Number of heads
-        self.nhead = 8
+        self.nhead = 16
 
         # Number of patches
         self.n_embeddings = (self.h * self.w) // (self.p**2)
@@ -89,7 +89,7 @@ class ViTat336(nn.Module):
         # FF dim
         self.mlp_size = 4096
         # Number of heads
-        self.nhead = 8
+        self.nhead = 16
 
         # Number of patches
         self.n_embeddings = (self.h * self.w) // (self.p**2)
