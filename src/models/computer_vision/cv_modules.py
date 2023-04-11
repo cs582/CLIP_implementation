@@ -122,7 +122,9 @@ class BlurPool2d(nn.Module):
     def __init__(self, n_channels):
         super(BlurPool2d, self).__init__()
         self.n_channels = n_channels
+
         blur_kernel = torch.tensor([ [1, 2, 1], [2, 4, 2], [1, 2, 1] ], dtype=torch.float32).expand(n_channels, 1, 3, 3)
+        # Setting as tensor buffer, not updated in backpropagation
         self.register_buffer('blur_kernel', blur_kernel / 16)
 
     def forward(self, x):
