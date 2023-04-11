@@ -90,7 +90,7 @@ class BackbonesUnitTest(unittest.TestCase):
     def test_RN_at_224(self):
         device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
 
-        x = torch.rand(2, 3, 224, 224).to(device)
+        x = torch.rand(4, 3, 224, 224).to(device)
         model = RN34_at224(embedding_dim=1000).to(device)
 
         start = time.time()
