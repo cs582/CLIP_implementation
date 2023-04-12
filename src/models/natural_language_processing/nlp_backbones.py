@@ -20,9 +20,9 @@ class TextTransformer(nn.Module):
         self.tkn_embedding_encoder = nn.Parameter(torch.rand(1, self.dim_model, self.dim_model))
         self.pos_encoder = nn.Parameter(torch.rand(1, self.max_length, self.dim_model))
 
-        self.transformers = [
+        self.transformers = nn.ModuleList([
             TransformerRadford(dim_model=self.dim_model, nhead=self.nhead, dim_ff=self.dim_ff) for _ in range(self.n_layers)
-        ]
+        ])
 
         self.to_latent = nn.Identity()
 
@@ -48,5 +48,9 @@ class TextTransformer(nn.Module):
         x = self.fc(x)
         x = self.softmax(x)
         return x
+
+    def to(self, device):
+        self.transformers.to(device)
+        return super(TextTransformer, self).to(device)
 
 
