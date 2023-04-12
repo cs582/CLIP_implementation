@@ -24,14 +24,24 @@ class TextTransformer(nn.Module):
             TransformerRadford(dim_model=self.dim_model, nhead=self.nhead, dim_ff=self.dim_ff) for _ in range(self.n_layers)
         ]
 
+        self.to_latent = nn.Identity()
+
         self.fc = nn.Linear(self.dim_model, n_classes)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x, mask): # b x l_max x dim_v
-        x = torch.matmul(x, self.tkn_embedding_encoder) # b x l_max x dim_v -> b x l_max x dim_v
-        x = torch.add(x, self.pos_encoder) # b x l_max x dim_v
+        # Token embedding and position embedding
+        x = torch.matmul(x, self.tkn_embedding_encoder)     # b x l_max x dim_v -> b x l_max x dim_v
+        x = torch.add(x, self.pos_encoder)                  # b x l_max x dim_v
+
+        # Transformer layers
         for l in range(self.n_layers):
             x = self.transformers[l](x, mask)
+
+        # Get last [EOS] token
+        x = x[:, mask.diff(dim=1)]
+        x = self.to_latent(x)
+
         x = self.fc(x)
         x = self.softmax(x)
         return x
