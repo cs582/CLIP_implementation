@@ -6,18 +6,16 @@ from collections import OrderedDict
 
 
 class TextTransformer(nn.Module):
-    def __init__(self, n_classes, layers, dim_model, max_length, dim_att, dim_ff, nhead):
+    def __init__(self, n_classes, layers, dim_model, max_length, dim_ff, nhead):
         super(TextTransformer, self).__init__()
 
         self.layers = layers
-
-        self.dim_model = dim_model
-        self.max_length = max_length
-
         self.nhead = nhead
 
-        self.dim_att = dim_att
+        self.dim_model = dim_model
         self.dim_ff = dim_ff
+
+        self.max_length = max_length
 
         self.tkn_embedding_encoder = nn.Parameter(torch.rand(1, self.dim_model, self.dim_model))
         self.pos_encoder = nn.Parameter(torch.rand(1, self.max_length, self.dim_model))
