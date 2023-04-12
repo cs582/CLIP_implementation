@@ -9,7 +9,7 @@ from src.models.computer_vision.backbones.vit import ViTat224, ViTat336
 class BackbonesUnitTest(unittest.TestCase):
     def test_RN_at_224(self):
         x = torch.rand(4, 3, 224, 224)
-        model = RN34at224(embedding_dim=1000)
+        model = RN34at224(dim_out=1000)
 
         start = time.time()
         out = model(x)
@@ -22,7 +22,7 @@ class BackbonesUnitTest(unittest.TestCase):
 
     def test_RN_at_336(self):
         x = torch.rand(4, 3, 336, 336)
-        model = RN34at336(embedding_dim=1000)
+        model = RN34at336(dim_out=1000)
 
         start = time.time()
         out = model(x)
@@ -35,7 +35,7 @@ class BackbonesUnitTest(unittest.TestCase):
 
     def test_ViT_at_224(self):
         x = torch.rand(4, 3, 224, 224)
-        model = ViTat224(embedding_dim=768)
+        model = ViTat224(dim_out=768)
 
         start = time.time()
         out = model(x)
@@ -48,7 +48,7 @@ class BackbonesUnitTest(unittest.TestCase):
 
     def test_ViT_at_336(self):
         x = torch.rand(4, 3, 336, 336)
-        model = ViTat336(embedding_dim=768)
+        model = ViTat336(dim_out=768)
 
         start = time.time()
         out = model(x)
@@ -65,7 +65,7 @@ class BackbonesUnitTestGPU(unittest.TestCase):
         device = torch.device('cuda:0')
 
         x = torch.rand(128, 3, 224, 224).to(device)
-        model = RN34at224(embedding_dim=1000).to(device).eval()
+        model = RN34at224(dim_out=1000).to(device).eval()
 
         start = time.time()
         out = model(x)
@@ -80,7 +80,7 @@ class BackbonesUnitTestGPU(unittest.TestCase):
         device = torch.device('cuda:0')
 
         x = torch.rand(64, 3, 336, 336).to(device)
-        model = RN34at336(embedding_dim=1000).to(device).eval()
+        model = RN34at336(dim_out=1000).to(device).eval()
 
         start = time.time()
         out = model(x)
@@ -97,7 +97,7 @@ class BackbonesUnitTestGPU(unittest.TestCase):
         batch_size = 8
 
         x = torch.rand(batch_size, 3, 224, 224).to(device)
-        model = ViTat224(embedding_dim=768).to(device)
+        model = ViTat224(dim_out=768).to(device)
 
         start = time.time()
         out = model(x)
@@ -114,7 +114,7 @@ class BackbonesUnitTestGPU(unittest.TestCase):
         batch_size = 4
 
         x = torch.rand(batch_size, 3, 336, 336).to(device)
-        model = ViTat336(embedding_dim=768).to(device)
+        model = ViTat336(dim_out=768).to(device)
 
         start = time.time()
         out = model(x)
