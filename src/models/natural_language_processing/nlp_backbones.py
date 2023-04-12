@@ -43,7 +43,7 @@ class TextTransformer(nn.Module):
         print(x.shape)
 
         # Get last [EOS] token
-        last_word = torch.cat((mask, torch.zeros(b, 1)), dim=1).diff(dim=1)
+        last_word = torch.cat((mask, torch.zeros(b, 1, dtype=torch.bool)), dim=1).diff(dim=1)
         x = x[last_word]
         x = self.to_latent(x)
         print(x.shape)
