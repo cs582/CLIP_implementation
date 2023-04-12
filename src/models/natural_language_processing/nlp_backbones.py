@@ -39,7 +39,9 @@ class TextTransformer(nn.Module):
             x = self.transformers[l](x, mask)
 
         # Get last [EOS] token
-        x = x[:, mask.diff(dim=1)]
+        num_words = mask.sum(dim=1)
+        masked_x = torch.masked_select(x, mask.unsqueeze(-1)).view(-1, self.max_length, self.dim_model)
+        x = torch.gather(masked_x, 1, (num_words - 1).unsqueeze(-1))
         x = self.to_latent(x)
 
         x = self.fc(x)
