@@ -37,6 +37,8 @@ class BackbonesTextUnitTest(unittest.TestCase):
 
 class BackbonesTextGPUUnitTest(unittest.TestCase):
     def test_transformer_decoder(self):
+        device = torch.device('cuda:0')
+
         n_batches = 128
         max_length = 74
 
@@ -44,16 +46,14 @@ class BackbonesTextGPUUnitTest(unittest.TestCase):
 
         dim_ff = 1024
         nhead = 8
-        layers = 12
+        n_layers = 12
 
-        mask = torch.zeros(64, max_length).to(dtype=torch.bool)
-        for i in range(64):
-            mask[i, :np.random.randint(low=0, high=max_length)] = 1.0
-
-        device = torch.device('cuda:0')
+        mask = torch.zeros(n_batches, max_length).to(dtype=torch.bool)
+        for i in range(n_batches):
+            mask[i, :np.random.randint(low=1, high=max_length)] = 1.0
 
         x = torch.rand(n_batches, max_length, token_dim).to(device)
-        model = TextTransformer(dim_model=token_dim, dim_ff=dim_ff, nhead=nhead, layers=layers, max_length=max_length, n_classes=1000).to(device)
+        model = TextTransformer(dim_model=token_dim, dim_ff=dim_ff, nhead=nhead, n_layers=n_layers, max_length=max_length, n_classes=1000).to(device)
 
         start = time.time()
         out = model(x, mask)
