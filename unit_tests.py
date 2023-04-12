@@ -1,11 +1,15 @@
 import unittest
 import argparse
+
+from src.tests.image_scraping_unit_tests import ImageScrappingUnitTests
+from src.tests.nlp_modules_unit_tests import TransformerRadfordUnitTest
+from src.tests.nlp_backbones_unit_tests import BackbonesTextUnitTest
+from src.tests.nlp_backbones_unit_tests import BackbonesTextGPUUnitTest
 from src.tests.cv_patches_unit_tests import UtilsTest
 from src.tests.cv_modules_unit_tests import ResnetModulesUnitTest
-from src.tests.nlp_modules_unit_tests import TransformerRadfordUnitTest
-from src.tests.image_scraping_unit_tests import ImageScrappingUnitTests
 from src.tests.cv_backbones_unit_tests import BackbonesUnitTest
 from src.tests.cv_backbones_unit_tests import BackbonesUnitTestGPU
+
 
 
 parser = argparse.ArgumentParser(
@@ -34,21 +38,25 @@ if __name__ == '__main__':
     image_scrapping_test = unittest.TestLoader().loadTestsFromTestCase(ImageScrappingUnitTests)
 
     # Test Backbones
-    backbones_test = unittest.TestLoader().loadTestsFromTestCase(BackbonesUnitTest)
+    backbones_cv_test = unittest.TestLoader().loadTestsFromTestCase(BackbonesUnitTest)
+    backbones_nlp_test = unittest.TestLoader().loadTestsFromTestCase(BackbonesTextUnitTest)
 
     # Test Backbones on GPU
-    backbones_test_gpu = unittest.TestLoader().loadTestsFromTestCase(BackbonesUnitTestGPU)
+    backbones_cv_test_gpu = unittest.TestLoader().loadTestsFromTestCase(BackbonesUnitTestGPU)
+    backbones_nlp_test_gpu = unittest.TestLoader().loadTestsFromTestCase(BackbonesTextGPUUnitTest)
 
     # List all tests to run
     tests_to_run = [utils_test, RN_modules_test, radford_test, image_scrapping_test]
 
     if args.heavy:
         print("Stacked Backbones Tests to TestSuite...")
-        tests_to_run.append(backbones_test)
+        tests_to_run.append(backbones_cv_test)
+        tests_to_run.append(backbones_nlp_test)
 
         if args.use_gpu:
             print("Stacked Backbones Tests with GPU to TestSuite...")
-            tests_to_run.append(backbones_test_gpu)
+            tests_to_run.append(backbones_cv_test_gpu)
+            tests_to_run.append(backbones_nlp_test_gpu)
 
     # Test suite that includes all the tests
     suite = unittest.TestSuite(tests_to_run)
