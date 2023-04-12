@@ -40,14 +40,10 @@ class TextTransformer(nn.Module):
         for l in range(self.n_layers):
             x = self.transformers[l](x, mask)
 
-        print("pre", x.shape)
-
         # Get last [EOS] token
         last_word = torch.cat((mask, torch.zeros(b, 1, dtype=torch.bool)), dim=1).diff(dim=1)
-        print("mask", last_word.shape)
         x = x[last_word]
         x = self.to_latent(x)
-        print("after", x.shape)
 
         x = self.fc(x)
         x = self.softmax(x)
