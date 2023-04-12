@@ -3,79 +3,68 @@ import torch
 import time
 import numpy as np
 
-from src.models.natural_language_processing.utils import ScaledDotProductAttention
-from src.models.natural_language_processing.utils import MultiHeadSelfAttention
-from src.models.natural_language_processing.utils import TransformerRadford
+from src.models.natural_language_processing.nlp_modules import MaskedSelfAttention, MaskedMultiHeadSelfAttention, TransformerRadford
 
 
 class TransformerRadfordUnitTest(unittest.TestCase):
-    def test_scaled_dot_product_attention(self):
-        # batch of 8 with 75 words of dim 25
-        batch_size = 32
+    def test_self_attention(self):
+        token_size = 512
+        max_length = 72
 
-        q = torch.rand(batch_size, 75, 25)
-        k = torch.rand(batch_size, 75, 25)
-        v = torch.rand(batch_size, 75, 25)
+        # Reproducing random length sentences
+        mask = torch.zeros(64, max_length).to(dtype=torch.bool)
+        for i in range(64):
+            mask[i, :np.random.randint(low=0, high=max_length)] = 1.0
 
-        # Fake a mask of words
-        mask = torch.ones(batch_size, 75, dtype=torch.bool)
-        for w in range(0, 75):
-            mask[:, np.random.randint(low=75//2, high=75):] = 0.0
-
-        start = time.time()
-        model = ScaledDotProductAttention()
-        end = time.time()
-        self.assertEqual(model(q, k, v, mask).shape, (batch_size, 75, 25), msg="Dot Product Attention Failed")
-
-        print(f"Scaled Dot Product Attention Masked finished in {end-start} seconds")
-
-    def test_multi_head_self_attention(self):
-        # batch of 8 with 75 words embedded on 25 dim
-        num_words = 75
-        batch_size = 32
-        embedding_dim = 25
-        latent_vector_size = 512
-
-        # nhead
-        nhead = 8
-
-        x = torch.rand(batch_size, num_words, embedding_dim)
-
-        # Fake a mask of words
-        mask = torch.ones(batch_size, num_words, dtype=torch.bool)
-        for w in range(0, num_words):
-            mask[:, np.random.randint(low=num_words//2, high=num_words):] = 0.0
+        x = torch.rand(64, max_length, token_size)
+        model = MaskedSelfAttention(dim_x=token_size, dim_att=128)
 
         start = time.time()
-        model = MultiHeadSelfAttention(embedd_dim=embedding_dim, vector_size=latent_vector_size, nhead=nhead)
+        out = model(x, mask)
         end = time.time()
 
-        self.assertEqual(model(x, mask).shape, (batch_size, num_words, latent_vector_size), msg="Self Attention Failed")
+        self.assertEqual(out.shape, (64, max_length, 128), msg=f"Wrong output shape, got {out.shape} should be (64, {max_length}, 128)")
 
-        print(f"Multi-head Masked Self-Attention finished in {end-start} seconds")
+        print(f"SelfAttention forward time: {end-start} seconds")
 
-    def test_transformer_radford(self):
-        # batch of 8 with 75 words embedded on 25 dim
-        num_words = 75
-        batch_size = 32
-        embedding_dim = 25
-        forward_dim = 1024
-        latent_vector_size = 512
+    def test_multihead_self_attention(self):
+        token_size = 512
+        max_length = 72
 
-        # nhead
-        nhead = 8
+        # Reproducing random length sentences
+        mask = torch.zeros(64, max_length).to(dtype=torch.bool)
+        for i in range(64):
+            mask[i, :np.random.randint(low=0, high=max_length)] = 1.0
 
-        x = torch.rand(batch_size, num_words, embedding_dim)
-
-        # Fake a mask of words
-        mask = torch.ones(batch_size, num_words, dtype=torch.bool)
-        for w in range(0, num_words):
-            mask[:, np.random.randint(low=num_words//2, high=num_words):] = 0.0
+        x = torch.rand(64, max_length, token_size)
+        model = MaskedMultiHeadSelfAttention(dim_model=token_size, n_head=8)
 
         start = time.time()
-        model = TransformerRadford(embedding_dim=embedding_dim, latent_vector_size=latent_vector_size, forward_dim=forward_dim, nhead=nhead)
+        out = model(x, mask)
         end = time.time()
 
-        self.assertEqual(model(x, mask).shape, (batch_size, num_words, latent_vector_size), msg="Transformer Radford")
+        self.assertEqual(out.shape, (64, max_length, token_size), msg=f"Wrong output shape, got {out.shape} should be (64, {max_length}, {token_size})")
 
-        print(f"Transformer Radford forward finished in {end-start} seconds")
+        print(f"MultiHeadSelfAttention forward time: {end-start} seconds")
+
+    def test_transformer_radford_layer(self):
+        token_size = 512
+        max_length = 72
+
+        # Reproducing random length sentences
+        mask = torch.zeros(64, max_length).to(dtype=torch.bool)
+        for i in range(64):
+            mask[i, :np.random.randint(low=0, high=max_length)] = 1.0
+
+        x = torch.rand(64, max_length, token_size)
+        model = TransformerRadford(dim_model=token_size, nhead=8, dim_ff=1024)
+
+        start = time.time()
+        out = model(x, mask)
+        end = time.time()
+
+        self.assertEqual(out.shape, (64, max_length, token_size), msg=f"Wrong output shape, got {out.shape} should be (64, {max_length}, {token_size})")
+
+        print(f"Transformer Radford forward time: {end-start} seconds")
+
+
