@@ -30,6 +30,8 @@ class TextTransformer(nn.Module):
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x, mask): # b x l_max x dim_v
+        b, _, _ = x.shape
+
         # Token embedding and position embedding
         x = torch.matmul(x, self.tkn_embedding_encoder)     # b x l_max x dim_v -> b x l_max x dim_v
         x = torch.add(x, self.pos_encoder)                  # b x l_max x dim_v
@@ -39,9 +41,7 @@ class TextTransformer(nn.Module):
             x = self.transformers[l](x, mask)
 
         # Get last [EOS] token
-        num_words = mask.sum(dim=1)
-        masked_x = torch.masked_select(x, mask.unsqueeze(-1)).view(-1, self.max_length, self.dim_model)
-        x = torch.gather(masked_x, 1, (num_words - 1).unsqueeze(-1))
+        x = torch.cat((mask, torch.zeros(b, 1)), dim=1).diff(dim=1)
         x = self.to_latent(x)
 
         x = self.fc(x)
