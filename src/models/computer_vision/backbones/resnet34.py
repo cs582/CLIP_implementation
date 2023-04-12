@@ -5,7 +5,7 @@ from src.models.computer_vision.cv_modules import Convolution1, Convolution2, Co
 
 
 class RN34at224(nn.Module):
-    def __init__(self, embedding_dim):
+    def __init__(self, dim_out):
         super(RN34at224, self).__init__()
 
         # Convolutional Layers
@@ -17,8 +17,8 @@ class RN34at224(nn.Module):
         self.conv5 = Convolution5() # 7 x 7
 
         # Final Stage
-        self.attention_pooling = AttentionPooling(in_size=(7,7), dim_attention=32)
-        self.fc = nn.Linear(32*512, embedding_dim)
+        self.attention_pooling = AttentionPooling(in_size=(7,7), dim_attention=49)
+        self.fc = nn.Linear(49*512, dim_out)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
@@ -37,7 +37,7 @@ class RN34at224(nn.Module):
 
 
 class RN34at336(nn.Module):
-    def __init__(self, embedding_dim):
+    def __init__(self, dim_out):
         super(RN34at336, self).__init__()
 
         # Convolutional Layers
@@ -49,8 +49,8 @@ class RN34at336(nn.Module):
         self.conv5 = Convolution5() # 11 x 11
 
         # Final Stage
-        self.attention_pooling = AttentionPooling(in_size=(11,11), dim_attention=32)
-        self.fc = nn.Linear(32*512, embedding_dim)
+        self.attention_pooling = AttentionPooling(in_size=(11,11), dim_attention=11*11)
+        self.fc = nn.Linear(11*11*512, dim_out)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):

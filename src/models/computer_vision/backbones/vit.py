@@ -7,7 +7,7 @@ from einops.layers.torch import Rearrange
 # ViT (Dosovitskiy et. al. 2020) / CLIP (Radford et al. 2021)
 # ViT-L/14 @ 224
 class ViTat224(nn.Module):
-    def __init__(self, embedding_dim):
+    def __init__(self, dim_out):
         super(ViTat224, self).__init__()
         # ViT Hyper-parameters
         self.c, self.h, self.w = (3, 224, 224)
@@ -47,7 +47,7 @@ class ViTat224(nn.Module):
         self.mlp_head = nn.Sequential(
             nn.LayerNorm(self.vector_size),
             nn.Linear(self.vector_size, self.mlp_size),
-            nn.Linear(self.mlp_size, embedding_dim),
+            nn.Linear(self.mlp_size, dim_out),
         )
 
     def forward(self, x):
@@ -76,7 +76,7 @@ class ViTat224(nn.Module):
 
 # ViT-L/14 @ 336
 class ViTat336(nn.Module):
-    def __init__(self, embedding_dim):
+    def __init__(self, dim_out):
         super(ViTat336, self).__init__()
         # ViT Hyper-parameters
         self.c, self.h, self.w = (3, 336, 336)
@@ -116,7 +116,7 @@ class ViTat336(nn.Module):
         self.mlp_head = nn.Sequential(
             nn.LayerNorm(self.vector_size),
             nn.Linear(self.vector_size, self.mlp_size),
-            nn.Linear(self.mlp_size, embedding_dim),
+            nn.Linear(self.mlp_size, dim_out),
         )
 
     def forward(self, x):
