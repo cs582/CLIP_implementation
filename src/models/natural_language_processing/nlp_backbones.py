@@ -1,20 +1,37 @@
+import torch
 import torch.nn as nn
-from nlp_modules import TransformerEncoderRadford
+from nlp_modules import TransformerRadford
+
+from collections import OrderedDict
 
 
-class Transformer(nn.Module):
-    def __init__(self, n_classes, max_sentence_size, latent_vs, nhead, mlp_dim):
-        super(Transformer, self).__init__()
+class TextTransformer(nn.Module):
+    def __init__(self, n_classes, layers, dim_model, max_length, dim_att, dim_ff, nhead):
+        super(TextTransformer, self).__init__()
 
-        self.pos_encoder = nn.Parameter(max_sentence_size, latent_vs)
-        self.embedding = nn.Embedding(num_embeddings=max_sentence_size, embedding_dim=latent_vs)
-        self.transformer = TransformerEncoderRadford(latent_vs=latent_vs, num_layers=12, nhead=nhead, mlp_dim=mlp_dim)
+        self.layers = layers
 
-        self.fc = nn.Linear(latent_vs, n_classes)
+        self.dim_model = dim_model
+        self.max_length = max_length
+
+        self.nhead = nhead
+
+        self.dim_att = dim_att
+        self.dim_ff = dim_ff
+
+        self.tkn_embedding_encoder = nn.Parameter(torch.rand(1, self.dim_model, self.dim_model))
+        self.pos_encoder = nn.Parameter(torch.rand(1, self.max_length, self.dim_model))
+
+        self.transformer = nn.Sequential(OrderedDict(
+            (f'layer{i}', TransformerRadford(dim_model=self.dim_model, nhead=self.nhead, dim_ff=self.dim_ff)) for i in range(self.layers)
+        ))
+
+        self.fc = nn.Linear(self.dim_model, n_classes)
         self.softmax = nn.Softmax(dim=1)
 
-    def forward(self, x):
-        x = self.embedding(x) + self.pos_encoder
+    def forward(self, x): # b x l_max x dim_v
+        x = self.token_embedding(x) # b x l_max x dim_v * dim_v x dim_emb -> b x l_max x dim_emb
+        x += self.pos_encoder # b x l_max x dim_emb
         x = self.transformer(x)
         x = self.fc(x)
         x = self.softmax(x)
