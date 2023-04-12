@@ -20,9 +20,9 @@ class TextTransformer(nn.Module):
         self.tkn_embedding_encoder = nn.Parameter(torch.rand(1, self.dim_model, self.dim_model))
         self.pos_encoder = nn.Parameter(torch.rand(1, self.max_length, self.dim_model))
 
-        self.transformer = nn.Sequential(OrderedDict(
+        self.transformer = nn.Sequential(OrderedDict([
             (f'layer{i}', TransformerRadford(dim_model=self.dim_model, nhead=self.nhead, dim_ff=self.dim_ff)) for i in range(self.layers)
-        ))
+        ]))
 
         self.fc = nn.Linear(self.dim_model, n_classes)
         self.softmax = nn.Softmax(dim=1)
