@@ -83,7 +83,7 @@ class MaskedSelfAttention(nn.Module):
         v = torch.matmul(x, self.wv) # b x l_max x dim_v
 
         s = torch.bmm(q, k.transpose(1, 2)) # b x l_max x l_max
-        s[mask] = -1000.0
+        s[~mask] = -1000.0
         s = s / (self.dim_k ** 0.5) # regularization
         s = self.softmax(s)
         out = torch.bmm(s, v)

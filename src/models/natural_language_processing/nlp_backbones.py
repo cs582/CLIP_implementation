@@ -9,7 +9,7 @@ class TextTransformer(nn.Module):
     def __init__(self, n_classes, n_layers, dim_model, max_length, dim_ff, nhead):
         super(TextTransformer, self).__init__()
 
-        self.n_layers = layers
+        self.n_layers = n_layers
         self.nhead = nhead
 
         self.dim_model = dim_model
