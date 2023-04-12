@@ -8,16 +8,15 @@ from src.models.natural_language_processing.nlp_backbones import TextTransformer
 class BackbonesTextUnitTest(unittest.TestCase):
     def test_transformer_decoder(self):
         n_batches = 128
-        max_length = 72
+        max_length = 74
 
-        sentence_length = 74
         token_dim = 512
 
         dim_ff = 1024
         nhead = 8
         layers = 12
 
-        x = torch.rand(n_batches, sentence_length, token_dim)
+        x = torch.rand(n_batches, max_length, token_dim)
         model = TextTransformer(dim_model=token_dim, dim_ff=dim_ff, nhead=nhead, layers=layers, max_length=max_length, n_classes=1000)
 
         start = time.time()
@@ -35,7 +34,6 @@ class BackbonesTextGPUUnitTest(unittest.TestCase):
         n_batches = 128
         max_length = 74
 
-        sentence_length = 74
         token_dim = 512
 
         dim_ff = 1024
@@ -44,7 +42,7 @@ class BackbonesTextGPUUnitTest(unittest.TestCase):
 
         device = torch.device('cuda:0')
 
-        x = torch.rand(n_batches, sentence_length, token_dim).to(device)
+        x = torch.rand(n_batches, max_length, token_dim).to(device)
         model = TextTransformer(dim_model=token_dim, dim_ff=dim_ff, nhead=nhead, layers=layers, max_length=max_length, n_classes=1000).to(device)
 
         start = time.time()
