@@ -2,7 +2,7 @@ import unittest
 import argparse
 from src.tests.cv_patches_unit_tests import UtilsTest
 from src.tests.cv_modules_unit_tests import ResnetModulesUnitTest
-from src.tests.nlp_unit_tests import TransformerRadfordUnitTest
+from src.tests.nlp_modules_unit_tests import TransformerRadfordUnitTest
 from src.tests.image_scraping_unit_tests import ImageScrappingUnitTests
 from src.tests.cv_backbones_unit_tests import BackbonesUnitTest
 from src.tests.cv_backbones_unit_tests import BackbonesUnitTestGPU
