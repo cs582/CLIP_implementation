@@ -49,8 +49,4 @@ class TextTransformer(nn.Module):
         x = self.softmax(x)
         return x
 
-    def to(self, device):
-        self.transformers.to(device)
-        return super(TextTransformer, self).to(device)
-
 

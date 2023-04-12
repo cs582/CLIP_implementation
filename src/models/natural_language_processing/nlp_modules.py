@@ -61,10 +61,6 @@ class MaskedMultiHeadSelfAttention(nn.Module):
         x = self.fc(x)
         return x
 
-    def to(self, device):
-        self.attention_heads.to(device)
-        return super(MaskedMultiHeadSelfAttention, self).to(device)
-
 
 class MaskedSelfAttention(nn.Module):
     def __init__(self, dim_x, dim_att):
