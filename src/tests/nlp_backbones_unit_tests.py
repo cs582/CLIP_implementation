@@ -59,7 +59,7 @@ class BackbonesTextGPUUnitTest(unittest.TestCase):
         out = model(x, mask)
         end = time.time()
 
-        message = f"Transformer Decoder forward time: {end - start} seconds"
+        message = f"Transformer Decoder [CUDA: {torch.cuda.get_device_name(0)}] forward time: {end - start} seconds"
         print(message)
 
         self.assertEqual(out.shape, (n_batches, 1000), msg=f"Transformer Decoder Failed, out size {out.shape} should be ({n_batches}, 1000)")
