@@ -47,9 +47,9 @@ class MaskedMultiHeadSelfAttention(nn.Module):
 
         self.n_head = n_head
 
-        self.attention_heads = [
+        self.attention_heads = nn.ModuleList([
             MaskedSelfAttention(dim_x=self.dim_model, dim_att=self.dim_att) for _ in range(self.n_head)
-            ]
+        ])
 
         self.fc = nn.Linear(self.dim_model, self.dim_model)
 
@@ -60,6 +60,11 @@ class MaskedMultiHeadSelfAttention(nn.Module):
         x = torch.cat(x_heads, dim=2)
         x = self.fc(x)
         return x
+
+    def to(self, device):
+        # Override the to() method to recursively apply to() on each attention head
+        self.attention_heads.to(device)
+        return super(MaskedMultiHeadSelfAttention, self).to(device)
 
 
 class MaskedSelfAttention(nn.Module):
