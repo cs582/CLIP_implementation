@@ -48,7 +48,7 @@ class BackbonesTextGPUUnitTest(unittest.TestCase):
         nhead = 8
         n_layers = 12
 
-        mask = torch.zeros(n_batches, max_length).to(dtype=torch.bool)
+        mask = torch.zeros(n_batches, max_length).to(device, dtype=torch.bool)
         for i in range(n_batches):
             mask[i, :np.random.randint(low=1, high=max_length)] = 1.0
 
