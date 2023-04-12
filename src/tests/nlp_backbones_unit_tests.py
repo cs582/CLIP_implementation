@@ -18,8 +18,8 @@ class BackbonesTextUnitTest(unittest.TestCase):
         nhead = 8
         n_layers = 12
 
-        mask = torch.zeros(64, max_length).to(dtype=torch.bool)
-        for i in range(64):
+        mask = torch.zeros(n_batches, max_length).to(dtype=torch.bool)
+        for i in range(n_batches):
             mask[i, :np.random.randint(low=0, high=max_length)] = 1.0
 
         x = torch.rand(n_batches, max_length, token_dim)
