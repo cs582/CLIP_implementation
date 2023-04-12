@@ -28,7 +28,9 @@ class TextTransformer(nn.Module):
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x): # b x l_max x dim_v
+        print("before encoding shape", x.shape)
         x = torch.matmul(x, self.tkn_embedding_encoder) # b x l_max x dim_v -> b x l_max x dim_v
+        print("after encoding shape", x.shape)
         x = torch.add(x, self.pos_encoder) # b x l_max x dim_v
         x = self.transformer(x)
         x = self.fc(x)
