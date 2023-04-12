@@ -62,7 +62,6 @@ class MaskedMultiHeadSelfAttention(nn.Module):
         return x
 
     def to(self, device):
-        # Override the to() method to recursively apply to() on each attention head
         self.attention_heads.to(device)
         return super(MaskedMultiHeadSelfAttention, self).to(device)
 
@@ -83,7 +82,6 @@ class MaskedSelfAttention(nn.Module):
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x, mask=None): # b x l_max x dim_v
-        print(x.get_device())
         q = torch.matmul(x, self.wq) # b x l_max x dim_q
         k = torch.matmul(x, self.wk) # b x l_max x dim_k
         v = torch.matmul(x, self.wv) # b x l_max x dim_v
