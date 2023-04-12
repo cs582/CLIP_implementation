@@ -3,21 +3,20 @@ import torch.nn as nn
 
 
 class CLIPLoss(nn.Module):
-    def __init__(self, temperature):
+    def __init__(self, logits_length):
         super(CLIPLoss, self).__init__()
-        self.temp = temperature
+        self.logits_length = logits_length
 
-    def forward(self, img_e, txt_e):
+    def forward(self, logits):
         # Define loss for each task
         images_loss = nn.CrossEntropyLoss()
         text_loss = nn.CrossEntropyLoss()
 
-        # Scaled pairwise cosine similarities
-        logits = torch.dot(img_e, txt_e) * torch.exp(self.temp)
+        # Get labels
+        labels = torch.arange(0, self.logits_length)
 
         # Loss function
-        labels = torch.arange(0, len(img_e))
         loss_images = images_loss(logits, labels)
-        loss_text = text_loss(logits.T, labels)
+        loss_text = text_loss(logits.transpose(0, 1), labels)
         loss = (loss_images + loss_text)/2
         return loss

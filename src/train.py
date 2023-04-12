@@ -1,34 +1,29 @@
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
+
+from src.models.natural_language_processing.nlp_backbones import TransformerB, TransformerL
+from src.models.computer_vision.backbones.resnet34 import RN34at224, RN34at336
+from src.models.computer_vision.backbones.vit import ViTat224, ViTat336
+
+from src.models.CLIP_model import CLIPModule
 
 from utils import CLIPLoss
 
-from models.computer_vision.cv_backbones import ViT
-from models.natural_language_processing.nlp_backbones import Transformer
 
-
-def training(training_dataset, image_encoder, text_encoder, temperature, optimizer, epochs):
-    loss_func = CLIPLoss(temperature=temperature)
+def training(training_dataset, image_encoder, text_encoder, temperature, optimizer, epochs, embedding_dim):
+    loss_func = CLIPLoss(logits_length=embedding_dim)
+    model = CLIPModule(image_encoder=image_encoder, text_encoder=text_encoder, dim_img='###', dim_text='###', number_of_pairs=embedding_dim, temperature=temperature)
 
     for epoch in range(0, epochs):
         for images, queries in training_dataset:
-            image_projection = None
-            text_projection = None
-
             # Extract feature representations
-            images_features = image_encoder(images)
-            texts_features = text_encoder(queries)
-
-            # Multimodal embedding
-            images_embeddings = F.normalize(torch.dot(images_features, image_projection), dim=1)
-            texts_embeddings = F.normalize(torch.dot(texts_features, text_projection), dim=1)
+            logits = model(images, queries)
 
             # Initialize Gradient
             optimizer.zero_grad()
 
             # Compute Loss
-            loss = loss_func(images_embeddings, texts_embeddings)
+            loss = loss_func(logits)
 
             # Backpropagation
             loss.backward()
