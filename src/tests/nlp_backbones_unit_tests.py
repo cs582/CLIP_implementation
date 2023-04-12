@@ -20,7 +20,7 @@ class BackbonesTextUnitTest(unittest.TestCase):
 
         mask = torch.zeros(n_batches, max_length).to(dtype=torch.bool)
         for i in range(n_batches):
-            mask[i, :np.random.randint(low=0, high=max_length)] = 1.0
+            mask[i, :np.random.randint(low=1, high=max_length)] = 1.0
 
         x = torch.rand(n_batches, max_length, token_dim)
         model = TextTransformer(dim_model=token_dim, dim_ff=dim_ff, nhead=nhead, n_layers=n_layers, max_length=max_length, n_classes=1000)
