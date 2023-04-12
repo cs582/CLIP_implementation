@@ -8,6 +8,7 @@ from src.models.natural_language_processing.nlp_backbones import TextTransformer
 class BackbonesTextUnitTest(unittest.TestCase):
     def test_transformer_decoder(self):
         n_batches = 128
+        max_length = 72
 
         sentence_length = 74
         token_dim = 512
@@ -17,7 +18,7 @@ class BackbonesTextUnitTest(unittest.TestCase):
         layers = 12
 
         x = torch.rand(n_batches, sentence_length, token_dim)
-        model = TextTransformer(dim_model=token_dim, dim_ff=dim_ff, nhead=nhead, layers=layers, n_classes=1000)
+        model = TextTransformer(dim_model=token_dim, dim_ff=dim_ff, nhead=nhead, layers=layers, max_length=max_length, n_classes=1000)
 
         start = time.time()
         out = model(x)
