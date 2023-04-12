@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from nlp_modules import TransformerRadford
+from src.models.natural_language_processing.nlp_modules import TransformerRadford
 
 from collections import OrderedDict
 
