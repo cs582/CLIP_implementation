@@ -10,8 +10,8 @@ class ImageQueryDataset(Dataset):
     def __init__(self, data_dir, filename, img_res=(224, 224)):
         self.data_dir = data_dir
         self.transform = transforms.Compose([
+            transforms.ToTensor(),
             transforms.RandomCrop(img_res),
-            transforms.ToTensor()
         ])
 
         # Get a list of image file paths
@@ -25,9 +25,7 @@ class ImageQueryDataset(Dataset):
         # Load the image at the given index
         image_path = self.image_files[index]
         image_full_path = f"{self.data_dir}/images/{image_path}"
-        print(image_full_path)
         image = cv2.imread(image_full_path)
-        print(image)
 
         # Apply any data transformations if specified
         if self.transform is not None:
