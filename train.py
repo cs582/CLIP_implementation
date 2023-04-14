@@ -93,7 +93,7 @@ if __name__ == "__main__":
     dataloader = DataLoader(training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=4)
 
     # Training cycle
-    training(training_dataset=training_dataset, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, epochs=epochs)
+    training(training_dataset=training_dataset, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, epochs=epochs, device=device)
 
 
 
