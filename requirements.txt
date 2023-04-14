@@ -3,4 +3,5 @@ tqdm
 numpy
 pandas
 einops
+opencv-python
 matplotlib
