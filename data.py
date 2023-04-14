@@ -63,8 +63,12 @@ if __name__ == "__main__":
         data.to_csv(f"{pairs_folder}/WQI_mini.csv", header=True)
 
     if args.task == 2:
+        # Get csv file address
+        csv_filepath = f"{pairs_folder}/WQI_mini.csv"
+
         # Read csv file
-        df = pd.read_csv(f"{pairs_folder}/WQI_mini.csv", index_col=0)
+        print(f"reading {csv_filepath}")
+        df = pd.read_csv(csv_filepath, index_col=0)
 
         cap = args.cap
 
