@@ -16,7 +16,7 @@ class ImageQueryDataset(Dataset):
 
         # Get a list of image file paths
         with open(f"{data_dir}/{filename}", 'r') as f:
-            self.image_files = json.loads(f)
+            self.image_files = json.load(f)
 
     def __len__(self):
         return len(self.image_files)
