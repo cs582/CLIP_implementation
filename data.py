@@ -30,7 +30,7 @@ def url_image_save(url, path, name):
     filepath = f"{path}/{name}.jpg"
     cv2.imwrite(filepath, image)
     cv2.waitKey(0)
-    return filepath
+    return f"{name}.jpg"
 
 
 def clean_sentence(sentence):
