@@ -1,5 +1,5 @@
 import torch
-import torchvision
+from torch.utils.data import DataLoader
 import torch.nn as nn
 import argparse
 
@@ -84,8 +84,9 @@ if __name__ == "__main__":
     # Set Adam Optimizer
     optimizer = torch.optim.Adam(clip_model.parameters(), lr=args.lr, eps=args.epsilon, betas=(args.beta_1, args.beta_2))
 
-    # Load dataset
-    training_dataset = ImageQueryDataset(path="src/data/image_gen/WQ-dataset", filename="image-queries-cap-at-10000.json")
+    # Load training dataset
+    training_dataset = ImageQueryDataset(data_dir="src/data/image_gen/WQ-dataset", filename="image-queries-cap-at-10000.json")
+    dataloader = DataLoader(training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=4)
 
     # Training cycle
     training(training_dataset=training_dataset, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, epochs=epochs)
