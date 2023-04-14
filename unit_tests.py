@@ -9,6 +9,7 @@ from src.tests.cv_patches_unit_tests import UtilsTest
 from src.tests.cv_modules_unit_tests import ResnetModulesUnitTest
 from src.tests.cv_backbones_unit_tests import BackbonesUnitTest
 from src.tests.cv_backbones_unit_tests import BackbonesUnitTestGPU
+from src.tests.nlp_tokenization_unit_tests import TokenizationUnitTest
 
 
 
@@ -45,8 +46,11 @@ if __name__ == '__main__':
     backbones_cv_test_gpu = unittest.TestLoader().loadTestsFromTestCase(BackbonesUnitTestGPU)
     backbones_nlp_test_gpu = unittest.TestLoader().loadTestsFromTestCase(BackbonesTextGPUUnitTest)
 
+    # Tokenization test
+    tokenization_test = unittest.TestLoader().loadTestsFromTestCase(TokenizationUnitTest)
+
     # List all tests to run
-    tests_to_run = [utils_test, RN_modules_test, radford_test, image_scrapping_test]
+    tests_to_run = [utils_test, RN_modules_test, radford_test, image_scrapping_test, tokenization_test]
 
     if args.heavy:
         print("Stacked Backbones Tests to TestSuite...")
