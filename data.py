@@ -82,6 +82,7 @@ if __name__ == "__main__":
         # Save images addresses into a list
         image_queries = []
         for url, q in zip(img_address, queries):
+            print(f"retrieving {url}")
             url_image_save(url, images_dir, q)
 
         # Save list to json file
