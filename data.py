@@ -1,7 +1,10 @@
 import os
+import cv2
 import json
 import argparse
 import pandas as pd
+
+from urllib.request import urlopen
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -13,8 +16,21 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument('-task', type=int, default=2, help='Set data to perform task 1 or 2. Read description for more info.')
+parser.add_argument('-cap', type=int, default=10, help='Cap the number of images to download.')
 
 args = parser.parse_args()
+
+
+def url_image_save(url, path, name):
+    resp = urlopen(url)
+    image = np.asarray(bytearray(resp.read()), dtype="uint8")
+    image = cv2.imdecode(image, -1)
+
+    filepath = f"{path}/{name}.jpg"
+    cv2.imwrite(filepath, image)
+    cv2.waitKey(0)
+    return filepath
+
 
 if __name__ == "__main__":
 
@@ -48,6 +64,29 @@ if __name__ == "__main__":
 
     if args.task == 2:
         # Read csv file
-        df = pd.read_csv(f"{pairs_folder}/WQI_mini.csv")
+        df = pd.read_csv(f"{pairs_folder}/WQI_mini.csv", index_col=0)
 
+        cap = args.cap
+
+        # Extract queries and images addresses
+        queries, img_address = df['query'].tolist()[:cap], df['image'].tolist()[:cap]
+
+        # Download images and store them into a new directory
+        folder = "images"
+        images_dir = f"{pairs_folder}/{folder}"
+
+        # Create new folder if doesn't exist
+        if not os.path.exists(images_dir):
+            os.mkdir(images_dir)
+
+        # Save images addresses into a list
+        image_queries = []
+        for url, q in zip(img_address, queries):
+            url_image_save(url, images_dir, q)
+
+        # Save list to json file
+        images_json_file = f"{pairs_folder}/image-queries-cap-at-{cap}.json"
+        with open(images_json_file, "w") as f:
+            json.dump(image_queries, f)
+            print(f"images saves successfully as {images_json_file}")
 
