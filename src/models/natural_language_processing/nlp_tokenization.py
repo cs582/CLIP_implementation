@@ -12,6 +12,15 @@ def add_tags(sentence):
     return '[SOS]' + sentence + '[EOS]'
 
 
+def remove_special_characters(text):
+    """
+    Removes all special characters from a string.
+    """
+    pattern = r'[^a-zA-Z0-9\s]'
+    text = re.sub(pattern, '', text)
+    return text
+
+
 def initialize_vocabulary(body_text):
     vocab = {'[EOS]':len(body_text), '[SOS]': len(body_text)}
     for sentence in body_text:
@@ -61,6 +70,7 @@ class BytePairEncoderTokenizer:
     def __init__(self, vocab_size=1000, min_freq=2):
         self.vocab_size = vocab_size
         self.min_freq = min_freq
+        self.token_ids = None
         self.vocab = None
         self.merges = None
 
@@ -68,8 +78,10 @@ class BytePairEncoderTokenizer:
         # Initialize vocab with [SOS], [EOS], and single characters
         self.vocab = initialize_vocabulary(body_text)
 
+        # Initialize the corpus
         corpus = prepare_corpus(body_text)
 
+        # Get the merges
         self.merges = {}
         while len(self.vocab.keys()) < self.vocab_size:
             pairs = get_status(corpus)
@@ -82,30 +94,41 @@ class BytePairEncoderTokenizer:
             self.vocab[new_char] = pairs[bp]
             self.merges[bp] = new_char
 
+        # Create TokenIDs
+        token_map = {}
+        for idx, word in enumerate(self.vocab.keys()):
+            token_map[word] = idx
+
+        self.token_ids = token_map
+
     def encode(self, words):
         # Apply the trained BPE codes to encode a word
         if self.vocab is None:
             raise ValueError("Tokenizer has not been trained yet!")
 
+        # Merge characters in the new sentence
         new_sentence = " ".join(words)
         for pair, new_char in self.merges.items():
             bigram = re.escape(' '.join(pair))
             p = re.compile(r'(?<!\S)' + bigram + r'(?!\S)')
             new_sentence = p.sub(''.join(pair), new_sentence)
 
-        encoded_sentence = new_sentence
-        for tokenID, (symbol, _) in enumerate(self.vocab.items()):
-            bigram = re.escape(symbol)
-            p = re.compile(r'(?<!\S)' + bigram + r'(?!\S)')
-            encoded_sentence = p.sub(str(tokenID), encoded_sentence)
+        # Encode tokens
+        encoded_sentence = []
+        for symbol in new_sentence.split():
+            encoded_sentence.append(self.token_ids[symbol])
+        return new_sentence, encoded_sentence
 
-        return new_sentence, [int(x) for x in encoded_sentence.split()]
-
-    def tokenize(self, sentence):
+    def tokenize(self, sentence, remove_special_char=True):
         # Tokenize a text using the trained BPE tokenizer
         if self.merges is None:
             raise ValueError("Tokenizer has not been trained yet!")
 
+        # Remove all special characters
+        if remove_special_char:
+            sentence = remove_special_characters(sentence)
+
+        # Initialize the sentence into symbols of one character each
         sentence_words = []
         sentence = fix_sentence(sentence).split()
         for i, word in enumerate(sentence):
