@@ -1,3 +1,4 @@
+import re
 import os
 import cv2
 import json
@@ -30,6 +31,26 @@ def url_image_save(url, path, name):
     cv2.imwrite(filepath, image)
     cv2.waitKey(0)
     return filepath
+
+
+def clean_sentence(sentence):
+    # Remove leading and trailing white spaces
+    sentence = sentence.strip()
+
+    # Remove extra spaces between words
+    sentence = re.sub(r'\s+', ' ', sentence)
+
+    # Handle special cases like "word1,word2" or "word1.word2"
+    sentence = re.sub(r'(?<=[^\s])[.,;:?!]+(?=[^\s])', ' ', sentence)
+
+    # Handle cases like "word1.word2" or "word1-word2"
+    sentence = re.sub(r'(?<=\S)[.-](?=\S)', ' ', sentence)
+
+    # Remove extra spaces after special characters
+    sentence = re.sub(r'\s+([.,;:?!])', r'\1', sentence)
+
+    return sentence
+
 
 
 if __name__ == "__main__":
@@ -86,7 +107,7 @@ if __name__ == "__main__":
         # Save images addresses into a list
         image_queries = []
         for url, q in zip(img_address, queries):
-            print(f"retrieving {url}")
+            q = clean_sentence(q).replace(" ", "_")
             url_image_save(url, images_dir, q)
 
         # Save list to json file
