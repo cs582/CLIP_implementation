@@ -25,7 +25,9 @@ class ImageQueryDataset(Dataset):
         # Load the image at the given index
         image_path = self.image_files[index]
         image_full_path = f"{self.data_dir}/{image_path}"
+        print(image_full_path)
         image = cv2.imread(image_full_path)
+        print(image)
 
         # Apply any data transformations if specified
         if self.transform is not None:
