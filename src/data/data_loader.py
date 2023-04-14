@@ -24,7 +24,7 @@ class ImageQueryDataset(Dataset):
     def __getitem__(self, index):
         # Load the image at the given index
         image_path = self.image_files[index]
-        image_full_path = f"{self.data_dir}/{image_path}"
+        image_full_path = f"{self.data_dir}/images/{image_path}"
         print(image_full_path)
         image = cv2.imread(image_full_path)
         print(image)
