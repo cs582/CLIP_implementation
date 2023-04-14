@@ -13,7 +13,7 @@ def add_tags(sentence):
 
 
 def initialize_vocabulary(body_text):
-    vocab = {'[SOS]': len(body_text), '[EOS]': len(body_text)}
+    vocab = {'[EOS]':len(body_text), '[SOS]': len(body_text)}
     for sentence in body_text:
         sentence = fix_sentence(sentence)
         for word in sentence.split():
@@ -23,18 +23,18 @@ def initialize_vocabulary(body_text):
     return vocab
 
 
+def sentence_to_symbol_format(sentence):
+    words_out = []
+    sentence = fix_sentence(sentence).split()
+    for i, word in enumerate(sentence):
+        w_out = [char for char in word] + ['</w>']
+        words_out.append(' '.join(w_out))
+    return words_out
+
 def prepare_corpus(body_text):
     corpus = []
     for sentence in body_text:
-        sentence = fix_sentence(sentence).split()
-        for i, word in enumerate(sentence):
-            if i == 0:
-                w_out = ['[SOS]'] + [char for char in word] + ['</w>']
-            elif i == len(sentence)-1:
-                w_out = [char for char in word] + ['[EOS] </w>']
-            else:
-                w_out = [char for char in word] + ['</w>']
-            corpus.append(' '.join(w_out))
+        corpus += sentence_to_symbol_format(sentence)
     return corpus
 
 
@@ -47,7 +47,7 @@ def get_status(corpus):
     return pairs
 
 
-def merge_vocab(pair, corpus):
+def update_corpus(pair, corpus):
     new_corpus = [None] * len(corpus)
     bigram = re.escape(' '.join(pair))
     p = re.compile(r'(?<!\S)' + bigram + r'(?!\S)')
@@ -62,7 +62,7 @@ class BytePairEncoderTokenizer:
         self.vocab_size = vocab_size
         self.min_freq = min_freq
         self.vocab = None
-        self.bpe_codes = None
+        self.merges = None
 
     def train(self, body_text):
         # Initialize vocab with [SOS], [EOS], and single characters
@@ -70,26 +70,51 @@ class BytePairEncoderTokenizer:
 
         corpus = prepare_corpus(body_text)
 
+        self.merges = {}
         while len(self.vocab.keys()) < self.vocab_size:
             pairs = get_status(corpus)
             bp = max(pairs, key=pairs.get)
+            new_char = ''.join(bp)
             if pairs[bp] < self.min_freq:
                 break
-            corpus = merge_vocab(bp, corpus)
-            self.vocab[''.join(bp)] = pairs[bp]
+            # Update the vocabulary and BPE codes
+            corpus = update_corpus(bp, corpus)
+            self.vocab[new_char] = pairs[bp]
+            self.merges[bp] = new_char
 
-        print(self.vocab, len(self.vocab.keys()))
+    def encode(self, words):
+        # Apply the trained BPE codes to encode a word
+        if self.vocab is None:
+            raise ValueError("Tokenizer has not been trained yet!")
 
+        new_sentence = " ".join(words)
+        for pair, new_char in self.merges.items():
+            bigram = re.escape(' '.join(pair))
+            p = re.compile(r'(?<!\S)' + bigram + r'(?!\S)')
+            new_sentence = p.sub(''.join(pair), new_sentence)
 
-body_text = [
-    "This is one sentence",
-    "Suppose this is something smart.",
-    "I don't think anybody would complain.",
-    "What if we add",
-    "A few sentences more."
-]
+        encoded_sentence = new_sentence
+        for tokenID, (symbol, _) in enumerate(self.vocab.items()):
+            bigram = re.escape(symbol)
+            p = re.compile(r'(?<!\S)' + bigram + r'(?!\S)')
+            encoded_sentence = p.sub(str(tokenID), encoded_sentence)
 
+        return new_sentence, [int(x) for x in encoded_sentence.split()]
 
-# Create an instance of the BytePairEncoderTokenizer
-tokenizer = BytePairEncoderTokenizer(vocab_size=100)
-tokenizer.train(body_text)
+    def tokenize(self, sentence):
+        # Tokenize a text using the trained BPE tokenizer
+        if self.merges is None:
+            raise ValueError("Tokenizer has not been trained yet!")
+
+        sentence_words = []
+        sentence = fix_sentence(sentence).split()
+        for i, word in enumerate(sentence):
+            char_out = [char for char in word]
+            if i == 0:
+                char_out = ['[SOS]'] + char_out
+            elif i == len(sentence)-1:
+                char_out = char_out + ['[EOS]']
+            w_out = ' '.join(char_out)
+            sentence_words.append(w_out)
+        _, tokens = self.encode(sentence_words)
+        return tokens
