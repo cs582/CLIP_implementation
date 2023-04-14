@@ -24,6 +24,7 @@ parser = argparse.ArgumentParser(
 
 # Trainer mode
 parser.add_argument('-fine_tuning', type=bool, default=True, help='Perform Fine tuning over one epoch. Requires arg model different from default:None.')
+parser.add_argument('-device', type=str, default="cpu", help="Set device to use: gpu or cpu.")
 
 # CLIP Hyper-parameters
 parser.add_argument('-image_encoder', type=str, default=None, help="Image encoder backbone. One of ViT@224, ViT@336, RN@224, or RN@336.")
@@ -50,8 +51,11 @@ if __name__ == "__main__":
     else:
         epochs = args.epochs
 
-
+    # Get multimodal embedding dim which is equal to the batch size
     multimodal_embedding_dim = args.batch_size
+
+    # Get device
+    device = torch.device('cuda:0') if args.device=="gpu" else torch.device('cpu')
 
     # Pick Image Encoder model
     assert args.image_encoder in ['ViT@224', 'ViT@336', 'RN@224', 'RN@336']
