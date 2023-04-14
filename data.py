@@ -108,7 +108,8 @@ if __name__ == "__main__":
         image_queries = []
         for url, q in zip(img_address, queries):
             q = clean_sentence(q).replace(" ", "_")
-            url_image_save(url, images_dir, q)
+            img_dir = url_image_save(url, images_dir, q)
+            image_queries.append(img_dir)
 
         # Save list to json file
         images_json_file = f"{pairs_folder}/image-queries-cap-at-{cap}.json"
