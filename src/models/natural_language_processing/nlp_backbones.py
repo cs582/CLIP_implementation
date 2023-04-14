@@ -8,11 +8,13 @@ from src.models.natural_language_processing.nlp_token_embedding import TokenEmbe
 class TransformerB(nn.Module):
     def __init__(self, dim_out, vocab_size, max_length):
         super(TransformerB, self).__init__()
+        self.max_length = max_length
         self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size, embedding_dim=dim_out)
         self.b_transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=8, dim_ff=2048)
 
     def forward(self, x):
         x = self.token_embedder(x)
+        # Create mask here
         x = self.b_transformer(x)
         return x
 
@@ -20,11 +22,13 @@ class TransformerB(nn.Module):
 class TransformerL(nn.Module):
     def __init__(self, dim_out, vocab_size, max_length):
         super(TransformerL, self).__init__()
+        self.max_length = max_length
         self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size, embedding_dim=dim_out)
         self.l_transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=12, dim_ff=2048)
 
     def forward(self, x):
         x = self.token_embedder(x)
+        # Create mask here
         x = self.l_transformer(x)
         return x
 
