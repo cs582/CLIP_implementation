@@ -2,29 +2,35 @@ import torch
 import torch.nn as nn
 from src.models.natural_language_processing.nlp_modules import TransformerRadford
 
+from src.models.natural_language_processing.nlp_token_embedding import TokenEmbedder
+
 
 class TransformerB(nn.Module):
-    def __init__(self, dim_out, max_length):
+    def __init__(self, dim_out, vocab_size, max_length):
         super(TransformerB, self).__init__()
-        self.b_transformer = TextTransformer(n_classes=dim_out, dim_model=512, n_layers=12, max_length=max_length, nhead=8, dim_ff=2048)
+        self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size, embedding_dim=dim_out)
+        self.b_transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=8, dim_ff=2048)
 
     def forward(self, x):
-        out = self.b_transformer(x)
-        return out
+        x = self.token_embedder(x)
+        x = self.b_transformer(x)
+        return x
 
 
 class TransformerL(nn.Module):
-    def __init__(self, dim_out, max_length):
+    def __init__(self, dim_out, vocab_size, max_length):
         super(TransformerL, self).__init__()
-        self.l_transformer = TextTransformer(n_classes=dim_out, dim_model=768, n_layers=12, max_length=max_length, nhead=12, dim_ff=2048)
+        self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size, embedding_dim=dim_out)
+        self.l_transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=12, dim_ff=2048)
 
     def forward(self, x):
-        out = self.l_transformer(x)
-        return out
+        x = self.token_embedder(x)
+        x = self.l_transformer(x)
+        return x
 
 
 class TextTransformer(nn.Module):
-    def __init__(self, n_classes, n_layers, dim_model, max_length, dim_ff, nhead):
+    def __init__(self, n_layers, dim_model, max_length, dim_ff, nhead):
         super(TextTransformer, self).__init__()
 
         self.n_layers = n_layers
@@ -44,7 +50,7 @@ class TextTransformer(nn.Module):
 
         self.to_latent = nn.Identity()
 
-        self.fc = nn.Linear(self.dim_model, n_classes)
+        self.fc = nn.Linear(self.dim_model, self.dim_model)
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x, mask): # b x l_max x dim_v

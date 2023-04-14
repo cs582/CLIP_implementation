@@ -1,19 +1,19 @@
 import torch
 import torch.nn as nn
 
-
 class CLIPModule(nn.Module):
-    def __init__(self, image_encoder, text_encoder, dim_img, dim_text, number_of_pairs, temperature):
+    def __init__(self, image_encoder, text_encoder, dim_img, dim_text, embedding_dim, temperature):
         super(CLIPModule, self).__init__()
         # The embedding dimension is equal to the number of image-queries to pair in the training stage
-        self.embedding_dim = number_of_pairs
+        self.embedding_dim = embedding_dim
+
         self.dim_img = dim_img
         self.dim_text = dim_text
 
         self.temperature = temperature
 
-        self.image_encoder = image_encoder(dim_out=self.dim_img)
-        self.text_encoder = text_encoder(dim_out=self.dim_text)
+        self.image_encoder = image_encoder
+        self.text_encoder = text_encoder
 
         self.img_mm_encoder = nn.Parameter(torch.randn(1, self.dim_img, self.embedding_dim))
         self.txt_mm_encoder = nn.Parameter(torch.randn(1, self.dim_text, self.embedding_dim))
@@ -28,7 +28,7 @@ class CLIPModule(nn.Module):
         txt_e = torch.norm(torch.matmul(txt_f, self.txt_mm_encoder), p=2, dim=1) # batch_size x embedding_dim
 
         # Scaled pairwise cosine similarities
-        logits = torch.matmul(img_e, txt_e.transpose(0, 1)) * torch.exp(self.temperature)
+        logits = torch.matmul(img_e, txt_e.transpose(0, 1)) * torch.exp(self.temperature) # batch_size x batch_size
         return logits
 
 
