@@ -28,7 +28,7 @@ class CLIPModule(nn.Module):
         txt_e = torch.norm(torch.matmul(txt_f, self.txt_mm_encoder), p=2, dim=1) # batch_size
 
         # Scaled pairwise cosine similarities
-        logits = torch.dot(img_e, txt_e) * torch.exp(self.temperature) # batch_size x batch_size
+        logits = torch.dot(img_e, txt_e) * torch.exp(torch.tensor(self.temperature)) # batch_size x batch_size
         return logits
 
 
