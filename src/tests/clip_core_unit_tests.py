@@ -7,7 +7,7 @@ import numpy as np
 from src.models.CLIP_model import CLIPModule
 from src.models.computer_vision.backbones.vit import ViTat224, ViTat336
 from src.models.computer_vision.backbones.resnet34 import RN34at224, RN34at336
-from src.models.natural_language_processing.nlp_backbones import TransformerL
+from src.models.natural_language_processing.nlp_backbones import TransformerB
 
 
 class CLIPUnitTest(unittest.TestCase):
@@ -27,7 +27,7 @@ class CLIPUnitTest(unittest.TestCase):
 
         # Initialize encoders
         image_encoder = ViTat224(dim_out=dim_img)
-        text_encoder = TransformerL(dim_out=dim_text, batch_size=batch_size, vocab_size=vocab_size, max_length=max_length)
+        text_encoder = TransformerB(dim_out=dim_text, batch_size=batch_size, vocab_size=vocab_size, max_length=max_length)
 
         # Initialize CLIP
         clip_model = CLIPModule(image_encoder, text_encoder, dim_img, dim_text, embedding_dim, temperature)
@@ -63,14 +63,14 @@ class CLIPGPUUnitTest(unittest.TestCase):
         # Text Encoder parameters
         vocab_size = 32000
         max_length = 24
-        dim_text = 768
+        dim_text = 512
 
         # Image Encoder parameters
         dim_img = 768
 
         # Initialize encoders
         image_encoder = ViTat224(dim_out=dim_img)
-        text_encoder = TransformerL(dim_out=dim_text, batch_size=batch_size, vocab_size=vocab_size, max_length=max_length)
+        text_encoder = TransformerB(dim_out=dim_text, batch_size=batch_size, vocab_size=vocab_size, max_length=max_length)
 
         # Initialize CLIP
         clip_model = CLIPModule(image_encoder, text_encoder, dim_img, dim_text, embedding_dim, temperature).to(device)
