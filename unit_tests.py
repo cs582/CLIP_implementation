@@ -5,11 +5,12 @@ from src.tests.image_scraping_unit_tests import ImageScrappingUnitTests
 from src.tests.nlp_modules_unit_tests import TransformerRadfordUnitTest
 from src.tests.nlp_backbones_unit_tests import BackbonesTextUnitTest
 from src.tests.nlp_backbones_unit_tests import BackbonesTextGPUUnitTest
+from src.tests.nlp_tokenization_unit_tests import TokenizationUnitTest
 from src.tests.cv_patches_unit_tests import UtilsTest
 from src.tests.cv_modules_unit_tests import ResnetModulesUnitTest
 from src.tests.cv_backbones_unit_tests import BackbonesUnitTest
 from src.tests.cv_backbones_unit_tests import BackbonesUnitTestGPU
-from src.tests.nlp_tokenization_unit_tests import TokenizationUnitTest
+from src.tests.clip_core_unit_tests import CLIPUnitTest
 
 
 
@@ -30,7 +31,7 @@ if __name__ == '__main__':
     utils_test = unittest.TestLoader().loadTestsFromTestCase(UtilsTest)
 
     # Test ResnetModulesUnitTest
-    RN_modules_test = unittest.TestLoader().loadTestsFromTestCase(ResnetModulesUnitTest)
+    rn_modules_test = unittest.TestLoader().loadTestsFromTestCase(ResnetModulesUnitTest)
 
     # Transformer Radford Unit Test
     radford_test = unittest.TestLoader().loadTestsFromTestCase(TransformerRadfordUnitTest)
@@ -46,16 +47,20 @@ if __name__ == '__main__':
     backbones_cv_test_gpu = unittest.TestLoader().loadTestsFromTestCase(BackbonesUnitTestGPU)
     backbones_nlp_test_gpu = unittest.TestLoader().loadTestsFromTestCase(BackbonesTextGPUUnitTest)
 
+    # Test CLIP
+    clip_unit_test = unittest.TestLoader().loadTestsFromTestCase(CLIPUnitTest)
+
     # Tokenization test
     tokenization_test = unittest.TestLoader().loadTestsFromTestCase(TokenizationUnitTest)
 
     # List all tests to run
-    tests_to_run = [utils_test, RN_modules_test, radford_test, image_scrapping_test, tokenization_test]
+    tests_to_run = [utils_test, tokenization_test, rn_modules_test, radford_test, image_scrapping_test, clip_unit_test]
 
     if args.heavy:
-        print("Stacked Backbones Tests to TestSuite...")
+        print("Stacked Backbones and CLIP Tests to TestSuite...")
         tests_to_run.append(backbones_cv_test)
         tests_to_run.append(backbones_nlp_test)
+        tests_to_run.append(clip_unit_test)
 
         if args.use_gpu:
             print("Stacked Backbones Tests with GPU to TestSuite...")

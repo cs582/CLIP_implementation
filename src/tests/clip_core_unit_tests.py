@@ -40,6 +40,7 @@ class CLIPUnitTest(unittest.TestCase):
         # Output
         out = clip_model(imgs, tokenized_words)
 
+        # Assert case
         self.assertEqual(out.shape, (batch_size, batch_size))
 
 
