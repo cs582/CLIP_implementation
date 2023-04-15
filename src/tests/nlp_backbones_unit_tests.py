@@ -30,7 +30,7 @@ class BackbonesTextUnitTest(unittest.TestCase):
         n_batches = 128
         max_length = 25
 
-        dim_out = 512
+        dim_out = 768
 
         x = torch.randint(low=0, high=1000, size=(n_batches, max_length))
         model = TransformerL(dim_out=dim_out, batch_size=n_batches, vocab_size=1000, max_length=max_length)
@@ -72,7 +72,7 @@ class BackbonesTextGPUUnitTest(unittest.TestCase):
         n_batches = 128
         max_length = 25
 
-        dim_out = 512
+        dim_out = 768
 
         x = torch.randint(low=0, high=1000, size=(n_batches, max_length)).to(device)
         model = TransformerL(dim_out=dim_out, batch_size=n_batches, vocab_size=1000, max_length=max_length).to(device)
