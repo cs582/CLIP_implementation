@@ -10,19 +10,15 @@ from src.models.natural_language_processing.nlp_backbones import TransformerB
 class BackbonesTextUnitTest(unittest.TestCase):
     def test_transformer_decoder(self):
         n_batches = 128
-        max_length = 74
+        max_length = 25
 
         dim_out = 512
 
-        mask = torch.zeros(n_batches, max_length).to(dtype=torch.bool)
-        for i in range(n_batches):
-            mask[i, :np.random.randint(low=1, high=max_length)] = 1.0
-
         x = torch.randint(low=0, high=1000, size=(n_batches, max_length))
-        model = TransformerB(dim_out=dim_out, vocab_size=1000, max_length=max_length)
+        model = TransformerB(dim_out=dim_out, batch_size=n_batches, vocab_size=1000, max_length=max_length)
 
         start = time.time()
-        out = model(x, mask)
+        out = model(x)
         end = time.time()
 
         message = f"Transformer Decoder forward time: {end - start} seconds"
@@ -36,19 +32,15 @@ class BackbonesTextGPUUnitTest(unittest.TestCase):
         device = torch.device('cuda:0')
 
         n_batches = 128
-        max_length = 74
+        max_length = 25
 
         dim_out = 512
 
-        mask = torch.zeros(n_batches, max_length).to(device, dtype=torch.bool)
-        for i in range(n_batches):
-            mask[i, :np.random.randint(low=1, high=max_length)] = 1.0
-
         x = torch.randint(low=0, high=1000, size=(n_batches, max_length)).to(device)
-        model = TransformerB(dim_out=dim_out, vocab_size=1000, max_length=max_length).to(device)
+        model = TransformerB(dim_out=dim_out, batch_size=n_batches, vocab_size=1000, max_length=max_length).to(device)
 
         start = time.time()
-        out = model(x, mask)
+        out = model(x)
         end = time.time()
 
         message = f"Transformer Decoder [CUDA: {torch.cuda.get_device_name(0)}] forward time: {end - start} seconds"
