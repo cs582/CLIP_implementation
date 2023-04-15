@@ -99,8 +99,11 @@ class TextTransformer(nn.Module):
             x = self.transformers[l](x, mask)
 
         # Get last [EOS] token
+        print("pre last word", x.shape)
         last_word = torch.cat((mask, torch.zeros(b, 1, dtype=torch.bool, device=mask.device)), dim=1).diff(dim=1) # last word mask
+        print("last word mask", last_word.shape)
         x = x[last_word]
+        print("x after", x.shape)
         x = self.to_latent(x)
 
         x = self.fc(x)
