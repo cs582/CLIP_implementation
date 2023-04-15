@@ -40,10 +40,14 @@ class CLIPUnitTest(unittest.TestCase):
             tokenized_words[q_idx, np.random.randint(low=1, high=max_length):] = -1.0
 
         # Output
+        start = time.time()
         out = clip_model(imgs, tokenized_words)
+        end = time.time()
 
         # Assert case
         self.assertEqual(out.shape, (batch_size, batch_size))
+        print(f"CLIP forward finished in {end-start} seconds with a batch of {batch_size}.")
+
 
 
 
