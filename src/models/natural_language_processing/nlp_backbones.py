@@ -19,12 +19,15 @@ class TransformerB(nn.Module):
         self.register_buffer('mask', mask)
 
     def forward(self, x):
+        print("x in", x.shape)
         # Mask
         self.mask = (x != -1)
         # Set other tokens to zero
         x[~self.mask] = 0.0
+        print("after setting -1 to 0.0", x.shape)
         # Token embedder
         x = self.token_embedder(x)
+        print("after token embedding", x.shape)
         # Transformer backbone
         x = self.transformer(x, self.mask)
         return x
