@@ -22,7 +22,8 @@ class CLIPModule(nn.Module):
         # Extract feature representation of each modality
         img_f = self.image_encoder(image) # batch_size x dim_img
         txt_f = self.text_encoder(text)   # batch_suze x dim_text
-        print(img_f.shape, txt_f.shape)
+        print("inputs", img_f.shape, txt_f.shape)
+        print("embedding", self.img_mm_encoder.shape, self.txt_mm_encoder.shape)
 
         # Joint multimodal embedding
         img_e = torch.norm(torch.matmul(img_f, self.img_mm_encoder), p=2, dim=1) # batch_size x embedding_dim
