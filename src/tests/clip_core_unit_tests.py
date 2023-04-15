@@ -35,7 +35,9 @@ class CLIPUnitTest(unittest.TestCase):
         # Testing images
         resolution = 224
         imgs = torch.rand(batch_size, 3, resolution, resolution)
-        tokenized_words = torch.randint(low=0, high=1, size=(batch_size, max_length))[:np.random.rand(1, max_length)]
+        tokenized_words = torch.randint(low=0, high=1, size=(batch_size, max_length))
+        for q_idx in range(len(tokenized_words)):
+            tokenized_words[q_idx, np.random.randint(low=1, high=max_length):] = -1.0
 
         # Output
         out = clip_model(imgs, tokenized_words)
