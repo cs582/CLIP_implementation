@@ -11,6 +11,7 @@ from src.tests.cv_modules_unit_tests import ResnetModulesUnitTest
 from src.tests.cv_backbones_unit_tests import BackbonesUnitTest
 from src.tests.cv_backbones_unit_tests import BackbonesUnitTestGPU
 from src.tests.clip_core_unit_tests import CLIPUnitTest
+from src.tests.clip_core_unit_tests import CLIPGPUUnitTest
 
 
 
@@ -49,6 +50,7 @@ if __name__ == '__main__':
 
     # Test CLIP
     clip_unit_test = unittest.TestLoader().loadTestsFromTestCase(CLIPUnitTest)
+    clip_unit_test_gpu = unittest.TestLoader().loadTestsFromTestCase(CLIPGPUUnitTest)
 
     # Tokenization test
     tokenization_test = unittest.TestLoader().loadTestsFromTestCase(TokenizationUnitTest)
@@ -66,6 +68,7 @@ if __name__ == '__main__':
             print("Stacked Backbones Tests with GPU to TestSuite...")
             tests_to_run.append(backbones_cv_test_gpu)
             tests_to_run.append(backbones_nlp_test_gpu)
+            tests_to_run.append(clip_unit_test_gpu)
 
     # Test suite that includes all the tests
     suite = unittest.TestSuite(tests_to_run)
