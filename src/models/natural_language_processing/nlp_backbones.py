@@ -21,6 +21,8 @@ class TransformerB(nn.Module):
     def forward(self, x):
         # Mask
         self.mask = (x != -1)
+        # Set other tokens to zero
+        x[~self.mask] = 0.0
         # Token embedder
         x = self.token_embedder(x)
         # Transformer backbone
@@ -44,6 +46,8 @@ class TransformerL(nn.Module):
     def forward(self, x):
         # Mask
         self.mask = (x != -1)
+        # Set other tokens to zero
+        x[~self.mask] = 0.0
         # Token embedder
         x = self.token_embedder(x)
         # Create mask here
