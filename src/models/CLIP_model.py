@@ -24,14 +24,15 @@ class CLIPModule(nn.Module):
         txt_f = self.text_encoder(text)   # batch_suze x dim_text
 
         # Joint multimodal embedding
-        img_e = torch.norm(torch.matmul(img_f, self.img_mm_encoder), p=2, dim=1) # batch_size
-        txt_e = torch.norm(torch.matmul(txt_f, self.txt_mm_encoder), p=2, dim=1) # batch_size
+        img_e = torch.matmul(img_f, self.img_mm_encoder) # batch_size x dim_emb
+        img_e = img_e / img_e.norm(p=2, dim=1)
 
-        print(img_e.shape, txt_e.shape)
+        txt_e = torch.matmul(txt_f, self.txt_mm_encoder) # batch_size x dim_emb
+        txt_e = txt_e / txt_e.norm(p=2, dim=1)
 
         # Scaled pairwise cosine similarities
         print(torch.dot(img_e, txt_e).shape)
-        logits = torch.dot(img_e, txt_e) * torch.exp(torch.tensor(self.temperature)) # batch_size x batch_size
+        logits = torch.matmul(img_e, txt_e) * torch.exp(torch.tensor(self.temperature)) # batch_size x batch_size
         return logits
 
 
