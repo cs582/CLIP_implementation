@@ -6,30 +6,52 @@ from src.models.natural_language_processing.nlp_token_embedding import TokenEmbe
 
 
 class TransformerB(nn.Module):
-    def __init__(self, dim_out, vocab_size, max_length):
+    def __init__(self, dim_out, batch_size, vocab_size, max_length):
         super(TransformerB, self).__init__()
+        self.batch_size = batch_size
         self.max_length = max_length
+
         self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size, embedding_dim=dim_out)
-        self.b_transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=8, dim_ff=2048)
+        self.transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=8, dim_ff=2048)
+
+        # Setting as tensor buffer, not updated in backpropagation
+        mask = torch.zeros(batch_size, max_length, dtype=torch.bool)
+        self.register_buffer('mask', mask)
 
     def forward(self, x):
+        # Mask
+        for qn in range(self.batch_size):
+            sentence_length = min(len(x[qn]), self.max_length)
+            self.mask[qn, :sentence_length], self.mask[qn, sentence_length:] = 1.0, 0.0
+        # Token embedder
         x = self.token_embedder(x)
-        # Create mask here
-        x = self.b_transformer(x)
+        # Transformer backbone
+        x = self.transformer(x, self.mask)
         return x
 
 
 class TransformerL(nn.Module):
-    def __init__(self, dim_out, vocab_size, max_length):
+    def __init__(self, dim_out, batch_size, vocab_size, max_length):
         super(TransformerL, self).__init__()
+        self.batch_size = batch_size
         self.max_length = max_length
+
         self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size, embedding_dim=dim_out)
-        self.l_transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=12, dim_ff=2048)
+        self.transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=12, dim_ff=2048)
+
+        # Setting as tensor buffer, not updated in backpropagation
+        mask = torch.zeros(batch_size, max_length, dtype=torch.bool)
+        self.register_buffer('mask', mask)
 
     def forward(self, x):
+        # Mask
+        for qn in range(self.batch_size):
+            sentence_length = min(len(x[qn]), self.max_length)
+            self.mask[qn, :sentence_length], self.mask[qn, sentence_length:] = 1.0, 0.0
+        # Token embedder
         x = self.token_embedder(x)
         # Create mask here
-        x = self.l_transformer(x)
+        x = self.transformer(x, self.mask)
         return x
 
 
