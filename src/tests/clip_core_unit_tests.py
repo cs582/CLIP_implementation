@@ -89,5 +89,4 @@ class CLIPGPUUnitTest(unittest.TestCase):
 
         # Assert case
         self.assertEqual(out.shape, (batch_size, batch_size))
-        print(f"CLIP forward finished in {end-start} seconds with a batch of {batch_size}.")
-
+        print(f"CLIP [CUDA: {torch.cuda.get_device_name(0)}] forward finished in {end-start} seconds with a batch of {batch_size}.")
