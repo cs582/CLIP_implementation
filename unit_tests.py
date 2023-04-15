@@ -54,7 +54,7 @@ if __name__ == '__main__':
     tokenization_test = unittest.TestLoader().loadTestsFromTestCase(TokenizationUnitTest)
 
     # List all tests to run
-    tests_to_run = [utils_test, tokenization_test, rn_modules_test, radford_test, image_scrapping_test, clip_unit_test]
+    tests_to_run = [utils_test, tokenization_test, rn_modules_test, radford_test, image_scrapping_test]
 
     if args.heavy:
         print("Stacked Backbones and CLIP Tests to TestSuite...")
