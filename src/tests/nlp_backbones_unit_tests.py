@@ -46,7 +46,7 @@ class BackbonesTextUnitTest(unittest.TestCase):
         message = f"Transformer Decoder Large forward time: {end - start} seconds"
         print(message)
 
-        self.assertEqual(out.shape, (batch_size, dim_out), msg=f"Transformer Decoder Failed, out size {out.shape} should be ({n_batches}, {dim_out})")
+        self.assertEqual(out.shape, (batch_size, dim_out), msg=f"Transformer Decoder Failed, out size {out.shape} should be ({batch_size}, {dim_out})")
 
 
 class BackbonesTextGPUUnitTest(unittest.TestCase):
