@@ -15,8 +15,8 @@ class CLIPModule(nn.Module):
         self.image_encoder = image_encoder
         self.text_encoder = text_encoder
 
-        self.img_mm_encoder = nn.Parameter(torch.randn(1, self.dim_img, self.embedding_dim))
-        self.txt_mm_encoder = nn.Parameter(torch.randn(1, self.dim_text, self.embedding_dim))
+        self.img_mm_encoder = nn.Parameter(torch.randn(self.dim_img, self.embedding_dim))
+        self.txt_mm_encoder = nn.Parameter(torch.randn(self.dim_text, self.embedding_dim))
 
     def forward(self, image, text):
         # Extract feature representation of each modality
