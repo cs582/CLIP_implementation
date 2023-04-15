@@ -63,7 +63,7 @@ class CLIPGPUUnitTest(unittest.TestCase):
         # Text Encoder parameters
         vocab_size = 32000
         max_length = 24
-        dim_text = 512
+        dim_text = 768
 
         # Image Encoder parameters
         dim_img = 768
