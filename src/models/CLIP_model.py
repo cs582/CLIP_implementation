@@ -27,6 +27,8 @@ class CLIPModule(nn.Module):
         img_e = torch.norm(torch.matmul(img_f, self.img_mm_encoder), p=2, dim=1) # batch_size x embedding_dim
         txt_e = torch.norm(torch.matmul(txt_f, self.txt_mm_encoder), p=2, dim=1) # batch_size x embedding_dim
 
+        print(img_e.shape, txt_e.shape)
+
         # Scaled pairwise cosine similarities
         logits = torch.matmul(img_e, txt_e.transpose(0, 1)) * torch.exp(self.temperature) # batch_size x batch_size
         return logits
