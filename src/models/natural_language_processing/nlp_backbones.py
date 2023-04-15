@@ -20,9 +20,7 @@ class TransformerB(nn.Module):
 
     def forward(self, x):
         # Mask
-        for qn in range(self.batch_size):
-            sentence_length = min(len(x[qn]), self.max_length)
-            self.mask[qn, :sentence_length], self.mask[qn, sentence_length:] = 1.0, 0.0
+        self.mask = (x != -1)
         # Token embedder
         x = self.token_embedder(x)
         # Transformer backbone
@@ -45,9 +43,7 @@ class TransformerL(nn.Module):
 
     def forward(self, x):
         # Mask
-        for qn in range(self.batch_size):
-            sentence_length = min(len(x[qn]), self.max_length)
-            self.mask[qn, :sentence_length], self.mask[qn, sentence_length:] = 1.0, 0.0
+        self.mask = (x != -1)
         # Token embedder
         x = self.token_embedder(x)
         # Create mask here

@@ -14,7 +14,9 @@ class BackbonesTextUnitTest(unittest.TestCase):
 
         dim_out = 512
 
-        x = torch.randint(low=0, high=1000, size=(n_batches, max_length))
+        x = torch.randint(low=0, high=1, size=(n_batches, max_length))
+        for q_idx in range(len(x)):
+            x[q_idx, :np.random.randint(low=1, high=max_length)] = -1.0
         model = TransformerB(dim_out=dim_out, batch_size=n_batches, vocab_size=1000, max_length=max_length)
 
         start = time.time()
@@ -27,13 +29,15 @@ class BackbonesTextUnitTest(unittest.TestCase):
         self.assertEqual(out.shape, (n_batches, dim_out), msg=f"Transformer Decoder Failed, out size {out.shape} should be ({n_batches}, {dim_out})")
 
     def test_transformer_decoder_large(self):
-        n_batches = 128
+        batch_size = 128
         max_length = 25
 
         dim_out = 768
 
-        x = torch.randint(low=0, high=1000, size=(n_batches, max_length))
-        model = TransformerL(dim_out=dim_out, batch_size=n_batches, vocab_size=1000, max_length=max_length)
+        x = torch.randint(low=0, high=1, size=(batch_size, max_length))
+        for q_idx in range(len(x)):
+            x[q_idx, :np.random.randint(low=1, high=max_length)] = -1.0
+        model = TransformerL(dim_out=dim_out, batch_size=batch_size, vocab_size=1000, max_length=max_length)
 
         start = time.time()
         out = model(x)
@@ -42,7 +46,7 @@ class BackbonesTextUnitTest(unittest.TestCase):
         message = f"Transformer Decoder Large forward time: {end - start} seconds"
         print(message)
 
-        self.assertEqual(out.shape, (n_batches, dim_out), msg=f"Transformer Decoder Failed, out size {out.shape} should be ({n_batches}, {dim_out})")
+        self.assertEqual(out.shape, (batch_size, dim_out), msg=f"Transformer Decoder Failed, out size {out.shape} should be ({n_batches}, {dim_out})")
 
 
 class BackbonesTextGPUUnitTest(unittest.TestCase):
@@ -54,7 +58,9 @@ class BackbonesTextGPUUnitTest(unittest.TestCase):
 
         dim_out = 512
 
-        x = torch.randint(low=0, high=1000, size=(n_batches, max_length)).to(device)
+        x = torch.randint(low=0, high=1, size=(n_batches, max_length)).to(device)
+        for q_idx in range(len(x)):
+            x[q_idx, :np.random.randint(low=1, high=max_length)] = -1.0
         model = TransformerB(dim_out=dim_out, batch_size=n_batches, vocab_size=1000, max_length=max_length).to(device)
 
         start = time.time()
@@ -74,7 +80,9 @@ class BackbonesTextGPUUnitTest(unittest.TestCase):
 
         dim_out = 768
 
-        x = torch.randint(low=0, high=1000, size=(n_batches, max_length)).to(device)
+        x = torch.randint(low=0, high=1, size=(n_batches, max_length)).to(device)
+        for q_idx in range(len(x)):
+            x[q_idx, :np.random.randint(low=1, high=max_length)] = -1.0
         model = TransformerL(dim_out=dim_out, batch_size=n_batches, vocab_size=1000, max_length=max_length).to(device)
 
         start = time.time()
