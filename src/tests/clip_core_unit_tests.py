@@ -13,7 +13,7 @@ from src.models.natural_language_processing.nlp_backbones import TransformerB
 class CLIPUnitTest(unittest.TestCase):
     def test_clip_module_with_ViTat224_in_cpu(self):
         # CLIP parameters
-        batch_size = 8
+        batch_size = 16
         embedding_dim = 512
         temperature = 0.07
 
@@ -56,7 +56,7 @@ class CLIPGPUUnitTest(unittest.TestCase):
         device = torch.device("cuda:0")
 
         # CLIP parameters
-        batch_size = 8
+        batch_size = 16
         embedding_dim = 512
         temperature = 0.07
 
