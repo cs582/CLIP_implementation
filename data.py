@@ -108,7 +108,7 @@ if __name__ == "__main__":
         image_query_pairs_with_files = []
         for idx, (url, q) in enumerate(zip(img_address, queries)):
             q = clean_sentence(q)
-            img_dir = url_image_save(url, images_dir, q)
+            img_dir = url_image_save(url, images_dir, idx)
             image_query_pairs_with_files.append([q, img_dir])
 
         # Save list to json file
