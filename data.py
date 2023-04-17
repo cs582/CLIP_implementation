@@ -18,6 +18,7 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument('-task', type=int, default=2, help='Set data to perform task 1 or 2. Read description for more info.')
 parser.add_argument('-cap', type=int, default=10, help='Cap the number of images to download.')
+parser.add_argument('-start', type=int, default=10, help='Starting image to save.')
 
 args = parser.parse_args()
 
@@ -104,19 +105,18 @@ if __name__ == "__main__":
         if not os.path.exists(images_dir):
             os.mkdir(images_dir)
 
-        # Save images addresses into a list
-        image_query_pairs_with_files = []
+        # Save images
         for idx, (url, q) in enumerate(zip(img_address, queries)):
+            if idx < starting_query:
+                continue
             try:
-                q = clean_sentence(q)
                 img_dir = url_image_save(url, images_dir, idx)
-                image_query_pairs_with_files.append([q, img_dir])
             except:
                 print(f"url: {url} failed.")
 
-        # Save list to json file
-        images_json_file = f"{pairs_folder}/image-queries-cap-at-{cap}.json"
-        with open(images_json_file, "w") as f:
-            json.dump(image_query_pairs_with_files, f)
-            print(f"images saves successfully as {images_json_file}")
+        # Save list to json file. Unnecessary, can access the same images by indexing.
+        # images_json_file = f"{pairs_folder}/image-queries-cap-at-{cap}.json"
+        # with open(images_json_file, "w") as f:
+        #     json.dump(image_query_pairs_with_files, f)
+        #     print(f"images saves successfully as {images_json_file}")
 
