@@ -107,9 +107,12 @@ if __name__ == "__main__":
         # Save images addresses into a list
         image_query_pairs_with_files = []
         for idx, (url, q) in enumerate(zip(img_address, queries)):
-            q = clean_sentence(q)
-            img_dir = url_image_save(url, images_dir, idx)
-            image_query_pairs_with_files.append([q, img_dir])
+            try:
+                q = clean_sentence(q)
+                img_dir = url_image_save(url, images_dir, idx)
+                image_query_pairs_with_files.append([q, img_dir])
+            except:
+                print(f"url: {url} failed.")
 
         # Save list to json file
         images_json_file = f"{pairs_folder}/image-queries-cap-at-{cap}.json"
