@@ -105,15 +105,15 @@ if __name__ == "__main__":
             os.mkdir(images_dir)
 
         # Save images addresses into a list
-        image_queries = []
-        for url, q in zip(img_address, queries):
-            q = clean_sentence(q).replace(" ", "_")
+        image_query_pairs_with_files = []
+        for idx, (url, q) in enumerate(zip(img_address, queries)):
+            q = clean_sentence(q)
             img_dir = url_image_save(url, images_dir, q)
-            image_queries.append(img_dir)
+            image_query_pairs_with_files.append([q, img_dir])
 
         # Save list to json file
         images_json_file = f"{pairs_folder}/image-queries-cap-at-{cap}.json"
         with open(images_json_file, "w") as f:
-            json.dump(image_queries, f)
+            json.dump(image_query_pairs_with_files, f)
             print(f"images saves successfully as {images_json_file}")
 
