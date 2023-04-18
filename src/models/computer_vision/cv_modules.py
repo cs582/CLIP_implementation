@@ -123,23 +123,24 @@ class BlurPool2d(nn.Module):
         super(BlurPool2d, self).__init__()
         self.n_channels = n_channels
 
-        kernel = torch.tensor([[1.]])
+        weights = torch.tensor([[1.]])
         if kernel_size == 2:
-            kernel = torch.tensor([[1., 1.]])
+            weights = torch.tensor([[1., 1.]])
         if kernel_size == 3:
-            kernel = torch.tensor([[1., 2., 1.]])
+            weights = torch.tensor([[1., 2., 1.]])
         if kernel_size == 4:
-            kernel = torch.tensor([[1., 3., 3., 1.]])
+            weights = torch.tensor([[1., 3., 3., 1.]])
         if kernel_size == 5:
-            kernel = torch.tensor([[1., 4., 6., 4., 1.]])
+            weights = torch.tensor([[1., 4., 6., 4., 1.]])
         if kernel_size == 6:
-            kernel = torch.tensor([[1., 5., 10., 10., 5., 1.]])
+            weights = torch.tensor([[1., 5., 10., 10., 5., 1.]])
         if kernel_size == 7:
-            kernel = torch.tensor([[1., 6., 15., 20., 15., 6., 1.]])
+            weights = torch.tensor([[1., 6., 15., 20., 15., 6., 1.]])
 
-        blur_kernel = torch.matmul(kernel, kernel.transpose(0,1)).expand(n_channels, 1, kernel_size, kernel_size)
+        filter = torch.matmul(weights, weights.transpose(0,1))
+        blur_kernel = filter.expand(n_channels, 1, kernel_size, kernel_size)
         # Setting as tensor buffer, not updated in backpropagation
-        self.register_buffer('blur_kernel', blur_kernel / 16)
+        self.register_buffer('blur_kernel', blur_kernel / filter.sum())
 
     def forward(self, x):
         # Pad the input tensor with zeros so that the tensor can be divided evenly into 3x3 regions
