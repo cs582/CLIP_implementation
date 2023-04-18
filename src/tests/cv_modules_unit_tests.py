@@ -8,7 +8,7 @@ from src.models.computer_vision.cv_modules import BlurPool2d, Convolution1, Conv
 class ResnetModulesUnitTest(unittest.TestCase):
     def test_blur_pooling_2d(self):
         x = torch.rand(64, 3, 56, 56)
-        model = BlurPool2d(n_channels=3)
+        model = BlurPool2d(n_channels=3, kernel_size=3)
 
         start = time.time()
         out = model(x)

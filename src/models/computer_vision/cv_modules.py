@@ -97,7 +97,7 @@ class ConvolutionBlock(nn.Module):
         self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=3, padding=1, stride=initial_stride)
         self.conv2 = nn.Conv2d(in_channels=out_channels, out_channels=out_channels, kernel_size=3, padding=1)
 
-        self.pool = BlurPool2d(n_channels=in_channels)
+        self.pool = BlurPool2d(n_channels=in_channels, kernel_size=3)
         if self.downsampling:
             self.convB = nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=1, padding=0)
 
@@ -119,11 +119,25 @@ class ConvolutionBlock(nn.Module):
 
 
 class BlurPool2d(nn.Module):
-    def __init__(self, n_channels):
+    def __init__(self, n_channels, kernel_size):
         super(BlurPool2d, self).__init__()
         self.n_channels = n_channels
 
-        blur_kernel = torch.tensor([ [1, 2, 1], [2, 4, 2], [1, 2, 1] ], dtype=torch.float32).expand(n_channels, 1, 3, 3)
+        kernel = torch.tensor([[1.]])
+        if kernel_size == 2:
+            kernel = torch.tensor([[1., 1.]])
+        if kernel_size == 3:
+            kernel = torch.tensor([[1., 2., 1.]])
+        if kernel_size == 4:
+            kernel = torch.tensor([[1., 3., 3., 1.]])
+        if kernel_size == 5:
+            kernel = torch.tensor([[1., 4., 6., 4., 1.]])
+        if kernel_size == 6:
+            kernel = torch.tensor([[1., 5., 10., 10., 5., 1.]])
+        if kernel_size == 7:
+            kernel = torch.tensor([[1., 6., 15., 20., 15., 6., 1.]])
+
+        blur_kernel = torch.matmul(kernel, kernel.transpose(0,1)).expand(n_channels, 1, kernel_size, kernel_size)
         # Setting as tensor buffer, not updated in backpropagation
         self.register_buffer('blur_kernel', blur_kernel / 16)
 
