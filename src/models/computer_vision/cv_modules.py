@@ -137,10 +137,10 @@ class BlurPool2d(nn.Module):
         if kernel_size == 7:
             weights = torch.tensor([[1., 6., 15., 20., 15., 6., 1.]])
 
-        filter = torch.matmul(weights, weights.transpose(0,1))
-        blur_kernel = filter.expand(n_channels, 1, kernel_size, kernel_size)
+        filt = torch.matmul(weights, weights.transpose(0,1))
+        blur_kernel = filt.expand(n_channels, 1, kernel_size, kernel_size)
         # Setting as tensor buffer, not updated in backpropagation
-        self.register_buffer('blur_kernel', blur_kernel / filter.sum())
+        self.register_buffer('blur_kernel', blur_kernel / filt.sum())
 
     def forward(self, x):
         # Pad the input tensor with zeros so that the tensor can be divided evenly into 3x3 regions
