@@ -14,10 +14,6 @@ class TransformerB(nn.Module):
         self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size, embedding_dim=dim_out)
         self.transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=8, dim_ff=2048)
 
-        # Setting as tensor buffer, not updated in backpropagation
-        mask = torch.zeros(batch_size, max_length, dtype=torch.bool)
-        self.register_buffer('mask', mask)
-
     def forward(self, x):
         b, _ = x.shape
         # Create masks
@@ -40,10 +36,6 @@ class TransformerL(nn.Module):
 
         self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size, embedding_dim=dim_out)
         self.transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=12, dim_ff=2048)
-
-        # Setting as tensor buffer, not updated in backpropagation
-        mask = torch.zeros(batch_size, max_length, dtype=torch.bool)
-        self.register_buffer('mask', mask)
 
     def forward(self, x):
         b, _ = x.shape
