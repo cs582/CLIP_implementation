@@ -22,7 +22,7 @@ def remove_special_characters(text):
 
 
 def initialize_vocabulary(body_text):
-    vocab = {'[EOS]':len(body_text), '[SOS]': len(body_text)}
+    vocab = {'[EOS]': len(body_text), '[SOS]': len(body_text)}
     for sentence in body_text:
         sentence = fix_sentence(sentence)
         for word in sentence.split():
@@ -119,7 +119,7 @@ class BytePairEncoderTokenizer:
             encoded_sentence.append(self.token_ids[symbol])
         return new_sentence, encoded_sentence
 
-    def tokenize(self, sentence, remove_special_char=True):
+    def tokenize(self, sentence, remove_special_char=True, max_length=74):
         # Tokenize a text using the trained BPE tokenizer
         if self.merges is None:
             raise ValueError("Tokenizer has not been trained yet!")
@@ -140,4 +140,5 @@ class BytePairEncoderTokenizer:
             w_out = ' '.join(char_out)
             sentence_words.append(w_out)
         _, tokens = self.encode(sentence_words)
+        tokens = tokens + [0]*(max_length - len(tokens))
         return tokens
