@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument('-task', type=int, default=2, help='Set data to perform task 1 or 2. Read description for more info.')
-parser.add_argument('-cap', type=int, default=10, help='Cap the number of images to download.')
+parser.add_argument('-cap', type=int, default=10, help='Cap the number of images to download. Set to -1 for full length.')
 parser.add_argument('-start', type=int, default=10, help='Starting image to save.')
 
 args = parser.parse_args()
@@ -93,6 +93,7 @@ if __name__ == "__main__":
         df = pd.read_csv(csv_filepath, index_col=0)
         df_row_len, df_col_len = df.shape
 
+        # Get cap limit
         cap = df_row_len if args.cap == -1 else args.cap
 
         # Extract queries and images addresses
