@@ -41,7 +41,7 @@ class TransformerL(nn.Module):
     def forward(self, x):
         b, _ = x.shape
         # Create masks
-        mask = torch.zeros(b, self.max_length, self.max_length)
+        mask = torch.zeros(b, self.max_length, self.max_length, dtype=torch.bool)
         for small_b in range(b):
             sentence_length = (x[small_b] != 0).sum()
             mask[small_b, :sentence_length, :sentence_length] = torch.triu(torch.ones(sentence_length, sentence_length), diagonal=1).T
