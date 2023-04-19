@@ -140,5 +140,11 @@ class BytePairEncoderTokenizer:
             w_out = ' '.join(char_out)
             sentence_words.append(w_out)
         _, tokens = self.encode(sentence_words)
-        tokens = tokens + [0]*(max_length - len(tokens))
+
+        # Cut the sentence size of tokens length is larger than max_size
+        # Else append zeros to reach max_size
+        if len(tokens) < max_length:
+            tokens = tokens + [0]*(max_length - len(tokens))
+        else:
+            tokens = tokens[:max_length]
         return tokens
