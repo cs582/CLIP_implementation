@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 import argparse
 
-from src.train import training
+from src.trainer import training
 from src.data.data_loader import ImageQueryDataset
 
 from src.utils import CLIPLoss

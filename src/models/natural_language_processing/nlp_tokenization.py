@@ -1,6 +1,11 @@
 # Senrich et. al 2016 & Gage et al. 1994
-import re, collections
+import os
+import re
+import json
+import pickle
+import collections
 
+from datetime import datetime as dt
 
 def fix_sentence(sentence):
     if sentence[-1] == '.':
@@ -75,7 +80,7 @@ class BytePairEncoderTokenizer:
         self.merges = None
 
     def train(self, body_text):
-        # Initialize vocab with [SOS], [EOS], and single characters
+        # Initialize vocab with [SOS] and [EOS] tokens and single characters
         self.vocab = initialize_vocabulary(body_text)
 
         # Initialize the corpus
@@ -148,3 +153,35 @@ class BytePairEncoderTokenizer:
         else:
             tokens = tokens[:max_length]
         return tokens
+
+    def save_tokenizer(self, filedir, test_mode=False):
+        assert self.token_ids is not None, f"token_ids not found, load vocabulary from json file or train the model."
+        assert self.vocab is not None, f"vocabulary not found, load vocabulary from json file or train the model."
+        assert self.merges is not None, f"merges not found, load vocabulary from json file or train the model."
+
+        if not os.path.exists(filedir):
+            os.mkdir(filedir)
+
+        filename = f"CLIP_text_tokenizer_{dt.strftime(dt.now(), '%Y%m%d_%H:%M:%S')}.pickle"
+
+        if test_mode:
+            filename = "TEST_" + filename
+
+        filepath = f"{filedir}/{filename}"
+
+        with open(filepath, "wb") as f:
+            tokenizer_info = {
+                "vocab": self.vocab,
+                "merges": self.merges,
+                "token_ids": self.token_ids
+            }
+            pickle.dump(tokenizer_info, f, protocol=pickle.HIGHEST_PROTOCOL)
+            print(f"Successfully saved tokenizer as {filename}!!!")
+
+    def load_tokenizer(self, filename):
+        with open(filename, "rb") as f:
+            tokenizer_info = pickle.load(f)
+            self.vocab = tokenizer_info["vocab"]
+            self.merges = tokenizer_info["merges"]
+            self.token_ids = tokenizer_info["token_ids"]
+            print(f"Successfully loaded tokenizer from {filename}!!!")
