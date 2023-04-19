@@ -48,7 +48,7 @@ class TransformerL(nn.Module):
         # Token embedder
         x = self.token_embedder(x)
         # Transformer backbone
-        x = self.transformer(x, self.mask)
+        x = self.transformer(x, mask)
         return x
 
 
