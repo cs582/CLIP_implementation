@@ -97,7 +97,7 @@ class BytePairEncoderTokenizer:
         # Create TokenIDs
         token_map = {}
         for idx, word in enumerate(self.vocab.keys()):
-            token_map[word] = idx
+            token_map[word] = idx+1
 
         self.token_ids = token_map
 
