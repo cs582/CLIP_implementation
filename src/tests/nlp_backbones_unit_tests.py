@@ -16,7 +16,7 @@ class BackbonesTextUnitTest(unittest.TestCase):
 
         x = torch.randint(low=0, high=1, size=(n_batches, max_length))
         for q_idx in range(len(x)):
-            x[q_idx, np.random.randint(low=1, high=max_length):] = -1.0
+            x[q_idx, np.random.randint(low=1, high=max_length):] = 0.0
         model = TransformerB(dim_out=dim_out, batch_size=n_batches, vocab_size=1000, max_length=max_length)
 
         start = time.time()
@@ -36,7 +36,7 @@ class BackbonesTextUnitTest(unittest.TestCase):
 
         x = torch.randint(low=0, high=1, size=(batch_size, max_length))
         for q_idx in range(len(x)):
-            x[q_idx, np.random.randint(low=1, high=max_length):] = -1.0
+            x[q_idx, np.random.randint(low=1, high=max_length):] = 0.0
         model = TransformerL(dim_out=dim_out, batch_size=batch_size, vocab_size=1000, max_length=max_length)
 
         start = time.time()
@@ -60,7 +60,7 @@ class BackbonesTextGPUUnitTest(unittest.TestCase):
 
         x = torch.randint(low=0, high=1, size=(n_batches, max_length)).to(device)
         for q_idx in range(len(x)):
-            x[q_idx, np.random.randint(low=1, high=max_length):] = -1.0
+            x[q_idx, np.random.randint(low=1, high=max_length):] = 0.0
         model = TransformerB(dim_out=dim_out, batch_size=n_batches, vocab_size=1000, max_length=max_length).to(device)
 
         start = time.time()
@@ -82,7 +82,7 @@ class BackbonesTextGPUUnitTest(unittest.TestCase):
 
         x = torch.randint(low=0, high=1, size=(n_batches, max_length)).to(device)
         for q_idx in range(len(x)):
-            x[q_idx, np.random.randint(low=1, high=max_length):] = -1.0
+            x[q_idx, np.random.randint(low=1, high=max_length):] = 0.0
         model = TransformerL(dim_out=dim_out, batch_size=n_batches, vocab_size=1000, max_length=max_length).to(device)
 
         start = time.time()
