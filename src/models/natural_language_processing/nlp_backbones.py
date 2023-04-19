@@ -19,10 +19,16 @@ class TransformerB(nn.Module):
         self.register_buffer('mask', mask)
 
     def forward(self, x):
+        b, _ = x.shape
+        # Create masks
+        mask = torch.zeros(b, self.max_length, self.max_length)
+        for small_b in range(b):
+            sentence_length = (x[small_b] != -1).sum()
+            mask[small_b, :sentence_length, :sentence_length] = torch.triu(torch.ones(sentence_length, sentence_length), diagonal=1).T
         # Token embedder
         x = self.token_embedder(x)
         # Transformer backbone
-        x = self.transformer(x)
+        x = self.transformer(x, mask)
         return x
 
 
@@ -78,8 +84,6 @@ class TextTransformer(nn.Module):
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x, mask): # b x l_max x dim_v
-        b, _, _ = x.shape
-
         # Token embedding and position embedding
         x = torch.matmul(x, self.tkn_embedding_encoder)     # b x l_max x dim_v -> b x l_max x dim_v
         x = torch.add(x, self.pos_encoder)                  # b x l_max x dim_v
@@ -88,7 +92,7 @@ class TextTransformer(nn.Module):
         for l in range(self.n_layers):
             x = self.transformers[l](x, mask)
 
-        # Get last [EOS] token % FIX WORDS
+        # Get last [EOS] token
         x = x[(mask.sum(dim=1)==0).cumsum(dim=1)==1]
         x = self.to_latent(x)
 
