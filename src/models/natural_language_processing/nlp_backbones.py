@@ -19,14 +19,10 @@ class TransformerB(nn.Module):
         self.register_buffer('mask', mask)
 
     def forward(self, x):
-        # Mask
-        self.mask = (x != -1)
-        # Set other tokens to zero
-        x[~self.mask] = 0.0
         # Token embedder
         x = self.token_embedder(x)
         # Transformer backbone
-        x = self.transformer(x, self.mask)
+        x = self.transformer(x)
         return x
 
 
@@ -44,10 +40,12 @@ class TransformerL(nn.Module):
         self.register_buffer('mask', mask)
 
     def forward(self, x):
-        # Mask
-        self.mask = (x != -1)
-        # Set other tokens to zero
-        x[~self.mask] = 0.0
+        b, _ = x.shape
+        # Create masks
+        mask = torch.zeros(b, self.max_length, self.max_length)
+        for small_b in range(b):
+            sentence_length = (x[small_b] != -1).sum()
+            mask[small_b, :sentence_length, :sentence_length] = torch.triu(torch.ones(sentence_length, sentence_length), diagonal=1).T
         # Token embedder
         x = self.token_embedder(x)
         # Transformer backbone
@@ -90,9 +88,8 @@ class TextTransformer(nn.Module):
         for l in range(self.n_layers):
             x = self.transformers[l](x, mask)
 
-        # Get last [EOS] token
-        last_word = torch.cat((mask, torch.zeros(b, 1, dtype=torch.bool, device=mask.device)), dim=1).diff(dim=1) # last word mask
-        x = x[last_word]
+        # Get last [EOS] token % FIX WORDS
+        x = x[(mask.sum(dim=1)==0).cumsum(dim=1)==1]
         x = self.to_latent(x)
 
         x = self.fc(x)
