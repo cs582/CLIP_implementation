@@ -11,7 +11,8 @@ class TransformerB(nn.Module):
         self.batch_size = batch_size
         self.max_length = max_length
 
-        self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size, embedding_dim=dim_out)
+        # The embedder takes size vocabulary_size+1 because it should ignore the dummy token 0
+        self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size+1, embedding_dim=dim_out)
         self.transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=8, dim_ff=2048)
 
     def forward(self, x):
@@ -19,7 +20,7 @@ class TransformerB(nn.Module):
         # Create masks
         mask = torch.zeros(b, self.max_length, self.max_length)
         for small_b in range(b):
-            sentence_length = (x[small_b] != -1).sum()
+            sentence_length = (x[small_b] != 0).sum()
             mask[small_b, :sentence_length, :sentence_length] = torch.triu(torch.ones(sentence_length, sentence_length), diagonal=1).T
         # Token embedder
         x = self.token_embedder(x)
@@ -42,7 +43,7 @@ class TransformerL(nn.Module):
         # Create masks
         mask = torch.zeros(b, self.max_length, self.max_length)
         for small_b in range(b):
-            sentence_length = (x[small_b] != -1).sum()
+            sentence_length = (x[small_b] != 0).sum()
             mask[small_b, :sentence_length, :sentence_length] = torch.triu(torch.ones(sentence_length, sentence_length), diagonal=1).T
         # Token embedder
         x = self.token_embedder(x)
