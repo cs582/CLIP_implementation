@@ -107,16 +107,10 @@ if __name__ == "__main__":
 
         # Save images
         for idx, (url, q) in enumerate(zip(img_address, queries)):
-            if idx < starting_query:
+            if idx < args.start:
                 continue
             try:
                 img_dir = url_image_save(url, images_dir, idx)
             except:
                 print(f"url: {url} failed.")
-
-        # Save list to json file. Unnecessary, can access the same images by indexing.
-        # images_json_file = f"{pairs_folder}/image-queries-cap-at-{cap}.json"
-        # with open(images_json_file, "w") as f:
-        #     json.dump(image_query_pairs_with_files, f)
-        #     print(f"images saves successfully as {images_json_file}")
 
