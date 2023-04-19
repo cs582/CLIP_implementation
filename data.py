@@ -6,6 +6,9 @@ import argparse
 import pandas as pd
 
 from urllib.request import urlopen
+
+from src.models.natural_language_processing.nlp_tokenization import BytePairEncoderTokenizer
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -13,10 +16,11 @@ parser = argparse.ArgumentParser(
     prog='CLIP Data.',
     description='CLIP data preparation.',
     epilog='The data preparation includes (1) reading the json files and converting them into a single csv file'\
-    '(2) downloading all images from the csv file and labeling them to a local directory file'
+    '(2) downloading all images from the csv file and labeling them to a local directory file'\
+    '(3) training the tokenizer using the queries from task 1'
 )
 
-parser.add_argument('-task', type=int, default=2, help='Set data to perform task 1 or 2. Read description for more info.')
+parser.add_argument('-task', type=int, default=2, help='Set data to perform task 1, 2, or 2. Read description for more info.')
 parser.add_argument('-cap', type=int, default=10, help='Cap the number of images to download. Set to -1 for full length.')
 parser.add_argument('-start', type=int, default=10, help='Starting image to save.')
 
@@ -57,6 +61,7 @@ def clean_sentence(sentence):
 if __name__ == "__main__":
 
     pairs_folder = "src/data/image_gen/WQ-dataset"
+    tokenizer_folder = "src/data/nlp/tokenizers"
 
     if args.task == 1:
         data = None
@@ -115,4 +120,26 @@ if __name__ == "__main__":
                 img_dir = url_image_save(url, images_dir, idx)
             except:
                 print(f"url: {url} failed.")
+
+    if args.task == 3:
+        # Get csv file address
+        csv_filepath = f"{pairs_folder}/WQI_mini.csv"
+
+        # Read csv file
+        print(f"reading {csv_filepath}")
+        df = pd.read_csv(csv_filepath, index_col=0)
+
+        # Get all queries
+        body_text = df['query'].tolist()
+
+        # Initialize tokenizer
+        tokenizer = BytePairEncoderTokenizer(vocab_size=43000, min_freq=2)
+
+        # Training tokenizer
+        print(f"training tokenizer over {len(body_text)} queries")
+        tokenizer.train(body_text)
+
+        # Saving tokenizer vocabulary, merges, and token_ids
+        tokenizer.save_tokenizer(tokenizer_folder)
+
 
