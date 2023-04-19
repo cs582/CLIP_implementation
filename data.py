@@ -91,8 +91,9 @@ if __name__ == "__main__":
         # Read csv file
         print(f"reading {csv_filepath}")
         df = pd.read_csv(csv_filepath, index_col=0)
+        df_row_len, df_col_len = df.shape
 
-        cap = args.cap
+        cap = df_row_len if args.cap == -1 else args.cap
 
         # Extract queries and images addresses
         queries, img_address = df['query'].tolist()[:cap], df['image'].tolist()[:cap]
