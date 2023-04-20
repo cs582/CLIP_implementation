@@ -119,11 +119,9 @@ class CLIPGPUUnitTest(unittest.TestCase):
 
         # Using Mixed-precision
         clip_model, optimizer = apex.amp.initialize(clip_model, optimizer, opt_level='O1')
-        print("clip device", clip_model.get_device())
 
         # Initialize loss function
         loss_function = CLIPLoss(batch_size).to(device)
-        print("loss", loss_function.get_device())
 
         # Testing images
         resolution = 224
@@ -142,6 +140,8 @@ class CLIPGPUUnitTest(unittest.TestCase):
 
         # Get cosine similarities
         logits = clip_model(imgs, tokenized_words)
+
+        print("logits device", logits.get_device())
 
         # Compute loss and backpropagation
         loss = loss_function(logits)
