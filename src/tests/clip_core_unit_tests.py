@@ -4,6 +4,8 @@ import time
 import apex
 import torch.nn as nn
 
+from torch.cuda.amp import autocast, GradScaler
+
 import numpy as np
 
 from src.models.CLIP_model import CLIPModule
@@ -97,7 +99,7 @@ class CLIPGPUUnitTest(unittest.TestCase):
         device = torch.device("cuda:0")
 
         # CLIP parameters
-        batch_size = 32
+        batch_size = 16
         embedding_dim = 512
         temperature = 0.07
 
@@ -120,6 +122,9 @@ class CLIPGPUUnitTest(unittest.TestCase):
         clip_model = CLIPModule(image_encoder, text_encoder, dim_img, dim_text, embedding_dim, temperature).to(device)
         optimizer = torch.optim.Adam(clip_model.parameters(), lr=2e-5)
 
+        # Define the scaler for mixed precision training
+        scaler = GradScaler()
+
         # Initialize loss function
         loss_function = CLIPLoss(batch_size).to(device)
 
@@ -136,12 +141,16 @@ class CLIPGPUUnitTest(unittest.TestCase):
         # Optim step
         optimizer.zero_grad()
 
-        # Get cosine similarities
-        logits = clip_model(imgs, tokenized_words)
+        with autocast():
+            # Get cosine similarities
+            logits = clip_model(imgs, tokenized_words)
+            # Compute loss and backpropagation
+            loss = loss_function(logits)
 
-        # Compute loss and backpropagation
-        loss = loss_function(logits)
-        loss.backward()
+        # Scale the loss and perform the backward pass with autocasting
+        scaler.scale(loss).backward()
+        scaler.step(optimizer)
+        scaler.update()
 
         # Take step
         optimizer.step()
