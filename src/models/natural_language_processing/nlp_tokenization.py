@@ -92,7 +92,7 @@ class BytePairEncoderTokenizer:
 
         # Get the merges
         self.merges = {}
-        pbar = tqdm.tqdm(desc="while loop", total=self.vocab_size)
+        pbar = tqdm.tqdm(desc="Getting vocabulary", total=self.vocab_size)
         while len(self.vocab.keys()) < self.vocab_size:
             pairs = get_status(corpus)
             bp = max(pairs, key=pairs.get)
