@@ -1,48 +1,78 @@
-import json
+import os
 import cv2
+import pandas as pd
+import torch.utils.data
 from torch.utils.data import Dataset
 from torchvision.transforms import transforms
 
 
-def resize_image(image, x, y):
-    height, width = image.shape[:2]
-    ratio = max(x/width, y/height)
-    new_width = int(width * ratio)
-    new_height = int(height * ratio)
-    resized_image = cv2.resize(image, (new_width, new_height), interpolation=cv2.INTER_LINEAR)
+def resize_image(image, h, w):
+    resized_image = cv2.resize(image, (w, h), interpolation=cv2.INTER_LINEAR)
     return resized_image
 
 
 class ImageQueryDataset(Dataset):
-    def __init__(self, data_dir, filename, img_res=(224, 224)):
-        self.img_res = img_res
-        self.data_dir = data_dir
+    def __init__(self, image_dir, csv_filepath, tokenizer, img_resolution=(224, 224)):
+
+        # Initial parameters
         self.transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.RandomCrop(img_res),
+            transforms.RandomCrop(img_resolution),
         ])
+        self.img_resolution = img_resolution
+        self.tokenizer = tokenizer
 
-        # Get a list of image file paths
-        with open(f"{data_dir}/{filename}", 'r') as f:
-            self.image_files = json.load(f)
+        # ->> IMAGE TRANSFORMATIONS <<- #
+        images_names = [x for x in os.listdir(csv_filepath)]
+        all_queries = pd.read_csv(csv_filepath, index_col=0, usecols=['query'])
+        imgs = [os.path.join(image_dir, img) for img in images_names]
+
+        # ->> TEXT TRANSFORMATIONS <<- #
+        queries_indexes = all_queries.index[[int(x[:-4]) for x in images_names]]
+        queries = all_queries[queries_indexes].tolist()
+
+        # Check that queries have the same size as images
+        n_queries, n_images = len(queries), len(imgs)
+        assert n_queries == n_images, f"Exception. Queries and Images do not correspond in length. Got {n_queries} queries and {n_images} images."
+
+        self.pairs = [[q, im] for q, im in zip(queries, imgs)]
 
     def __len__(self):
-        return len(self.image_files)
+        return len(self.pairs)
 
     def __getitem__(self, index):
-        # Load the image at the given index
-        image_path = self.image_files[index]
-        image_full_path = f"{self.data_dir}/images/{image_path}"
-        image = cv2.imread(image_full_path)
+        # Get the current query
+        query, image_path = self.pairs[index]
 
-        if image.shape[0] < self.img_res[0] or image.shape[1] < self.img_res[1]:
-            image = resize_image(image, *self.img_res)
+        # Load image with OpenCV
+        img = cv2.imread(image_path)[:, :, ::-1]
+
+        # Get image original dimensions
+        img_h, img_w, channels = img.shape
+
+        # Get current image resolution
+        min_h, min_w = self.img_resolution
+
+        # Placeholder for new image dimensions
+        new_img_h, new_img_w = None, None
+
+        # If the image is too big or too small, resize the smallest side to 1.2 of the minimum size
+        if img_h > min_h * 1.5 or img_w > min_w * 1.5 or img_h < min_h or img_w < min_w:
+            if img_h > img_w:
+                gamma = (min_w * 1.2) / img_w
+                new_img_h, new_img_w = min_h * gamma, min_w
+            else:
+                gamma = (min_h * 1.2) / img_h
+                new_img_h, new_img_w = min_h, min_w * gamma
+
+        # Resize image
+        image = resize_image(img, new_img_h, new_img_w)
 
         # Apply any data transformations if specified
         if self.transform is not None:
             image = self.transform(image)
 
-        # Get the label from the image file name
-        label = image_path.replace('.jpg', '').replace('_', ' ')
+        # Tokenize query
+        token = torch.tensor(self.tokenizer.tokenize(query))
 
-        return image, label
+        return image, token
