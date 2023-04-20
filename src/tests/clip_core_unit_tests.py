@@ -121,7 +121,7 @@ class CLIPGPUUnitTest(unittest.TestCase):
         clip_model, optimizer = apex.amp.initialize(clip_model, optimizer, opt_level='O1')
 
         # Initialize loss function
-        loss_function = CLIPLoss(batch_size)
+        loss_function = CLIPLoss(batch_size).to(device)
 
         # Testing images
         resolution = 224
