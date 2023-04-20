@@ -119,9 +119,11 @@ class CLIPGPUUnitTest(unittest.TestCase):
 
         # Using Mixed-precision
         clip_model, optimizer = apex.amp.initialize(clip_model, optimizer, opt_level='O1')
+        print("clip device", clip_model.get_device())
 
         # Initialize loss function
         loss_function = CLIPLoss(batch_size).to(device)
+        print("loss", loss_function.get_device())
 
         # Testing images
         resolution = 224
@@ -129,6 +131,8 @@ class CLIPGPUUnitTest(unittest.TestCase):
         tokenized_words = torch.randint(low=1, high=vocab_size, size=(batch_size, max_length)).to(device)
         for q_idx in range(len(tokenized_words)):
             tokenized_words[q_idx, np.random.randint(low=1, high=max_length):] = 0.0
+
+        print("img device", imgs.get_device(), "token device", tokenized_words.get_device())
 
         # Training process
         start_time = time.time()
