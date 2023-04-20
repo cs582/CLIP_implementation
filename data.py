@@ -23,6 +23,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('-task', type=int, default=2, help='Set data to perform task 1, 2, or 3. Read description for more info.')
 parser.add_argument('-cap', type=int, default=10, help='Cap the number of images to download. Set to -1 for full length.')
 parser.add_argument('-start', type=int, default=10, help='Starting image to save.')
+parser.add_argument('-vocab_size', type=int, default=10000, help='Vocabulary size for task 3: training tokenizer.')
 
 args = parser.parse_args()
 
@@ -133,7 +134,7 @@ if __name__ == "__main__":
         body_text = df['query'].tolist()
 
         # Initialize tokenizer
-        tokenizer = BytePairEncoderTokenizer(vocab_size=43000, min_freq=2)
+        tokenizer = BytePairEncoderTokenizer(vocab_size=args.vocab_size, min_freq=2)
 
         # Training tokenizer
         print(f"training tokenizer over {len(body_text)} queries")

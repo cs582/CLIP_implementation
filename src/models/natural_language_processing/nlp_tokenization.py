@@ -85,15 +85,14 @@ class BytePairEncoderTokenizer:
     def train(self, body_text):
         # Initialize vocab with [SOS] and [EOS] tokens and single characters
         self.vocab = initialize_vocabulary(body_text)
+        self.merges = {}
 
         # Initialize the corpus
-        print("preparing corpus ...")
         corpus = prepare_corpus(body_text)
 
         # Get the merges
-        self.merges = {}
         pbar = tqdm.tqdm(desc="Getting vocabulary", total=self.vocab_size)
-        while len(self.vocab.keys()) < self.vocab_size:
+        while len(self.vocab) < self.vocab_size:
             pairs = get_status(corpus)
             bp = max(pairs, key=pairs.get)
             new_char = ''.join(bp)
@@ -104,7 +103,7 @@ class BytePairEncoderTokenizer:
             self.vocab[new_char] = pairs[bp]
             self.merges[bp] = new_char
 
-            pbar.update(len(self.vocab.keys()))
+            pbar.update(len(self.vocab))
 
         # Create TokenIDs
         token_map = {}
