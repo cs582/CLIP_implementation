@@ -109,6 +109,9 @@ class CLIPGPUUnitTest(unittest.TestCase):
         # Image Encoder parameters
         dim_img = 768
 
+        # Enable cublasLt for mixed-precision training
+        torch.backends.cudnn.enabled = True
+
         # Initialize encoders
         image_encoder = ViTat224(dim_out=dim_img)
         text_encoder = TransformerB(dim_out=dim_text, batch_size=batch_size, vocab_size=vocab_size, max_length=max_length)
@@ -116,9 +119,6 @@ class CLIPGPUUnitTest(unittest.TestCase):
         # Initialize CLIP
         clip_model = CLIPModule(image_encoder, text_encoder, dim_img, dim_text, embedding_dim, temperature).to(device)
         optimizer = torch.optim.Adam(clip_model.parameters(), lr=2e-5)
-
-        # Using Mixed-precision
-        clip_model, optimizer = apex.amp.initialize(clip_model, optimizer, opt_level='O1')
 
         # Initialize loss function
         loss_function = CLIPLoss(batch_size).to(device)
@@ -130,8 +130,6 @@ class CLIPGPUUnitTest(unittest.TestCase):
         for q_idx in range(len(tokenized_words)):
             tokenized_words[q_idx, np.random.randint(low=1, high=max_length):] = 0.0
 
-        print("img device", imgs.get_device(), "token device", tokenized_words.get_device())
-
         # Training process
         start_time = time.time()
 
@@ -140,8 +138,6 @@ class CLIPGPUUnitTest(unittest.TestCase):
 
         # Get cosine similarities
         logits = clip_model(imgs, tokenized_words)
-
-        print("logits device", logits.get_device())
 
         # Compute loss and backpropagation
         loss = loss_function(logits)
