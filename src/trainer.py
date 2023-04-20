@@ -21,4 +21,3 @@ def training(training_dataset, clip_model, loss_function, optimizer, epochs, dev
 
             # Optimization
             optimizer.step()
-
