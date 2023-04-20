@@ -97,7 +97,7 @@ class CLIPGPUUnitTest(unittest.TestCase):
         device = torch.device("cuda:0")
 
         # CLIP parameters
-        batch_size = 8
+        batch_size = 16
         embedding_dim = 512
         temperature = 0.07
 
