@@ -7,6 +7,7 @@ import collections
 
 from datetime import datetime as dt
 
+
 def fix_sentence(sentence):
     if sentence[-1] == '.':
         return sentence[:-1]
@@ -44,6 +45,7 @@ def sentence_to_symbol_format(sentence):
         w_out = [char for char in word] + ['</w>']
         words_out.append(' '.join(w_out))
     return words_out
+
 
 def prepare_corpus(body_text):
     corpus = []
