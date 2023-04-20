@@ -23,6 +23,7 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument('-heavy', type=bool, default=False, help='Include heavy tasks such as backbones in the unit test.')
 parser.add_argument('-use_gpu', type=bool, default=False, help='Test backbones on GPU, heavy must be set to True.')
+parser.add_argument('-test_n', type=int, default=0, help='0: All tests. 1: Modules and Backbones. 2: CLIP only.')
 
 
 args = parser.parse_args()
@@ -56,19 +57,30 @@ if __name__ == '__main__':
     tokenization_test = unittest.TestLoader().loadTestsFromTestCase(TokenizationUnitTest)
 
     # List all tests to run
-    tests_to_run = [utils_test, tokenization_test, rn_modules_test, radford_test, image_scrapping_test]
+    tests_to_run = []
+    if args.test_n in [0, 1]:
+        tests_to_run = [utils_test, tokenization_test, rn_modules_test, radford_test, image_scrapping_test]
 
     if args.heavy:
-        print("Stacked Backbones and CLIP Tests to TestSuite...")
-        tests_to_run.append(backbones_cv_test)
-        tests_to_run.append(backbones_nlp_test)
-        tests_to_run.append(clip_unit_test)
+        if args.test_n in [0, 1]:
+            print("Stacked Backbones and CLIP Tests to TestSuite...")
+            tests_to_run.append(backbones_cv_test)
+            tests_to_run.append(backbones_nlp_test)
+        if args.test_n in [0, 2]:
+            print("Stacked CLIP Tests to TestSuite...")
+            tests_to_run.append(clip_unit_test)
 
         if args.use_gpu:
-            print("Stacked Backbones Tests with GPU to TestSuite...")
-            tests_to_run.append(backbones_cv_test_gpu)
-            tests_to_run.append(backbones_nlp_test_gpu)
-            tests_to_run.append(clip_unit_test_gpu)
+            if args.test_n in [0, 1]:
+                print("Stacked Backbones with GPU to TestSuite...")
+                tests_to_run.append(backbones_cv_test_gpu)
+                tests_to_run.append(backbones_nlp_test_gpu)
+            if args.test_n in [0, 2]:
+                print("Stacked CLIP Tests with GPU to TestSuite...")
+                tests_to_run.append(clip_unit_test_gpu)
+
+    if len(tests_to_run)==0:
+        raise ValueError("Choose more than one test to perform.")
 
     # Test suite that includes all the tests
     suite = unittest.TestSuite(tests_to_run)
