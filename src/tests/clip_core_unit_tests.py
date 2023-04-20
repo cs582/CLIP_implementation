@@ -150,6 +150,6 @@ class CLIPGPUUnitTest(unittest.TestCase):
         end_time = time.time()
 
         # Assert case
-        self.assertEqual(logits.shape, (batch_size, batch_size))
-        self.assertNotEqual(loss.item(), torch.nan)
+        self.assertEqual(logits.shape, (batch_size, batch_size), msg=f"logits shape {logits.shape} doesn't match expected size ({batch_size}, {batch_size})")
+        self.assertNotEqual(loss.item(), torch.nan, msg=f"Loss item is {loss.item()}")
         print(f"CLIP [CUDA: {torch.cuda.get_device_name(0)}] backward finished in {end_time-start_time} seconds with a batch of {batch_size}.")
