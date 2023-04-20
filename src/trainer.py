@@ -1,7 +1,9 @@
+from tqdm import tqdm
+
+
 def training(training_dataset, clip_model, loss_function, optimizer, epochs, device):
     for epoch in range(0, epochs):
-        print(f"Current epoch {epoch}...")
-        for images, queries in training_dataset:
+        for images, queries in tqdm(training_dataset, desc=f"epoch {epoch}"):
             images.to(device)
             queries.to(device)
 
