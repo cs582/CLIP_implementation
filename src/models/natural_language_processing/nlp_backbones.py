@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torch.utils.checkpoint import checkpoint
 from src.models.natural_language_processing.nlp_modules import TransformerRadford
 
 from src.models.natural_language_processing.nlp_token_embedding import TokenEmbedder
@@ -87,7 +88,7 @@ class TextTransformer(nn.Module):
 
         # Transformer layers
         for l in range(self.n_layers):
-            x = self.transformers[l](x, mask)
+            x = checkpoint(self.transformers[l], x, mask)
 
         # Get last [EOS] token
         x = x[(mask.sum(dim=1)==0).cumsum(dim=1)==1]
