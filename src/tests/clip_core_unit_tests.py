@@ -73,7 +73,7 @@ class CLIPGPUUnitTest(unittest.TestCase):
         text_encoder = TransformerB(dim_out=dim_text, batch_size=batch_size, vocab_size=vocab_size, max_length=max_length)
 
         # Initialize CLIP
-        clip_model = CLIPModule(image_encoder, text_encoder, dim_img, dim_text, embedding_dim, temperature)
+        clip_model = CLIPModule(image_encoder, text_encoder, dim_img, dim_text, embedding_dim, temperature).to(device)
 
         # Testing images
         resolution = 224
