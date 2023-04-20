@@ -50,7 +50,7 @@ def sentence_to_symbol_format(sentence):
 
 def prepare_corpus(body_text):
     corpus = []
-    for sentence in body_text:
+    for sentence in tqdm.tqdm(body_text):
         corpus += sentence_to_symbol_format(sentence)
     return corpus
 
@@ -87,6 +87,7 @@ class BytePairEncoderTokenizer:
         self.vocab = initialize_vocabulary(body_text)
 
         # Initialize the corpus
+        print("preparing corpus ...")
         corpus = prepare_corpus(body_text)
 
         # Get the merges
