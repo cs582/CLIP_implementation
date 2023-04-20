@@ -143,7 +143,7 @@ class CLIPGPUUnitTest(unittest.TestCase):
 
         with autocast():
             # Get cosine similarities
-            logits = clip_model(imgs, tokenized_words)
+            logits = clip_model(imgs.half(), tokenized_words.half())
             # Compute loss and backpropagation
             loss = loss_function(logits)
 
