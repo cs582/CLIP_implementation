@@ -13,7 +13,7 @@ class CLIPLoss(nn.Module):
         text_loss = nn.CrossEntropyLoss()
 
         # Get labels
-        labels = torch.arange(0, self.logits_length)
+        labels = torch.arange(0, self.logits_length).to(logits.get_device())
 
         # Loss function
         loss_images = images_loss(logits, labels)
