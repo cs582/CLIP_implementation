@@ -2,6 +2,7 @@
 import os
 import re
 import json
+import tqdm
 import pickle
 import collections
 
@@ -90,6 +91,7 @@ class BytePairEncoderTokenizer:
 
         # Get the merges
         self.merges = {}
+        pbar = tqdm.tqdm(desc="while loop", total=self.vocab_size)
         while len(self.vocab.keys()) < self.vocab_size:
             pairs = get_status(corpus)
             bp = max(pairs, key=pairs.get)
@@ -100,6 +102,8 @@ class BytePairEncoderTokenizer:
             corpus = update_corpus(bp, corpus)
             self.vocab[new_char] = pairs[bp]
             self.merges[bp] = new_char
+
+            pbar.update(len(self.vocab.keys()))
 
         # Create TokenIDs
         token_map = {}

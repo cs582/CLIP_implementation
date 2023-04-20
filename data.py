@@ -20,7 +20,7 @@ parser = argparse.ArgumentParser(
     '(3) training the tokenizer using the queries from task 1'
 )
 
-parser.add_argument('-task', type=int, default=2, help='Set data to perform task 1, 2, or 2. Read description for more info.')
+parser.add_argument('-task', type=int, default=2, help='Set data to perform task 1, 2, or 3. Read description for more info.')
 parser.add_argument('-cap', type=int, default=10, help='Cap the number of images to download. Set to -1 for full length.')
 parser.add_argument('-start', type=int, default=10, help='Starting image to save.')
 
