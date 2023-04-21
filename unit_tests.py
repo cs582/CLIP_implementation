@@ -60,7 +60,7 @@ if __name__ == '__main__':
     # List all tests to run
     tests_to_run = []
     if args.test_n in [0, 1]:
-        tests_to_run = [utils_test, tokenization_test, rn_modules_test, radford_test, image_scrapping_test]
+        tests_to_run += [utils_test, tokenization_test, rn_modules_test, radford_test, image_scrapping_test]
 
     if args.heavy:
         if args.cpu and (args.test_n in [0, 1]):
