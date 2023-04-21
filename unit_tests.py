@@ -63,11 +63,11 @@ if __name__ == '__main__':
         tests_to_run = [utils_test, tokenization_test, rn_modules_test, radford_test, image_scrapping_test]
 
     if args.heavy:
-        if args.cpu and args.test_n in [0, 1]:
+        if args.cpu and (args.test_n in [0, 1]):
             print("Stacked Backbones and CLIP Tests to TestSuite...")
             tests_to_run.append(backbones_cv_test)
             tests_to_run.append(backbones_nlp_test)
-        if args.cpu and args.test_n in [0, 2]:
+        if args.cpu and (args.test_n in [0, 2]):
             print("Stacked CLIP Tests to TestSuite...")
             tests_to_run.append(clip_unit_test)
 
