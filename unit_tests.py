@@ -21,11 +21,10 @@ parser = argparse.ArgumentParser(
     epilog='Unit Tests used to speed up the development of CLIP and ease error traceback before main training.'
 )
 
-parser.add_argument('-heavy', type=bool, default=False, help='Include heavy tasks such as backbones in the unit test.')
-parser.add_argument('-cpu', type=bool, default=False, help='Test backbones on CPU, heavy must be set to True.')
-parser.add_argument('-gpu', type=bool, default=False, help='Test backbones on GPU, heavy must be set to True.')
-parser.add_argument('-test_n', type=int, default=0, help='0: All tests. 1: Modules and Backbones. 2: CLIP only.')
 
+parser.add_argument('-cpu_heavy', type=bool, default=False, help='Test backbones on CPU, heavy must be set to True.')
+parser.add_argument('-gpu_heavy', type=bool, default=False, help='Test backbones on GPU, heavy must be set to True.')
+parser.add_argument('-test_n', type=int, default=0, help='0: All tests. 1: Modules and Backbones. 2: CLIP only.')
 
 args = parser.parse_args()
 
