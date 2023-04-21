@@ -1,7 +1,6 @@
 import unittest
 import torch
 import time
-import apex
 import torch.nn as nn
 
 from torch.cuda.amp import autocast, GradScaler

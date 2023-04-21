@@ -1,9 +1,10 @@
 import torch
-from torch.utils.data import DataLoader
-import torch.nn as nn
 import argparse
 
+import torch.nn as nn
+
 from src.trainer import training
+from torch.utils.data import DataLoader
 from src.data.data_loader import ImageQueryDataset
 
 from src.utils import CLIPLoss
@@ -79,14 +80,17 @@ if __name__ == "__main__":
     if args.text_encoder == "Large":
         text_model = TransformerL(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=76)
 
-    # Call CLIP core model
-    clip_model = CLIPModule(image_encoder=image_model, text_encoder=text_model, dim_img=args.image_dim_out, dim_text=args.text_dim_out, embedding_dim=args.embedding_dim, temperature=0.07)
-
     # Set CLIP Loss function
     loss_func = CLIPLoss(logits_length=multimodal_embedding_dim)
 
+    # Call CLIP core model
+    clip_model = CLIPModule(image_encoder=image_model, text_encoder=text_model, dim_img=args.image_dim_out, dim_text=args.text_dim_out, embedding_dim=args.embedding_dim, temperature=0.07)
+
     # Set Adam Optimizer
     optimizer = torch.optim.Adam(clip_model.parameters(), lr=args.lr, eps=args.epsilon, betas=(args.beta_1, args.beta_2))
+
+    # Use Mixed-precision
+    clip_model, optimizer = apex.amp.initialize(clip_model, optimizer, opt_level='O1')
 
     # Load training dataset
     training_dataset = ImageQueryDataset(data_dir="src/data/image_gen/WQ-dataset", filename="image-queries-cap-at-10000.json")
