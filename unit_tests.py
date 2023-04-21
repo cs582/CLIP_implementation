@@ -62,23 +62,23 @@ if __name__ == '__main__':
     if args.test_n in [0, 1]:
         tests_to_run += [utils_test, tokenization_test, rn_modules_test, radford_test, image_scrapping_test]
 
-    if args.heavy:
-        if args.cpu and (args.test_n in [0, 1]):
+    if args.cpu_heavy:
+        if args.test_n in [0, 1]:
             print("Stacked Backbones and CLIP Tests to TestSuite...")
             tests_to_run.append(backbones_cv_test)
             tests_to_run.append(backbones_nlp_test)
-        if args.cpu and (args.test_n in [0, 2]):
+        if args.test_n in [0, 2]:
             print("Stacked CLIP Tests to TestSuite...")
             tests_to_run.append(clip_unit_test)
 
-        if args.gpu:
-            if args.test_n in [0, 1]:
-                print("Stacked Backbones with GPU to TestSuite...")
-                tests_to_run.append(backbones_cv_test_gpu)
-                tests_to_run.append(backbones_nlp_test_gpu)
-            if args.test_n in [0, 2]:
-                print("Stacked CLIP Tests with GPU to TestSuite...")
-                tests_to_run.append(clip_unit_test_gpu)
+    if args.gpu_heavy:
+        if args.test_n in [0, 1]:
+            print("Stacked Backbones with GPU to TestSuite...")
+            tests_to_run.append(backbones_cv_test_gpu)
+            tests_to_run.append(backbones_nlp_test_gpu)
+        if args.test_n in [0, 2]:
+            print("Stacked CLIP Tests with GPU to TestSuite...")
+            tests_to_run.append(clip_unit_test_gpu)
 
     if len(tests_to_run)==0:
         raise ValueError("Choose more than one test to perform.")
