@@ -53,58 +53,58 @@ def prepare_corpus(body_text):
     return corpus
 
 
-def get_status(corpus):
-    pairs = collections.defaultdict(int)
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = []
-        for word in corpus:
-            symbols = word.split()
-            for i in range(len(symbols)-2):
-                future = executor.submit(add_pair, pairs, symbols[i], symbols[i+1])
-                futures.append(future)
-        concurrent.futures.wait(futures)
-    return pairs
-
-
-def add_pair(pairs, symbol1, symbol2):
-    pairs[symbol1, symbol2] += 1
-
-
-def update_corpus(pair, corpus):
-    new_corpus = [None] * len(corpus)
-    bigram = re.escape(' '.join(pair))
-    p = re.compile(r'(?<!\S)' + bigram + r'(?!\S)')
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = []
-        for i, word in enumerate(corpus):
-            future = executor.submit(update_word, p, pair, word)
-            futures.append(future)
-        concurrent.futures.wait(futures)
-        for i, future in enumerate(futures):
-            new_corpus[i] = future.result()
-    return new_corpus
-
-
-def update_word(p, pair, word):
-    return p.sub(''.join(pair), word)
-
 # def get_status(corpus):
 #     pairs = collections.defaultdict(int)
-#     for word in corpus:
-#         symbols = word.split()
-#         for i in range(len(symbols)-2):
-#             pairs[symbols[i], symbols[i+1]] = pairs.get((symbols[i], symbols[i+1]), 0) + 1
+#     with concurrent.futures.ThreadPoolExecutor() as executor:
+#         futures = []
+#         for word in corpus:
+#             symbols = word.split()
+#             for i in range(len(symbols)-2):
+#                 future = executor.submit(add_pair, pairs, symbols[i], symbols[i+1])
+#                 futures.append(future)
+#         concurrent.futures.wait(futures)
 #     return pairs
+#
+#
+# def add_pair(pairs, symbol1, symbol2):
+#     pairs[symbol1, symbol2] += 1
 #
 #
 # def update_corpus(pair, corpus):
 #     new_corpus = [None] * len(corpus)
 #     bigram = re.escape(' '.join(pair))
 #     p = re.compile(r'(?<!\S)' + bigram + r'(?!\S)')
-#     for i, word in enumerate(corpus):
-#         w_out = p.sub(''.join(pair), word)
-#         new_corpus[i] = w_out
+#     with concurrent.futures.ThreadPoolExecutor() as executor:
+#         futures = []
+#         for i, word in enumerate(corpus):
+#             future = executor.submit(update_word, p, pair, word)
+#             futures.append(future)
+#         concurrent.futures.wait(futures)
+#         for i, future in enumerate(futures):
+#             new_corpus[i] = future.result()
 #     return new_corpus
+#
+#
+# def update_word(p, pair, word):
+#     return p.sub(''.join(pair), word)
+
+def get_status(corpus):
+    pairs = collections.defaultdict(int)
+    for word in corpus:
+        symbols = word.split()
+        for i in range(len(symbols)-2):
+            pairs[symbols[i], symbols[i+1]] = pairs.get((symbols[i], symbols[i+1]), 0) + 1
+    return pairs
+
+
+def update_corpus(pair, corpus):
+    new_corpus = [None] * len(corpus)
+    bigram = re.escape(' '.join(pair))
+    p = re.compile(r'(?<!\S)' + bigram + r'(?!\S)')
+    for i, word in enumerate(corpus):
+        w_out = p.sub(''.join(pair), word)
+        new_corpus[i] = w_out
+    return new_corpus
 
 
 def check_saving_status(n_saved_vocabs, curr_size, frequency):
