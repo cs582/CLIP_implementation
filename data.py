@@ -2,11 +2,10 @@ import re
 import os
 import cv2
 import json
-import asyncio
+import requests
 import argparse
 import pandas as pd
 
-import aiohttp
 from tqdm import tqdm
 from PIL import Image
 import io
@@ -32,29 +31,30 @@ parser.add_argument('-vocab_size', type=int, default=10000, help='Vocabulary siz
 args = parser.parse_args()
 
 
-async def download_image(session, url, path, name):
+
+def download_image(session, url, path, name):
     try:
-        async with session.get(url) as response:
-            content = await response.read()
-            with Image.open(io.BytesIO(content)) as image:
-                filepath = os.path.join(path, f"{name}.jpg")
-                image.save(filepath)
-                return f"{name}.jpg"
+        response = session.get(url)
+        content = response.content
+        with Image.open(io.BytesIO(content)) as image:
+            filepath = os.path.join(path, f"{name}.jpg")
+            image.save(filepath)
+            return f"{name}.jpg"
     except:
         print(f"Error while downloading image {url}")
 
 
-async def url_image_save_async(urls, path, num_workers=10, first_index=0):
+def url_image_save_sync(urls, path, num_workers=10, first_index=0):
     curr_idx = first_index
-    async with aiohttp.ClientSession() as session:
+    with requests.Session() as session:
         tasks = []
         for url in tqdm(urls, desc="urls"):
             name = f"{curr_idx}"
-            task = asyncio.ensure_future(download_image(session, url, path, name))
-            tasks.append(task)
+            result = download_image(session, url, path, name)
+            if result is not None:
+                tasks.append(result)
             curr_idx += 1
-        results = await asyncio.gather(*tasks)
-        return results
+        return tasks
 
 
 def clean_sentence(sentence):
@@ -131,7 +131,7 @@ if __name__ == "__main__":
         if not os.path.exists(images_dir):
             os.mkdir(images_dir)
 
-        asyncio.run(url_image_save_async(urls=img_address, path=images_dir, first_index=idx_0))
+        url_image_save_sync(urls=img_address, path=images_dir, first_index=idx_0)
 
 
     if args.task == 3:
