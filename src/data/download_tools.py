@@ -29,7 +29,7 @@ async def url_image_save_async(urls, path, num_workers=10, first_index=0):
         with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
             loop = asyncio.get_event_loop()
             tasks = []
-            for url in tqdm(urls, desc="urls"):
+            for url in urls:
                 name = f"{img_index}"
                 task = asyncio.ensure_future(
                     loop.run_in_executor(executor, download_image, session, url, path, name)
