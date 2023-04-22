@@ -1,6 +1,7 @@
 import re
 import os
 import json
+import time
 import concurrent.futures
 import requests
 import argparse
@@ -137,7 +138,7 @@ if __name__ == "__main__":
 
     if args.task == 3:
         # Get csv file address
-        csv_filepath = f"{pairs_folder}/WQI_mini.csv"
+        csv_filepath = f"{pairs_folder}/WQI_test.csv"
 
         # Read csv file
         print(f"reading {csv_filepath}")
@@ -151,7 +152,9 @@ if __name__ == "__main__":
 
         # Training tokenizer
         print(f"training tokenizer over {len(body_text)} queries")
+        start = time.time()
         tokenizer.train(body_text, tokenizer_folder)
+        print(f"Done in {time.time() - start} seconds")
 
         # Saving tokenizer vocabulary, merges, and token_ids
         tokenizer.save_tokenizer(tokenizer_folder)
