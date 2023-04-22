@@ -5,9 +5,13 @@ import json
 import asyncio
 import argparse
 import pandas as pd
-import os
 
-from src.data.download_tools import url_image_save_async
+import concurrent.futures
+import aiohttp
+from urllib.request import urlopen, Request
+from tqdm import tqdm
+from PIL import Image
+import io
 
 from src.models.natural_language_processing.nlp_tokenization import BytePairEncoderTokenizer
 
@@ -39,9 +43,32 @@ args = parser.parse_args()
 #     cv2.waitKey(0)
 #     return f"{name}.jpg"
 
+async def download_image(session, url, path, name):
+    try:
+        async with session.get(url) as response:
+            content = await response.read()
+            with Image.open(io.BytesIO(content)) as image:
+                filepath = os.path.join(path, f"{name}.jpg")
+                image.save(filepath)
+                return f"{name}.jpg"
+    except:
+        print(f"Error while downloading image {url}.")
 
-async def async_download(img_address, images_dir, idx_0):
-    return await url_image_save_async(img_address, images_dir, num_workers=20, first_index=idx_0)
+
+async def url_image_save_async(urls, path, num_workers=10, first_index=0):
+    img_index = first_index
+    os.makedirs(path, exist_ok=True)
+    async with aiohttp.ClientSession() as session:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
+            loop = asyncio.get_event_loop()
+            tasks = []
+            for url in urls:
+                name = f"{img_index}"
+                task = loop.run_in_executor(executor, download_image, session, url, path, name)
+                tasks.append(task)
+                img_index += 1
+            results = await asyncio.gather(*tasks)
+            return results
 
 
 def clean_sentence(sentence):
@@ -129,7 +156,7 @@ if __name__ == "__main__":
         #         print(f"url: {url} failed.")
 
         loop = asyncio.get_event_loop()
-        loop.run_until_complete(async_download(img_address, images_dir, idx_0))
+        loop.run_until_complete(url_image_save_async(urls=img_address, path=images_dir, first_index=idx_0))
 
 
     if args.task == 3:
