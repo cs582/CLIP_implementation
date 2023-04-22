@@ -157,6 +157,7 @@ class BytePairEncoderTokenizer:
                 threshold += X
 
             current_vocab_size = len(self.vocab)
+            print(f"\rcurr_size: {current_vocab_size}", end="")
 
         # Create TokenIDs
         print("Creating TokenIDs...")
