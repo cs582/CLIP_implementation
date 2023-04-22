@@ -2,6 +2,7 @@ import re
 import os
 import cv2
 import json
+import asyncio
 import argparse
 import pandas as pd
 import os
@@ -37,6 +38,10 @@ args = parser.parse_args()
 #     cv2.imwrite(filepath, image)
 #     cv2.waitKey(0)
 #     return f"{name}.jpg"
+
+
+async def async_download(img_address, images_dir, idx_0):
+    return await url_image_save_async(img_address, images_dir, num_workers=20, first_index=idx_0)
 
 
 def clean_sentence(sentence):
@@ -123,7 +128,7 @@ if __name__ == "__main__":
         #     except:
         #         print(f"url: {url} failed.")
 
-        await url_image_save_async(img_address, images_dir, num_workers=20, first_index=idx_0)
+        asyncio.run(async_download(img_address, images_dir, idx_0))
 
 
     if args.task == 3:
