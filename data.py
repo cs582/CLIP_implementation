@@ -43,14 +43,16 @@ args = parser.parse_args()
 #     cv2.waitKey(0)
 #     return f"{name}.jpg"
 
+
 async def download_image(session, url, path, name):
     try:
-        async with session.get(url) as response:
-            content = await response.read()
-            with Image.open(io.BytesIO(content)) as image:
-                filepath = os.path.join(path, f"{name}.jpg")
-                image.save(filepath)
-                return f"{name}.jpg"
+        async with session.get(url) as resp:
+            data = await resp.read()
+            image = np.asarray(bytearray(data), dtype="uint8")
+            image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+            filepath = os.path.join(path, f"{name}.jpg")
+            cv2.imwrite(filepath, image)
+            return f"{name}.jpg"
     except:
         print(f"Error while downloading image {url}")
 
