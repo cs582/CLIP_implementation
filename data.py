@@ -128,7 +128,8 @@ if __name__ == "__main__":
         #     except:
         #         print(f"url: {url} failed.")
 
-        asyncio.run(async_download(img_address, images_dir, idx_0))
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(async_download(img_address, images_dir, idx_0))
 
 
     if args.task == 3:
