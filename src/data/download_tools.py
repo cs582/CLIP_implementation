@@ -2,9 +2,11 @@ import concurrent.futures
 import asyncio
 import aiohttp
 from urllib.request import urlopen, Request
+from tqdm import tqdm
 from PIL import Image
 import os
 import io
+
 
 
 async def download_image(session, url, path, name):
@@ -26,7 +28,7 @@ def url_image_save_async(urls, path, num_workers=10, first_index=0):
         with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
             loop = asyncio.get_event_loop()
             tasks = []
-            for url in urls:
+            for url in tqdm(urls, desc="urls"):
                 name = f"{img_index}"
                 task = loop.run_in_executor(executor, download_image, session, url, path, name)
                 tasks.append(task)
