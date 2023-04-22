@@ -1,6 +1,7 @@
 # Senrich et. al 2016 & Gage et al. 1994
 import os
 import re
+import math
 import json
 import tqdm
 import pickle
@@ -74,9 +75,14 @@ def update_corpus(pair, corpus):
     return new_corpus
 
 
+def check_saving_status(n_saved_vocabs, curr_size, frequency):
+    return n_saved_vocabs == (curr_size//frequency-1)
+
+
+
 class BytePairEncoderTokenizer:
     def __init__(self, vocab_size=1000, min_freq=2):
-        self.vocab_size = vocab_size
+        self.max_vocab_size = vocab_size
         self.min_freq = min_freq
         self.token_ids = None
         self.vocab = None
@@ -91,9 +97,11 @@ class BytePairEncoderTokenizer:
         corpus = prepare_corpus(body_text)
 
         # Get the merges
-        pbar = tqdm.tqdm(desc="Getting vocabulary", total=self.vocab_size)
+        pbar = tqdm.tqdm(desc="Getting vocabulary", total=self.max_vocab_size)
+
+        n_saved_vocabs = 0
         current_vocab_size = 0
-        while current_vocab_size < self.vocab_size:
+        while current_vocab_size < self.max_vocab_size:
             pairs = get_status(corpus)
             bp = max(pairs, key=pairs.get)
             new_char = ''.join(bp)
@@ -105,14 +113,20 @@ class BytePairEncoderTokenizer:
             self.vocab[new_char] = pairs[bp]
             self.merges[bp] = new_char
 
+            if n_saved_vocabs == (current_vocab_size//100-1):
+                # Create TokenIDs
+                print("Creating TokenIDs...")
+                token_map = {}
+                for idx, word in enumerate(self.vocab.keys()):
+                    token_map[word] = idx+1
+                self.token_ids = token_map
+                self.save_tokenizer(filedir)
+
             current_vocab_size = len(self.vocab)
             pbar.update(current_vocab_size)
-            if current_vocab_size > self.vocab_size:
-                print("Cycle Completed")
-                break
 
         # Create TokenIDs
-        print("Creating token IDs")
+        print("Creating TokenIDs...")
         token_map = {}
         for idx, word in enumerate(self.vocab.keys()):
             token_map[word] = idx+1

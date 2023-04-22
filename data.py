@@ -111,7 +111,7 @@ if __name__ == "__main__":
 
     if args.task == 2:
         # Get csv file address
-        csv_filepath = f"{pairs_folder}/WQI_mini.csv"
+        csv_filepath = f"{pairs_folder}/WQI_test.csv"
 
         # Read csv file
         print(f"reading {csv_filepath}")
