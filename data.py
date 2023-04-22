@@ -1,6 +1,5 @@
 import re
 import os
-import cv2
 import json
 import concurrent.futures
 import requests
@@ -38,7 +37,7 @@ def url_image_save_multithreaded(urls, path, num_workers=10, first_index=0):
     curr_index = first_index
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
         futures = []
-        for url in urls:
+        for url in tqdm(urls, desc="Downloading Images"):
             name = f"{curr_index}"
             future = executor.submit(download_image_sync, url, path, name)
             futures.append(future)
