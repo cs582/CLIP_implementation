@@ -152,9 +152,11 @@ if __name__ == "__main__":
         #     except:
         #         print(f"url: {url} failed.")
 
-        loop = asyncio.get_event_loop()
-        asyncio.ensure_future(url_image_save_async(urls=img_address, path=images_dir, first_index=idx_0))
-        loop.close()
+        # loop = asyncio.get_event_loop()
+        # asyncio.ensure_future(url_image_save_async(urls=img_address, path=images_dir, first_index=idx_0))
+        # loop.run_forever()
+        # loop.close()
+        asyncio.run(url_image_save_async(urls=img_address, path=images_dir, first_index=idx_0))
 
 
     if args.task == 3:
