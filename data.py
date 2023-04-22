@@ -55,7 +55,7 @@ async def download_image(session, url, path, name):
         print(f"Error while downloading image {url}")
 
 
-def url_image_save_async(urls, path, num_workers=10, first_index=0):
+async def url_image_save_async(urls, path, num_workers=10, first_index=0):
     curr_idx = first_index
     os.makedirs(path, exist_ok=True)
     async with aiohttp.ClientSession() as session:
@@ -149,7 +149,10 @@ if __name__ == "__main__":
         #     except:
         #         print(f"url: {url} failed.")
 
-        url_image_save_async(urls=img_address, path=img_address, first_index=idx_0)
+        loop = asyncio.get_event_loop()
+        asyncio.ensure_future(url_image_save_async(urls=img_address, path=img_address, first_index=idx_0))
+        loop.run_forever()
+        loop.close()
 
 
     if args.task == 3:
