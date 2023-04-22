@@ -6,9 +6,7 @@ import asyncio
 import argparse
 import pandas as pd
 
-import concurrent.futures
 import aiohttp
-from urllib.request import urlopen, Request
 from tqdm import tqdm
 from PIL import Image
 import io
@@ -32,16 +30,6 @@ parser.add_argument('-start', type=int, default=0, help='Starting image to save.
 parser.add_argument('-vocab_size', type=int, default=10000, help='Vocabulary size for task 3: training tokenizer.')
 
 args = parser.parse_args()
-
-# def url_image_save(url, path, name):
-#     resp = urlopen(url)
-#     image = np.asarray(bytearray(resp.read()), dtype="uint8")
-#     image = cv2.imdecode(image, -1)
-#
-#     filepath = f"{path}/{name}.jpg"
-#     cv2.imwrite(filepath, image)
-#     cv2.waitKey(0)
-#     return f"{name}.jpg"
 
 
 async def download_image(session, url, path, name):
@@ -143,19 +131,6 @@ if __name__ == "__main__":
         if not os.path.exists(images_dir):
             os.mkdir(images_dir)
 
-        # Save images
-        # for idx, (url, q) in enumerate(zip(img_address, queries)):
-        #     if idx < args.start:
-        #         continue
-        #     try:
-        #         #img_dir = url_image_save(url, images_dir, idx)
-        #     except:
-        #         print(f"url: {url} failed.")
-
-        # loop = asyncio.get_event_loop()
-        # asyncio.ensure_future(url_image_save_async(urls=img_address, path=images_dir, first_index=idx_0))
-        # loop.run_forever()
-        # loop.close()
         asyncio.run(url_image_save_async(urls=img_address, path=images_dir, first_index=idx_0))
 
 
