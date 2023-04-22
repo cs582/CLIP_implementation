@@ -123,7 +123,7 @@ if __name__ == "__main__":
         #     except:
         #         print(f"url: {url} failed.")
 
-        url_image_save_async(img_address, images_dir, num_workers=20, first_index=idx_0)
+        await url_image_save_async(img_address, images_dir, num_workers=20, first_index=idx_0)
 
 
     if args.task == 3:
