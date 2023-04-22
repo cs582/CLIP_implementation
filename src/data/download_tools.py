@@ -18,8 +18,6 @@ async def download_image(session, url, path, name):
                 return f"{name}.jpg"
     except:
         print(f"Error while downloading image {url}.")
-        return None
-    pass
 
 
 async def url_image_save_async(urls, path, num_workers=10, first_index=0):
@@ -31,9 +29,7 @@ async def url_image_save_async(urls, path, num_workers=10, first_index=0):
             tasks = []
             for url in urls:
                 name = f"{img_index}"
-                task = asyncio.ensure_future(
-                    loop.run_in_executor(executor, download_image, session, url, path, name)
-                )
+                task = loop.run_in_executor(executor, download_image, session, url, path, name)
                 tasks.append(task)
                 img_index += 1
             results = await asyncio.gather(*tasks)
