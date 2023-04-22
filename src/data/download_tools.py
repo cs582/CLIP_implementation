@@ -22,7 +22,7 @@ async def download_image(session, url, path, name):
     pass
 
 
-def url_image_save_async(urls, path, num_workers=10, first_index=0):
+async def url_image_save_async(urls, path, num_workers=10, first_index=0):
     img_index = first_index
     os.makedirs(path, exist_ok=True)
     async with aiohttp.ClientSession() as session:
