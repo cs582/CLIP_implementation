@@ -151,7 +151,7 @@ if __name__ == "__main__":
 
         # Training tokenizer
         print(f"training tokenizer over {len(body_text)} queries")
-        tokenizer.train(body_text)
+        tokenizer.train(body_text, tokenizer_folder)
 
         # Saving tokenizer vocabulary, merges, and token_ids
         tokenizer.save_tokenizer(tokenizer_folder)
