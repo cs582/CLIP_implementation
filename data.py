@@ -154,7 +154,6 @@ if __name__ == "__main__":
 
         loop = asyncio.get_event_loop()
         asyncio.ensure_future(url_image_save_async(urls=img_address, path=images_dir, first_index=idx_0))
-        loop.run_forever()
         loop.close()
 
 
