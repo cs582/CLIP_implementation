@@ -22,9 +22,6 @@ def add_tags(sentence):
 
 
 def remove_special_characters(text):
-    """
-    Removes all special characters from a string.
-    """
     pattern = r'[^a-zA-Z0-9\s]'
     text = re.sub(pattern, '', text)
     return text
@@ -37,7 +34,6 @@ def initialize_vocabulary(body_text):
         for word in sentence.split():
             for char in word:
                 vocab[char] = vocab.get(char, 0) + 1
-
     return vocab
 
 
