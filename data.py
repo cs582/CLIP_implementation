@@ -57,10 +57,9 @@ async def download_image(session, url, path, name):
 
 async def url_image_save_async(urls, path, num_workers=10, first_index=0):
     curr_idx = first_index
-    os.makedirs(path, exist_ok=True)
     async with aiohttp.ClientSession() as session:
         tasks = []
-        for url in urls:
+        for url in tqdm(urls, desc="urls"):
             name = f"{curr_idx}"
             task = asyncio.ensure_future(download_image(session, url, path, name))
             tasks.append(task)
@@ -139,6 +138,9 @@ if __name__ == "__main__":
         # Download images and store them into a new directory
         folder = "images"
         images_dir = f"{pairs_folder}/{folder}"
+
+        if not os.path.exists(images_dir):
+            os.mkdir(images_dir)
 
         # Save images
         # for idx, (url, q) in enumerate(zip(img_address, queries)):
