@@ -37,12 +37,12 @@ def url_image_save_multithreaded(urls, path, num_workers=10, first_index=0):
     curr_index = first_index
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
         futures = []
-        for url in tqdm(urls, desc="Downloading Images"):
+        for url in tqdm(urls, desc="Stacking Processes"):
             name = f"{curr_index}"
             future = executor.submit(download_image_sync, url, path, name)
             futures.append(future)
             curr_index += 1
-        results = [future.result() for future in concurrent.futures.as_completed(futures)]
+        results = [future.result() for future in tqdm(concurrent.futures.as_completed(futures), desc="Downloading Images")]
         return results
 
 
