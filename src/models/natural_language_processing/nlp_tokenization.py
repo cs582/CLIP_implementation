@@ -82,7 +82,7 @@ class BytePairEncoderTokenizer:
         self.vocab = None
         self.merges = None
 
-    def train(self, body_text):
+    def train(self, body_text, filedir):
         # Initialize vocab with [SOS] and [EOS] tokens and single characters
         self.vocab = initialize_vocabulary(body_text)
         self.merges = {}
@@ -92,25 +92,33 @@ class BytePairEncoderTokenizer:
 
         # Get the merges
         pbar = tqdm.tqdm(desc="Getting vocabulary", total=self.vocab_size)
-        while len(self.vocab) < self.vocab_size:
+        current_vocab_size = 0
+        while current_vocab_size < self.vocab_size:
             pairs = get_status(corpus)
             bp = max(pairs, key=pairs.get)
             new_char = ''.join(bp)
             if pairs[bp] < self.min_freq:
                 break
+
             # Update the vocabulary and BPE codes
             corpus = update_corpus(bp, corpus)
             self.vocab[new_char] = pairs[bp]
             self.merges[bp] = new_char
 
-            pbar.update(len(self.vocab))
+            current_vocab_size = len(self.vocab)
+            pbar.update(current_vocab_size)
+            if current_vocab_size > self.vocab_size:
+                print("Cycle Completed")
+                break
 
         # Create TokenIDs
+        print("Creating token IDs")
         token_map = {}
         for idx, word in enumerate(self.vocab.keys()):
             token_map[word] = idx+1
-
         self.token_ids = token_map
+        self.save_tokenizer(filedir)
+
 
     def encode(self, words):
         # Apply the trained BPE codes to encode a word
@@ -165,6 +173,7 @@ class BytePairEncoderTokenizer:
         assert self.vocab is not None, f"vocabulary not found, load vocabulary from json file or train the model."
         assert self.merges is not None, f"merges not found, load vocabulary from json file or train the model."
 
+        print("Saving tokenizer...")
         if not os.path.exists(filedir):
             os.mkdir(filedir)
 
@@ -185,6 +194,7 @@ class BytePairEncoderTokenizer:
             print(f"Successfully saved tokenizer as {filename}!!!")
 
     def load_tokenizer(self, filename):
+        print("Loading tokenizer...")
         with open(filename, "rb") as f:
             tokenizer_info = pickle.load(f)
             self.vocab = tokenizer_info["vocab"]
