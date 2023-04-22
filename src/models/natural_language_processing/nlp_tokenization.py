@@ -101,6 +101,7 @@ class BytePairEncoderTokenizer:
         threshold = X
         pbar = tqdm.tqdm(desc="Getting vocabulary", total=self.max_vocab_size)
         current_vocab_size = len(self.vocab)
+        print("curr", current_vocab_size, "max", self.max_vocab_size)
         while current_vocab_size < self.max_vocab_size:
             pairs = get_status(corpus)
             bp = max(pairs, key=pairs.get)
