@@ -42,7 +42,7 @@ def url_image_save_multithreaded(urls, path, num_workers=10, first_index=0):
             future = executor.submit(download_image_sync, url, path, name)
             futures.append(future)
             curr_index += 1
-        results = [future.result() for future in tqdm(concurrent.futures.as_completed(futures), desc="Downloading Images")]
+        results = [future.result() for future in tqdm(concurrent.futures.as_completed(futures), total=len(urls), desc="Downloading Images")]
         return results
 
 
