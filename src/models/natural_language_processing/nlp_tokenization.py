@@ -97,7 +97,7 @@ class BytePairEncoderTokenizer:
         corpus = prepare_corpus(body_text)
 
         # Get the merges
-        X = 100
+        X = 3000
         threshold = X
         current_vocab_size = len(self.vocab)
         print(f"Retrieving vocabulary. curr_size {current_vocab_size}, max_size {self.max_vocab_size}")
