@@ -43,6 +43,7 @@ args = parser.parse_args()
 #     cv2.waitKey(0)
 #     return f"{name}.jpg"
 
+
 async def download_image(session, url, path, name):
     try:
         async with session.get(url) as response:
@@ -124,7 +125,7 @@ if __name__ == "__main__":
 
     if args.task == 2:
         # Get csv file address
-        csv_filepath = f"{pairs_folder}/WQI_mini.csv"
+        csv_filepath = f"{pairs_folder}/WQI_test.csv"
 
         # Read csv file
         print(f"reading {csv_filepath}")
@@ -141,10 +142,6 @@ if __name__ == "__main__":
         # Download images and store them into a new directory
         folder = "images"
         images_dir = f"{pairs_folder}/{folder}"
-
-        # Create new folder if doesn't exist
-        if not os.path.exists(images_dir):
-            os.mkdir(images_dir)
 
         # Save images
         # for idx, (url, q) in enumerate(zip(img_address, queries)):
