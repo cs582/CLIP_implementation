@@ -18,7 +18,7 @@ async def download_image(session, url, path, name):
                 return f"{name}.jpg"
     except:
         print(f"Error while downloading image {url}.")
-
+        return None
     pass
 
 
