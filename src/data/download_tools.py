@@ -28,11 +28,7 @@ async def url_image_save_async(urls, path, num_workers=10, first_index=0):
     async with aiohttp.ClientSession() as session:
         with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
             loop = asyncio.get_event_loop()
-            tasks = []
             for url in tqdm(urls, desc="urls"):
                 name = f"{img_index}"
-                task = loop.run_in_executor(executor, download_image, session, url, path, name)
-                tasks.append(task)
+                await loop.run_in_executor(executor, download_image, session, url, path, name)
                 img_index += 1
-            results = await asyncio.gather(*tasks)
-            return results
