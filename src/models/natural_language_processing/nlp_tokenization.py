@@ -122,7 +122,7 @@ class BytePairEncoderTokenizer:
                 self.token_ids = token_map
                 self.save_tokenizer(filedir)
 
-                threshold += threshold
+                threshold += X
 
             current_vocab_size = len(self.vocab)
             pbar.update(current_vocab_size)
