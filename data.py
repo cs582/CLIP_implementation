@@ -2,9 +2,12 @@ import re
 import os
 import cv2
 import json
+import concurrent.futures
 import requests
 import argparse
 import pandas as pd
+
+from urllib.request import urlopen
 
 from tqdm import tqdm
 from PIL import Image
@@ -31,30 +34,29 @@ parser.add_argument('-vocab_size', type=int, default=10000, help='Vocabulary siz
 args = parser.parse_args()
 
 
+def url_image_save_multithreaded(urls, path, num_workers=10, first_index=0):
+    curr_index = first_index
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
+        futures = []
+        for url in urls:
+            name = f"{curr_index}"
+            future = executor.submit(download_image_sync, url, path, name)
+            futures.append(future)
+            curr_index += 1
+        results = [future.result() for future in concurrent.futures.as_completed(futures)]
+        return results
 
-def download_image(session, url, path, name):
+
+def download_image_sync(url, path, name):
     try:
-        response = session.get(url)
-        content = response.content
-        with Image.open(io.BytesIO(content)) as image:
+        resp = urlopen(url)
+        image = np.asarray(bytearray(resp.read()), dtype="uint8")
+        with Image.open(io.BytesIO(image)) as image:
             filepath = os.path.join(path, f"{name}.jpg")
             image.save(filepath)
             return f"{name}.jpg"
     except:
         print(f"Error while downloading image {url}")
-
-
-def url_image_save_sync(urls, path, num_workers=10, first_index=0):
-    curr_idx = first_index
-    with requests.Session() as session:
-        tasks = []
-        for url in tqdm(urls, desc="urls"):
-            name = f"{curr_idx}"
-            result = download_image(session, url, path, name)
-            if result is not None:
-                tasks.append(result)
-            curr_idx += 1
-        return tasks
 
 
 def clean_sentence(sentence):
@@ -131,7 +133,7 @@ if __name__ == "__main__":
         if not os.path.exists(images_dir):
             os.mkdir(images_dir)
 
-        url_image_save_sync(urls=img_address, path=images_dir, first_index=idx_0)
+        url_image_save_multithreaded(urls=img_address, path=images_dir, first_index=idx_0)
 
 
     if args.task == 3:
