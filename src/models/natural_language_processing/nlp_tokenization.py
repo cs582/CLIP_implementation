@@ -125,6 +125,10 @@ class BytePairEncoderTokenizer:
             current_vocab_size = len(self.vocab)
             pbar.update(current_vocab_size)
 
+            if current_vocab_size > self.max_vocab_size:
+                print(f"DONE with size {current_vocab_size}!!!")
+                break
+
         # Create TokenIDs
         print("Creating TokenIDs...")
         token_map = {}
