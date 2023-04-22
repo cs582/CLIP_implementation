@@ -97,10 +97,10 @@ class BytePairEncoderTokenizer:
         corpus = prepare_corpus(body_text)
 
         # Get the merges
+        X = 100
+        threshold = X
         pbar = tqdm.tqdm(desc="Getting vocabulary", total=self.max_vocab_size)
-
-        n_saved_vocabs = 0
-        current_vocab_size = 0
+        current_vocab_size = len(self.vocab)
         while current_vocab_size < self.max_vocab_size:
             pairs = get_status(corpus)
             bp = max(pairs, key=pairs.get)
@@ -113,7 +113,7 @@ class BytePairEncoderTokenizer:
             self.vocab[new_char] = pairs[bp]
             self.merges[bp] = new_char
 
-            if n_saved_vocabs == (current_vocab_size//100-1):
+            if current_vocab_size > threshold:
                 # Create TokenIDs
                 print("Creating TokenIDs...")
                 token_map = {}
@@ -121,6 +121,8 @@ class BytePairEncoderTokenizer:
                     token_map[word] = idx+1
                 self.token_ids = token_map
                 self.save_tokenizer(filedir)
+
+                threshold += threshold
 
             current_vocab_size = len(self.vocab)
             pbar.update(current_vocab_size)
