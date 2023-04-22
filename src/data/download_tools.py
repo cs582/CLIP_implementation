@@ -8,7 +8,6 @@ import os
 import io
 
 
-
 async def download_image(session, url, path, name):
     try:
         async with session.get(url) as response:
@@ -19,6 +18,8 @@ async def download_image(session, url, path, name):
                 return f"{name}.jpg"
     except:
         print(f"Error while downloading image {url}.")
+
+    pass
 
 
 def url_image_save_async(urls, path, num_workers=10, first_index=0):
