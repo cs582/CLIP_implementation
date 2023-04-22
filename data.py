@@ -45,13 +45,15 @@ args = parser.parse_args()
 
 
 async def download_image(session, url, path, name):
-    async with session.get(url) as resp:
-        data = await resp.read()
-        image = np.asarray(bytearray(data), dtype="uint8")
-        image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-        filepath = os.path.join(path, f"{name}.jpg")
-        cv2.imwrite(filepath, image)
-        return f"{name}.jpg"
+    try:
+        async with session.get(url) as response:
+            content = await response.read()
+            with Image.open(io.BytesIO(content)) as image:
+                filepath = os.path.join(path, f"{name}.jpg")
+                image.save(filepath)
+                return f"{name}.jpg"
+    except:
+        print(f"Error while downloading image {url}")
 
 
 async def url_image_save_async(urls, path, num_workers=10, first_index=0):
@@ -151,7 +153,7 @@ if __name__ == "__main__":
         #         print(f"url: {url} failed.")
 
         loop = asyncio.get_event_loop()
-        asyncio.ensure_future(url_image_save_async(urls=img_address, path=img_address, first_index=idx_0))
+        asyncio.ensure_future(url_image_save_async(urls=img_address, path=images_dir, first_index=idx_0))
         loop.run_forever()
         loop.close()
 
