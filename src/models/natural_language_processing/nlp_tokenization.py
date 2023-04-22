@@ -116,7 +116,8 @@ class BytePairEncoderTokenizer:
 
             if current_vocab_size > threshold:
                 # Create TokenIDs
-                print("Creating TokenIDs...")
+                print("\nCreating TokenIDs...")
+                print("curr", current_vocab_size, "max", self.max_vocab_size)
                 token_map = {}
                 for idx, word in enumerate(self.vocab.keys()):
                     token_map[word] = idx+1
