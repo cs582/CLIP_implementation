@@ -4,8 +4,9 @@ import cv2
 import json
 import argparse
 import pandas as pd
+import os
 
-from urllib.request import urlopen
+from src.data.download_tools import url_image_save_async
 
 from src.models.natural_language_processing.nlp_tokenization import BytePairEncoderTokenizer
 
@@ -27,16 +28,15 @@ parser.add_argument('-vocab_size', type=int, default=10000, help='Vocabulary siz
 
 args = parser.parse_args()
 
-
-def url_image_save(url, path, name):
-    resp = urlopen(url)
-    image = np.asarray(bytearray(resp.read()), dtype="uint8")
-    image = cv2.imdecode(image, -1)
-
-    filepath = f"{path}/{name}.jpg"
-    cv2.imwrite(filepath, image)
-    cv2.waitKey(0)
-    return f"{name}.jpg"
+# def url_image_save(url, path, name):
+#     resp = urlopen(url)
+#     image = np.asarray(bytearray(resp.read()), dtype="uint8")
+#     image = cv2.imdecode(image, -1)
+#
+#     filepath = f"{path}/{name}.jpg"
+#     cv2.imwrite(filepath, image)
+#     cv2.waitKey(0)
+#     return f"{name}.jpg"
 
 
 def clean_sentence(sentence):
@@ -100,10 +100,11 @@ if __name__ == "__main__":
         df_row_len, df_col_len = df.shape
 
         # Get cap limit
-        cap = df_row_len if args.cap == -1 else args.cap
+        idx_0 = args.start
+        idx_f = df_row_len if args.cap == -1 else args.cap
 
         # Extract queries and images addresses
-        queries, img_address = df['query'].tolist()[:cap], df['image'].tolist()[:cap]
+        queries, img_address = df['query'].tolist()[idx_0:idx_f], df['image'].tolist()[idx_0:idx_f]
 
         # Download images and store them into a new directory
         folder = "images"
@@ -114,13 +115,16 @@ if __name__ == "__main__":
             os.mkdir(images_dir)
 
         # Save images
-        for idx, (url, q) in enumerate(zip(img_address, queries)):
-            if idx < args.start:
-                continue
-            try:
-                img_dir = url_image_save(url, images_dir, idx)
-            except:
-                print(f"url: {url} failed.")
+        # for idx, (url, q) in enumerate(zip(img_address, queries)):
+        #     if idx < args.start:
+        #         continue
+        #     try:
+        #         #img_dir = url_image_save(url, images_dir, idx)
+        #     except:
+        #         print(f"url: {url} failed.")
+
+        url_image_save_async(img_address, images_dir, num_workers=20, first_index=idx_0)
+
 
     if args.task == 3:
         # Get csv file address
