@@ -142,7 +142,7 @@ if __name__ == "__main__":
 
         # Read csv file
         print(f"reading {csv_filepath}")
-        df = pd.read_csv(csv_filepath, index_col=0)
+        df = pd.read_csv(csv_filepath, index_col=0).sample(1000000)
 
         # Get all queries
         body_text = df['query'].tolist()
