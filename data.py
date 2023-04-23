@@ -159,7 +159,7 @@ if __name__ == "__main__":
         file = open(filename_corpus, "w")
         a = file.write(body_text)
         file.close()
-        print(f"Saved corpus as {corpus}")
+        print(f"Saved corpus as {filename_corpus}")
 
     if args.task == 3:
         # Initialize a tokenizer
