@@ -35,11 +35,7 @@ def initialize_vocabulary(body_text):
 
 
 def sentence_to_symbol_format(sentence):
-    words_out = []
     sentence = fix_sentence(sentence).split()
-    for i, word in enumerate(sentence):
-        w_out = [char for char in word] + ['</w>']
-        words_out.append(' '.join(w_out))
     return words_out
 
 

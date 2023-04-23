@@ -12,9 +12,6 @@ from tqdm import tqdm
 from PIL import Image
 from urllib.request import urlopen
 
-from tokenizers.trainers import BpeTrainer
-from tokenizers import Tokenizer
-from tokenizers.models import BPE
 from tokenizers import Tokenizer, models, pre_tokenizers, decoders, trainers, processors
 
 from src.models.natural_language_processing.nlp_tokenization import BytePairEncoderTokenizer, prepare_corpus
@@ -153,15 +150,14 @@ if __name__ == "__main__":
         df = pd.read_csv(csv_filepath, index_col=0)
 
         # Get all queries
-        body_text = df['query'].tolist()
-        corpus = prepare_corpus(body_text)
+        body_text = "\n".join(df['query'].tolist())
 
         # File to save corpus
         filename_corpus = f'{tokenizer_folder}/corpus.txt'
 
         # Save corpus
         file = open(filename_corpus, "w")
-        a = file.write(corpus)
+        a = file.write(body_text)
         file.close()
         print(f"Saved corpus as {corpus}")
 
@@ -178,7 +174,7 @@ if __name__ == "__main__":
         trainer = trainers.BpeTrainer(
             vocab_size=43000,
             min_frequency=2,
-            initial_alphabet=pre_tokenizers.ByteLevel.alphabet()
+            initial_alphabet=pre_tokenizers.ByteLevel.alphabet(),
         )
 
         tokenizer.train([f'{tokenizer_folder}/corpus.txt'], trainer=trainer)
