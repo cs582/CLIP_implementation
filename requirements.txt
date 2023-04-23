@@ -3,5 +3,6 @@ tqdm
 numpy
 pandas
 einops
+tokenizers
 opencv-python
 matplotlib

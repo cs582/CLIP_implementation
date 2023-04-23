@@ -1,19 +1,23 @@
 import re
 import os
+import io
 import json
 import time
 import concurrent.futures
-import requests
 import argparse
-import pandas as pd
 
-from urllib.request import urlopen
+import pandas as pd
 
 from tqdm import tqdm
 from PIL import Image
-import io
+from urllib.request import urlopen
 
-from src.models.natural_language_processing.nlp_tokenization import BytePairEncoderTokenizer
+from tokenizers.trainers import BpeTrainer
+from tokenizers import Tokenizer
+from tokenizers.models import BPE
+from tokenizers import Tokenizer, models, pre_tokenizers, decoders, trainers, processors
+
+from src.models.natural_language_processing.nlp_tokenization import BytePairEncoderTokenizer, prepare_corpus
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -84,6 +88,11 @@ if __name__ == "__main__":
     pairs_folder = "src/data/image_gen/WQ-dataset"
     tokenizer_folder = "src/data/nlp/tokenizers"
 
+    if not os.path.exists(tokenizer_folder):
+        os.mkdir(tokenizer_folder)
+    if not os.path.exists(pairs_folder):
+        os.mkdir(pairs_folder)
+
     if args.task == 1:
         data = None
         data_frames = []
@@ -135,28 +144,45 @@ if __name__ == "__main__":
 
         url_image_save_multithreaded(urls=img_address, path=images_dir, first_index=idx_0)
 
-
-    if args.task == 3:
+    if args.task == 3.5:
         # Get csv file address
         csv_filepath = f"{pairs_folder}/WQI_mini.csv"
 
         # Read csv file
         print(f"reading {csv_filepath}")
-        df = pd.read_csv(csv_filepath, index_col=0).sample(1000000)
+        df = pd.read_csv(csv_filepath, index_col=0)
 
         # Get all queries
         body_text = df['query'].tolist()
+        corpus = prepare_corpus(body_text)
 
-        # Initialize tokenizer
-        tokenizer = BytePairEncoderTokenizer(vocab_size=args.vocab_size, min_freq=2)
+        # File to save corpus
+        filename_corpus = f'{tokenizer_folder}/corpus.txt'
 
-        # Training tokenizer
-        print(f"training tokenizer over {len(body_text)} queries")
-        start = time.time()
-        tokenizer.train(body_text, tokenizer_folder)
-        print(f"Done in {time.time() - start} seconds")
+        # Save corpus
+        file = open(filename_corpus, "w")
+        a = file.write(corpus)
+        file.close()
 
-        # Saving tokenizer vocabulary, merges, and token_ids
-        tokenizer.save_tokenizer(tokenizer_folder)
+    if args.task == 3:
+        # Initialize a tokenizer
+        tokenizer = Tokenizer(models.BPE())
+
+        # Customize pre-tokenization and decoding
+        tokenizer.pre_tokenizer = pre_tokenizers.ByteLevel(add_prefix_space=True)
+        tokenizer.decoder = decoders.ByteLevel()
+        tokenizer.post_processor = processors.ByteLevel(trim_offsets=True)
+
+        # And then train
+        trainer = trainers.BpeTrainer(
+            vocab_size=43000,
+            min_frequency=2,
+            initial_alphabet=pre_tokenizers.ByteLevel.alphabet()
+        )
+
+        tokenizer.train([f'{tokenizer_folder}/corpus.txt'], trainer=trainer)
+
+        # And Save it
+        tokenizer.save(f"{tokenizer_folder}/CLIP-bpe.tokenizer.json", pretty=True)
 
 

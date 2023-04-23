@@ -1,12 +1,9 @@
 # Senrich et. al 2016 & Gage et al. 1994
 import os
 import re
-import math
-import json
 import tqdm
 import pickle
 import collections
-import concurrent.futures
 
 from datetime import datetime as dt
 
@@ -51,6 +48,7 @@ def prepare_corpus(body_text):
     for sentence in tqdm.tqdm(body_text):
         corpus += sentence_to_symbol_format(sentence)
     return corpus
+
 
 def get_status(corpus):
     pairs = collections.defaultdict(int)
