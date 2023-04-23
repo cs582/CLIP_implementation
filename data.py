@@ -170,13 +170,18 @@ if __name__ == "__main__":
         tokenizer.decoder = decoders.ByteLevel()
         tokenizer.post_processor = processors.ByteLevel(trim_offsets=True)
 
+        # Define special tokens
+        special_tokens = ['[EOS]', '[SOS]']
+
+        # Add special tokens to the vocabulary
+        tokenizer.add_tokens(special_tokens)
+
         # And then train
         trainer = trainers.BpeTrainer(
             vocab_size=43000,
             min_frequency=2,
             initial_alphabet=pre_tokenizers.ByteLevel.alphabet(),
         )
-
         tokenizer.train([f'{tokenizer_folder}/corpus.txt'], trainer=trainer)
 
         # And Save it
