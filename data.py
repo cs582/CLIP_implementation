@@ -30,7 +30,7 @@ parser = argparse.ArgumentParser(
     '(3) training the tokenizer using the queries from task 1'
 )
 
-parser.add_argument('-task', type=int, default=2, help='Set data to perform task 1, 2, or 3. Read description for more info.')
+parser.add_argument('-task', type=float, default=2, help='Set data to perform task 1, 2, or 3 (or 3.5). Read description for more info.')
 parser.add_argument('-cap', type=int, default=10, help='Cap the number of images to download. Set to -1 for full length.')
 parser.add_argument('-start', type=int, default=0, help='Starting image to save.')
 parser.add_argument('-vocab_size', type=int, default=10000, help='Vocabulary size for task 3: training tokenizer.')
@@ -163,6 +163,7 @@ if __name__ == "__main__":
         file = open(filename_corpus, "w")
         a = file.write(corpus)
         file.close()
+        print(f"Saved corpus as {corpus}")
 
     if args.task == 3:
         # Initialize a tokenizer
