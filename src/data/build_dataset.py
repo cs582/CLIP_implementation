@@ -6,7 +6,7 @@ from tqdm import tqdm
 
 from PIL import Image
 
-pattern = re.compile("^[0-9]\.jpg$")
+pattern = re.compile("^[0-9]+\.jpg$")
 
 
 def valid_image_checker(image_dir, x):
