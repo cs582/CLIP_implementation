@@ -37,7 +37,7 @@ class LoadingImagesUnitTest(unittest.TestCase):
             img_filename = os.path.join(img_path, f"{img_name}.jpg")
 
             start = time.time()
-            x = transformation(cv2.imread(img_filename)[:, :, ::-1])
+            x = transformation(cv2.imread(img_filename))
             end = time.time()
 
             times[i] = end - start
