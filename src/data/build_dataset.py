@@ -16,6 +16,7 @@ def build():
     # Get all (valid) images from image directory
     print(f"Getting all valid images from {image_dir}")
     img_in_dir = [x for x in os.listdir(image_dir) if ".jpg" in x and min(Image.open(os.path.join(image_dir, x)).size) >= 112]
+    print(img_in_dir)
 
     # Valid queries mask
     idx = np.array([int(x[:-4]) for x in img_in_dir])
