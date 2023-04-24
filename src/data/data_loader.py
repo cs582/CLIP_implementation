@@ -10,10 +10,6 @@ from torch.utils.data import Dataset
 from torchvision.transforms import transforms
 
 
-def resize_image(image, h, w):
-    resized_image = cv2.resize(image, (w, h), interpolation=cv2.INTER_LINEAR)
-    return resized_image
-
 # TODO: Implement the Dataset by using the csv file using in build_dataset.py
 class ImageQueryDataset(Dataset):
     def __init__(self, dataset_file, tokenizer_file, img_resolution=(224, 224)):
