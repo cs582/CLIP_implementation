@@ -3,21 +3,16 @@ import os
 import io
 import json
 import time
-import concurrent.futures
 import argparse
-
 import pandas as pd
+import numpy as np
+import concurrent.futures
 
 from tqdm import tqdm
 from PIL import Image
 from urllib.request import urlopen
-
 from tokenizers import Tokenizer, models, pre_tokenizers, decoders, trainers, processors
 
-from src.models.natural_language_processing.nlp_tokenization import BytePairEncoderTokenizer, prepare_corpus
-
-import numpy as np
-import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser(
     prog='CLIP Data.',
@@ -167,7 +162,7 @@ if __name__ == "__main__":
 
         # Customize pre-tokenization and decoding
         tokenizer.pre_tokenizer = pre_tokenizers.ByteLevel(add_prefix_space=True)
-        tokenizer.decoder = decoders.ByteLevel()
+        tokenizer.decoder = decoders.BPEDecoder()
         tokenizer.post_processor = processors.ByteLevel(trim_offsets=True)
 
         # Define special tokens
