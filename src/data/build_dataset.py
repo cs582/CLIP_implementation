@@ -19,7 +19,7 @@ def build():
 
     for x in img_in_dir:
         try:
-            int(x)
+            int(x[:-4])
         except:
             print(f"{x} failed")
 
