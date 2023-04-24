@@ -10,9 +10,11 @@ def build():
     image_dir = "src/data/image_gen/WQ-dataset/images"
 
     # Read csv file with queries
+    print(f"Reading {wq_dataset_file}")
     queries = pd.read_csv(wq_dataset_file, index_col=0, usecols=['query']).index
 
     # Get all (valid) images from image directory
+    print(f"Getting all valid images from {image_dir}")
     img_in_dir = [x for x in os.listdir(image_dir) if ".jpg" in x and min(Image.open(os.path.join(image_dir, x)).size) >= 112]
 
     # Valid queries mask
@@ -29,5 +31,6 @@ def build():
 
     # Save pairs in DataFrame
     wqi_local_file = "src/data/image_gen/WQ-dataset/WQI_local.csv"
+    print(f"Saving as {wqi_local_file}")
     pd.DataFrame(pairs, columns=["Q", "IMG"]).to_csv(wqi_local_file)
     print(f"Successfully saved WQI_local as {wqi_local_file}")
