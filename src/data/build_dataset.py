@@ -45,5 +45,5 @@ def build():
     # Save pairs in DataFrame
     wqi_local_file = "src/data/image_gen/WQ-dataset/WQI_local.csv"
     print(f"Saving as {wqi_local_file}")
-    pd.DataFrame(pairs, columns=["Q", "IMG"]).to_csv(wqi_local_file)
+    pd.DataFrame(pairs, columns=["Q", "IMG"]).to_csv(wqi_local_file, index=False, header=True)
     print(f"Successfully saved WQI_local as {wqi_local_file}")
