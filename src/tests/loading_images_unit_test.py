@@ -8,7 +8,7 @@ import numpy as np
 from PIL import Image
 from torchvision.transforms import transforms
 
-transformation = transforms.ToTensor()
+transformation = transforms.Compose([transforms.ToTensor()])
 
 
 class LoadingImagesUnitTest(unittest.TestCase):
@@ -21,8 +21,7 @@ class LoadingImagesUnitTest(unittest.TestCase):
             img_filename = os.path.join(img_path, f"{img_name}.jpg")
 
             start = time.time()
-            x = np.asarray(Image.open(img_filename))
-            x = transformation(x)
+            x = transformation(np.asarray(Image.open(img_filename)))
             end = time.time()
 
             times[i] = end - start
@@ -38,8 +37,7 @@ class LoadingImagesUnitTest(unittest.TestCase):
             img_filename = os.path.join(img_path, f"{img_name}.jpg")
 
             start = time.time()
-            x = cv2.imread(img_filename)[:, :, ::-1]
-            x = transformation(x)
+            x = transformation(cv2.imread(img_filename)[:, :, ::-1])
             end = time.time()
 
             times[i] = end - start
