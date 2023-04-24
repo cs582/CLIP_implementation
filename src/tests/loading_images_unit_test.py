@@ -11,7 +11,7 @@ from torchvision.transforms import transforms
 transformation = transforms.ToTensor()
 
 
-class BackbonesTextUnitTest(unittest.TestCase):
+class LoadingImagesUnitTest(unittest.TestCase):
     def test_pillow(self):
         img_path = "src/data/image_gen/WQ-dataset/images"
 
