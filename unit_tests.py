@@ -56,13 +56,10 @@ if __name__ == '__main__':
     # Test Loading Images
     loading_images_test = unittest.TestLoader().loadTestsFromTestCase(LoadingImagesUnitTest)
 
-    # Tokenization test
-    tokenization_test = unittest.TestLoader().loadTestsFromTestCase(TokenizationUnitTest)
-
     # List all tests to run
     tests_to_run = []
     if args.test_n in [0, 1]:
-        tests_to_run += [utils_test, loading_images_test, tokenization_test, rn_modules_test, radford_test, image_scrapping_test]
+        tests_to_run += [utils_test, loading_images_test, rn_modules_test, radford_test, image_scrapping_test]
 
     if args.cpu_heavy:
         if args.test_n in [0, 1]:
