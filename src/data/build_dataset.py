@@ -1,8 +1,16 @@
+import re
 import os
 import pandas as pd
 import numpy as np
+from tqdm import tqdm
 
 from PIL import Image
+
+pattern = re.compile("^[0-9]\.jpg$")
+
+
+def valid_image_checker(image_dir, x):
+    return pattern.search(x) and min(Image.open(os.path.join(image_dir, x)).size) >= 112
 
 
 def build():
@@ -14,8 +22,7 @@ def build():
     queries = pd.read_csv(wq_dataset_file, index_col=0, usecols=['query']).index
 
     # Get all (valid) images from image directory
-    print(f"Getting all valid images from {image_dir}")
-    img_in_dir = [x for x in os.listdir(image_dir) if ".jpg" in x and min(Image.open(os.path.join(image_dir, x)).size) >= 112]
+    img_in_dir = [x for x in tqdm(os.listdir(image_dir), total=len(image_dir), desc="Getting (valid) images") if valid_image_checker(image_dir, x)]
 
     for x in img_in_dir:
         try:
