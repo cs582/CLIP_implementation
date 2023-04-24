@@ -26,7 +26,7 @@ class LoadingImagesUnitTest(unittest.TestCase):
 
             times[i] = end - start
 
-        print(f"Loaded images with PIL: {times}. AVG: {np.mean(times)}")
+        print(f"Loaded images with PIL: {times}. AVG: {np.mean(times[1:])}")
 
     def test_cv2(self):
         img_path = "src/data/image_gen/WQ-dataset/images"
@@ -42,6 +42,6 @@ class LoadingImagesUnitTest(unittest.TestCase):
 
             times[i] = end - start
 
-        print(f"Loaded images with OpenCV: {times}. AVG: {np.mean(times)}")
+        print(f"Loaded images with OpenCV: {times}. AVG: {np.mean(times[1:])}")
 
 
