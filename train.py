@@ -33,6 +33,7 @@ parser.add_argument('-max_temperature', type=float, default=100.0, help="Maximum
 parser.add_argument('-batch_size', type=int, default=8, help="Batch size. Is the same as the multimodal embedding dimension.")
 parser.add_argument('-epochs', type=int, default=32, help="Epochs for training. (ignored in fine-tuning).")
 parser.add_argument('-vocab_size', type=int, default=20000, help="Vocabulary size from trained tokenizer.")
+parser.add_argument('-max_length', type=int, default=34, help="Max length of the token encoding.")
 parser.add_argument('-decay', type=float, default=0.2, help="Weight decay.")
 parser.add_argument('-beta_1', type=float, default=0.9, help="Adam optimizer beta_1.")
 parser.add_argument('-beta_2', type=float, default=0.98, help="Adam optimizer beta_2. Recommended 0.98 for ViT.")
