@@ -1,13 +1,12 @@
 from tqdm import tqdm
 
 
-def training(training_dataset, clip_model, loss_function, optimizer, epochs, device):
+def training(training_dataset, clip_model, loss_function, optimizer, epochs, device, batch_size):
     for epoch in range(0, epochs):
-        for images, queries in tqdm(training_dataset, desc=f"epoch {epoch}"):
+        pbar = tqdm(total=batch_size)
+        for images, queries in training_dataset:
             images.to(device)
             queries.to(device)
-
-            print("IMG shape", images.shape, "Queries shape", queries.shape)
 
             # Extract feature representations
             logits = clip_model(images, queries)
@@ -23,3 +22,6 @@ def training(training_dataset, clip_model, loss_function, optimizer, epochs, dev
 
             # Optimization
             optimizer.step()
+
+            pbar.set_description(f"Epoch:{epoch}. LOSS:{loss.item()}")
+            pbar.update(1)
