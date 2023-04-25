@@ -5,8 +5,7 @@ def training(training_dataset, clip_model, loss_function, optimizer, epochs, dev
     for epoch in range(0, epochs):
         pbar = tqdm(total=len(training_dataset))
         for images, queries in training_dataset:
-            images = images.to(device)
-            queries = queries.to(device)
+            images, queries = images.to(device), queries.to(device)
 
             # Extract feature representations
             logits = clip_model(images, queries)
