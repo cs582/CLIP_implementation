@@ -13,6 +13,7 @@ import torchvision.transforms as T
 
 class ImageQueryDataset(Dataset):
     def __init__(self, dataset_file, image_path, tokenizer_file, max_length, img_res=112):
+        print("Initializing Dataset...")
         # Initial parameters
         self.img_res = img_res
         self.max_length = max_length
@@ -31,6 +32,8 @@ class ImageQueryDataset(Dataset):
         # Read dataset from csv file
         self.data = pd.read_csv(dataset_file).values
         np.random.shuffle(self.data)
+
+        print("Dataset Initialization DONE.")
 
     def __len__(self):
         return len(self.data)
