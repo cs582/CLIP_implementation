@@ -23,8 +23,8 @@ class ImageQueryDataset(Dataset):
         self.image_path = image_path
 
         # Transformation is only Random Crop to match image resolution
-        self.transform = transforms.Compose([
-            transforms.RandomCrop((img_res, img_res)),
+        self.transform = T.Compose([
+            T.RandomCrop((img_res, img_res)),
         ])
 
         # Load tokenizer from file
