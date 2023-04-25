@@ -12,8 +12,10 @@ import torchvision.transforms as T
 
 
 class ImageQueryDataset(Dataset):
-    def __init__(self, dataset_file, image_path, tokenizer_file, img_res=112):
+    def __init__(self, dataset_file, image_path, tokenizer_file, max_length, img_res=112):
+        # Initial parameters
         self.img_res = img_res
+        self.max_length = max_length
 
         # Set image path
         self.image_path = image_path
@@ -50,8 +52,22 @@ class ImageQueryDataset(Dataset):
         if self.transform is not None:
             image = self.transform(image)
 
-        # Tokenize query
-        encoding = self.tokenizer.encode(query)
-        token = torch.tensor(encoding.ids)
+        # Encode sequence
+        encoded_query = self.tokenizer.encode(query)
+
+        # Truncate query if necessary
+        encoded_query = encoded_query[:self.max_length-2]
+
+        # Add end_of_sentence token [EOS]
+        encoded_query += [self.tokenizer.token_to_id('[EOS]')]
+
+        # Add padding to encoded sentence
+        encoded_query += [0] * (self.max_length - 2 - len(encoded_query))
+
+        # Add [SOS] and [EOS] tokens
+        encoded_query = [self.tokenizer.token_to_id('[SOS]')] + encoded_query
+
+        # Add
+        token = torch.tensor(encoded_query)
 
         return image, token
