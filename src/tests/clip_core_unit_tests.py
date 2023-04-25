@@ -1,17 +1,15 @@
 import unittest
 import torch
 import time
-import torch.nn as nn
 
 from torch.cuda.amp import autocast, GradScaler
 
 import numpy as np
 
 from src.models.CLIP_model import CLIPModule
-from src.models.computer_vision.backbones.vit import ViTat112, ViTat224, ViTat336
-from src.models.computer_vision.backbones.resnet34 import RN34at224, RN34at336
+from src.models.computer_vision.backbones.vit import ViTat112, ViTat224
 from src.models.natural_language_processing.nlp_backbones import TransformerB
-from src.utils import CLIPLoss
+from src.models.CLIP_Loss import CLIPLoss
 
 
 class CLIPUnitTest(unittest.TestCase):
@@ -59,7 +57,7 @@ class CLIPGPUUnitTest(unittest.TestCase):
         device = torch.device("cuda:0")
 
         # CLIP parameters
-        batch_size = 16
+        batch_size = 64
         embedding_dim = 512
         temperature = 0.07
 
@@ -127,7 +125,7 @@ class CLIPGPUUnitTest(unittest.TestCase):
         device = torch.device("cuda:0")
 
         # CLIP parameters
-        batch_size = 16
+        batch_size = 128
         embedding_dim = 512
         temperature = 0.07
 
