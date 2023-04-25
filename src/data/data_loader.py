@@ -47,8 +47,8 @@ class ImageQueryDataset(Dataset):
         _, h, w = image.shape
         factor = self.img_res / min(w, h)
 
-        new_width = int(w * factor)
-        new_height = int(h * factor)
+        new_width = int(w * factor) + 1
+        new_height = int(h * factor) + 1
 
         image = T.Resize((new_height, new_width))(image)
 
