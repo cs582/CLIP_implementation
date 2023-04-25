@@ -41,7 +41,7 @@ class ImageQueryDataset(Dataset):
     def __getitem__(self, index):
         query, x = self.data[index]
 
-        image = read_image(os.path.join(self.image_path, x))
+        image = read_image(os.path.join(self.image_path, x)).to(dtype=torch.float32)
 
         _, h, w = image.shape
         factor = self.img_res / min(w, h)
@@ -71,6 +71,6 @@ class ImageQueryDataset(Dataset):
         encoded_query = [self.tokenizer.token_to_id('[SOS]')] + encoded_query
 
         # Add
-        token = torch.tensor(encoded_query)
+        token = torch.tensor(encoded_query, dtype=torch.float32)
 
         return image, token
