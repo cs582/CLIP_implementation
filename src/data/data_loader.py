@@ -54,7 +54,10 @@ class ImageQueryDataset(Dataset):
 
         # Apply any data transformations if specified
         if self.transform is not None:
-            image = self.transform(image)
+            try:
+                image = self.transform(image)
+            except:
+                print(f"{image.shape}")
 
         # Encode sequence
         encoded_query = self.tokenizer.encode(query).ids
