@@ -12,11 +12,12 @@ import torchvision.transforms as T
 
 
 class ImageQueryDataset(Dataset):
-    def __init__(self, dataset_file, image_path, tokenizer_file, max_length, img_res=112):
+    def __init__(self, dataset_file, image_path, tokenizer_file, max_length, device, img_res=112):
         print("Initializing Dataset...")
         # Initial parameters
         self.img_res = img_res
         self.max_length = max_length
+        self.device = device
 
         # Set image path
         self.image_path = image_path
@@ -41,7 +42,7 @@ class ImageQueryDataset(Dataset):
     def __getitem__(self, index):
         query, x = self.data[index]
 
-        image = read_image(os.path.join(self.image_path, x)).to(dtype=torch.float32)
+        image = read_image(os.path.join(self.image_path, x)).to(self.device, dtype=torch.float32)
 
         _, h, w = image.shape
         factor = self.img_res / min(w, h)
@@ -71,6 +72,6 @@ class ImageQueryDataset(Dataset):
         encoded_query = [self.tokenizer.token_to_id('[SOS]')] + encoded_query
 
         # Add
-        token = torch.tensor(encoded_query, dtype=int)
+        token = torch.tensor(encoded_query, device=self.device, dtype=int)
 
         return image, token
