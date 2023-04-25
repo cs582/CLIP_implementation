@@ -101,7 +101,7 @@ if __name__ == "__main__":
     training_info_log_message(device, epochs, args.batch_size, args.image_encoder, args.text_encoder, args.image_dim_out, args.text_dim_out, optimizer)
 
     # Load training dataset
-    training_dataset = ImageQueryDataset(dataset_file, image_path, tokenizer_file, args.max_length, image_resolution)
+    training_dataset = ImageQueryDataset(dataset_file, image_path, tokenizer_file, args.max_length, device, image_resolution)
     dataloader = DataLoader(training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=10)
 
     # Training cycle
