@@ -1,9 +1,9 @@
 from tqdm import tqdm
 
 
-def training(training_dataset, clip_model, loss_function, optimizer, epochs, device, batch_size):
+def training(training_dataset, clip_model, loss_function, optimizer, epochs, device):
     for epoch in range(0, epochs):
-        pbar = tqdm(total=batch_size)
+        pbar = tqdm(total=len(training_dataset))
         for images, queries in training_dataset:
             images.to(device)
             queries.to(device)
@@ -23,5 +23,5 @@ def training(training_dataset, clip_model, loss_function, optimizer, epochs, dev
             # Optimization
             optimizer.step()
 
-            pbar.set_description(f"Epoch:{epoch}. LOSS:{loss.item()}")
+            pbar.set_description(f"Epoch:{epoch}. CURR LOSS:{loss.item()}")
             pbar.update(1)
