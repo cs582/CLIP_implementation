@@ -9,7 +9,7 @@ def training_info_log_message(device, epochs, batch_size, image_encoder, text_en
     Device:         {torch.cuda.get_device_name() if device == torch.device("cuda:0") else "CPU"}
     Epochs:         {epochs}
     Batch size:     {batch_size}
-    Image Encoder:  {image_encoder} (dim = {image_dim_out})
+    Image Encoder:  ViT{image_encoder} (dim = {image_dim_out})
     Text Encoder:   {text_encoder}  (dim = {text_dim_out})
     Optimizer:      {optimizer}
     _____________________________________________
