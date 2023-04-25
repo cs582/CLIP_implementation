@@ -7,6 +7,8 @@ def training(training_dataset, clip_model, loss_function, optimizer, epochs, dev
             images.to(device)
             queries.to(device)
 
+            print("IMG shape", images.shape, "Queries shape", queries.shape)
+
             # Extract feature representations
             logits = clip_model(images, queries)
 
