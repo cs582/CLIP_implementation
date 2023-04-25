@@ -62,7 +62,7 @@ if __name__ == "__main__":
     device = torch.device('cuda:0') if args.device=="gpu" else torch.device('cpu')
 
     # Pick Image Encoder model
-    assert args.image_encoder in ['ViT@112', 'ViT@224', 'ViT@336']
+    assert args.image_encoder in ['@112', '@224', '@336']
 
     image_model = None
     image_resolution = None
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         image_resolution = 336
 
     # Pick Text Encoder model
-    assert args.image_encoder in ['@112', '@224', '@336']
+    assert args.text_encoder in ['S', 'B', 'L']
 
     text_model = None
     if args.text_encoder == "S":
