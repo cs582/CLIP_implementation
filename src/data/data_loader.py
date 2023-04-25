@@ -71,6 +71,6 @@ class ImageQueryDataset(Dataset):
         encoded_query = [self.tokenizer.token_to_id('[SOS]')] + encoded_query
 
         # Add
-        token = torch.tensor(encoded_query, dtype=torch.int8)
+        token = torch.tensor(encoded_query, dtype=int)
 
         return image, token
