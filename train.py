@@ -81,11 +81,11 @@ if __name__ == "__main__":
 
     text_model = None
     if args.text_encoder == "S":
-        text_model = TransformerS(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=76, batch_size=args.batch_size)
+        text_model = TransformerS(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size)
     if args.text_encoder == "B":
-        text_model = TransformerB(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=76, batch_size=args.batch_size)
+        text_model = TransformerB(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size)
     if args.text_encoder == "L":
-        text_model = TransformerL(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=76, batch_size=args.batch_size)
+        text_model = TransformerL(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size)
 
     # Set CLIP Loss function
     loss_func = CLIPLoss(logits_length=multimodal_embedding_dim)
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     training_info_log_message(device, epochs, args.batch_size, args.image_encoder, args.text_encoder, args.image_dim_out, args.text_dim_out, optimizer)
 
     # Load training dataset
-    training_dataset = ImageQueryDataset(dataset_file, image_path, tokenizer_file, args.text_dim_out, image_resolution)
+    training_dataset = ImageQueryDataset(dataset_file, image_path, tokenizer_file, args.max_length, image_resolution)
     dataloader = DataLoader(training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=10)
 
     # Training cycle
