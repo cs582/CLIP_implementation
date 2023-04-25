@@ -1,4 +1,5 @@
 from tqdm import tqdm
+import numpy as np
 
 
 def training(training_dataset, clip_model, loss_function, optimizer, epochs, device):
@@ -22,5 +23,5 @@ def training(training_dataset, clip_model, loss_function, optimizer, epochs, dev
             # Optimization
             optimizer.step()
 
-            pbar.set_description(f"Epoch:{epoch}. CURR LOSS:{loss.item()}")
+            pbar.set_description(f"Epoch:{epoch}. CURR LOSS:{np.round(loss.item(),3)}")
             pbar.update(1)
