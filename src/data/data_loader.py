@@ -53,7 +53,7 @@ class ImageQueryDataset(Dataset):
             image = self.transform(image)
 
         # Encode sequence
-        encoded_query = self.tokenizer.encode(query)
+        encoded_query = self.tokenizer.encode(query).ids
 
         # Truncate query if necessary
         encoded_query = encoded_query[:self.max_length-2]
