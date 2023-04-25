@@ -65,7 +65,7 @@ class ImageQueryDataset(Dataset):
         encoded_query += [self.tokenizer.token_to_id('[EOS]')]
 
         # Add padding to encoded sentence
-        encoded_query += [0] * (self.max_length - 2 - len(encoded_query))
+        encoded_query += [0] * (self.max_length - len(encoded_query) - 1)
 
         # Add [SOS] and [EOS] tokens
         encoded_query = [self.tokenizer.token_to_id('[SOS]')] + encoded_query
