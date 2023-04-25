@@ -1,17 +1,17 @@
 import torch
 import argparse
 
-import torch.nn as nn
-
 from src.trainer import training
 from torch.utils.data import DataLoader
 from src.data.data_loader import ImageQueryDataset
 
-from src.utils import CLIPLoss
+from src.models.CLIP_Loss import CLIPLoss
 from src.models.CLIP_model import CLIPModule
 
 from src.models.computer_vision.backbones.vit import ViTat112, ViTat224, ViTat336
 from src.models.natural_language_processing.nlp_backbones import TransformerS, TransformerB, TransformerL
+
+from src.utils import training_info_log_message
 
 
 parser = argparse.ArgumentParser(
@@ -95,6 +95,9 @@ if __name__ == "__main__":
 
     # Set Adam Optimizer
     optimizer = torch.optim.Adam(clip_model.parameters(), lr=args.lr, eps=args.epsilon, betas=(args.beta_1, args.beta_2))
+
+    # Print training information
+    training_info_log_message(device, epochs, args.batch_size, args.image_encoder, args.text_encoder, args.image_dim_out, args.text_dim_out, optimizer)
 
     # Load training dataset
     training_dataset = ImageQueryDataset(dataset_file, image_path, tokenizer_file, args.text_dim_out, image_resolution)
