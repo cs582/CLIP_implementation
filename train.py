@@ -89,10 +89,10 @@ if __name__ == "__main__":
         text_model = TransformerL(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size)
 
     # Set CLIP Loss function
-    loss_func = CLIPLoss(logits_length=multimodal_embedding_dim)
+    loss_func = CLIPLoss(logits_length=multimodal_embedding_dim).to(device)
 
     # Call CLIP core model
-    clip_model = CLIPModule(image_encoder=image_model, text_encoder=text_model, dim_img=args.image_dim_out, dim_text=args.text_dim_out, embedding_dim=args.embedding_dim, temperature=0.07)
+    clip_model = CLIPModule(image_encoder=image_model, text_encoder=text_model, dim_img=args.image_dim_out, dim_text=args.text_dim_out, embedding_dim=args.embedding_dim, temperature=0.07).to(device)
 
     # Set Adam Optimizer
     optimizer = torch.optim.Adam(clip_model.parameters(), lr=args.lr, eps=args.epsilon, betas=(args.beta_1, args.beta_2))
