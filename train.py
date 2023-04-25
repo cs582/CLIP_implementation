@@ -44,7 +44,12 @@ parser.add_argument('-embedding_dim', type=int, default=512, help="Embedding dim
 
 args = parser.parse_args()
 
+dataset_file = "src/data/image_gen/WQ-dataset/WQI_local.csv"
+image_path = "src/data/image_gen/WQ-dataset/images"
+tokenizer_file = "src/data/nlp/tokenizers/CLIP-bpe.tokenizer.json"
+
 if __name__ == "__main__":
+
     if args.fine_tuning:
         epochs = 1
     else:
@@ -60,12 +65,16 @@ if __name__ == "__main__":
     assert args.image_encoder in ['ViT@112', 'ViT@224', 'ViT@336']
 
     image_model = None
+    image_resolution = None
     if args.image_encoder == "@112":
         image_model = ViTat112(dim_out=args.image_dim_out)
+        image_resolution = 112
     if args.image_encoder == "@224":
         image_model = ViTat224(dim_out=args.image_dim_out)
+        image_resolution = 224
     if args.image_encoder == "@336":
         image_model = ViTat336(dim_out=args.image_dim_out)
+        image_resolution = 336
 
     # Pick Text Encoder model
     assert args.image_encoder in ['@112', '@224', '@336']
@@ -88,7 +97,7 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(clip_model.parameters(), lr=args.lr, eps=args.epsilon, betas=(args.beta_1, args.beta_2))
 
     # Load training dataset
-    #training_dataset = ImageQueryDataset() % TODO
+    training_dataset = ImageQueryDataset(dataset_file, image_path, tokenizer_file, args.text_dim_out, image_resolution)
     dataloader = DataLoader(training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=10)
 
     # Training cycle
