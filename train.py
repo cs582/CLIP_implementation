@@ -8,8 +8,8 @@ from src.data.data_loader import ImageQueryDataset
 from src.models.CLIP_Loss import CLIPLoss
 from src.models.CLIP_model import CLIPModule
 
-from src.models.computer_vision.backbones.vit import ViTat112, ViTat224, ViTat336
-from src.models.natural_language_processing.nlp_backbones import TransformerS, TransformerB, TransformerL
+from src.models.computer_vision.backbones.vit import ViTBat224, ViTLat224
+from src.models.natural_language_processing.nlp_backbones import TransformerB, TransformerL
 
 from src.utils import training_info_log_message
 
@@ -32,13 +32,13 @@ parser.add_argument('-text_encoder', type=str, default=None, help="Text encoder 
 parser.add_argument('-max_temperature', type=float, default=100.0, help="Maximum temperature for CLIP loss.")
 parser.add_argument('-batch_size', type=int, default=8, help="Batch size. Is the same as the multimodal embedding dimension.")
 parser.add_argument('-epochs', type=int, default=32, help="Epochs for training. (ignored in fine-tuning).")
-parser.add_argument('-vocab_size', type=int, default=20000, help="Vocabulary size from trained tokenizer.")
+parser.add_argument('-vocab_size', type=int, default=43001, help="Vocabulary size from trained tokenizer.")
 parser.add_argument('-max_length', type=int, default=34, help="Max length of the token encoding.")
 parser.add_argument('-decay', type=float, default=0.2, help="Weight decay.")
 parser.add_argument('-beta_1', type=float, default=0.9, help="Adam optimizer beta_1.")
 parser.add_argument('-beta_2', type=float, default=0.98, help="Adam optimizer beta_2. Recommended 0.98 for ViT.")
 parser.add_argument('-epsilon', type=float, default=1e-6, help="Adam optimizer epsilon. Recommended 1e-6 for ViT.")
-parser.add_argument('-lr', type=float, default=2e-5, help="Learning rate.")
+parser.add_argument('-lr', type=float, default=5e-4, help="Learning rate.")
 parser.add_argument('-text_dim_out', type=int, default=512, help="Text encoder output dimension.")
 parser.add_argument('-image_dim_out', type=int, default=768, help="Image encoder output dimension.")
 parser.add_argument('-embedding_dim', type=int, default=512, help="Embedding dimension CLIP.")
@@ -63,26 +63,21 @@ if __name__ == "__main__":
     device = torch.device('cuda:0') if args.device=="gpu" else torch.device('cpu')
 
     # Pick Image Encoder model
-    assert args.image_encoder in ['@112', '@224', '@336']
+    assert args.image_encoder in ['B@224', 'L@224']
 
     image_model = None
     image_resolution = None
-    if args.image_encoder == "@112":
-        image_model = ViTat112(dim_out=args.image_dim_out)
-        image_resolution = 112
-    if args.image_encoder == "@224":
-        image_model = ViTat224(dim_out=args.image_dim_out)
+    if args.image_encoder == "B@224":
+        image_model = ViTBat224(dim_out=args.image_dim_out)
         image_resolution = 224
-    if args.image_encoder == "@336":
-        image_model = ViTat336(dim_out=args.image_dim_out)
-        image_resolution = 336
+    if args.image_encoder == "L@224":
+        image_model = ViTLat224(dim_out=args.image_dim_out)
+        image_resolution = 224
 
     # Pick Text Encoder model
-    assert args.text_encoder in ['S', 'B', 'L']
+    assert args.text_encoder in ['B', 'L']
 
     text_model = None
-    if args.text_encoder == "S":
-        text_model = TransformerS(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size)
     if args.text_encoder == "B":
         text_model = TransformerB(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size)
     if args.text_encoder == "L":
