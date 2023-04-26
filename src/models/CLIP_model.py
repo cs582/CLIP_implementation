@@ -34,7 +34,7 @@ class CLIPModule(nn.Module):
 
         # Scaled pairwise cosine similarities
         logits_images = torch.matmul(img_e, txt_e.t())  # batch_size x batch_size
-        logits_images = logits_images * torch.clamp_max(torch.exp(self.temperature), 0.01) # Scale by temperature
+        logits_images = logits_images * torch.clamp_max(torch.exp(self.temperature), max=np.log(100.0)) # Scale by temperature
         logits_text = logits_images.t()
 
         return logits_images, logits_text
