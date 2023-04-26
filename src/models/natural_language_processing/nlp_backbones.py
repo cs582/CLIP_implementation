@@ -51,7 +51,7 @@ class TransformerL(nn.Module):
         self.transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=12, dim_ff=2048)
 
         self.register_buffer('mask', torch.zeros(self.batch_size, self.max_length, self.max_length, dtype=torch.bool))
-        self.register_buffer('eos_mask', torch.zeros(self.batch_size, self.max_length, self.max_length, dtype=torch.bool))
+        self.register_buffer('eos_mask', torch.zeros(self.batch_size, self.max_length, dtype=torch.bool))
 
     def forward(self, x):
         b, _ = x.shape
