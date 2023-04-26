@@ -32,11 +32,11 @@ class CLIPModule(nn.Module):
         txt_e = F.normalize(txt_e, p=2, dim=1) # l2 normalization
 
         # Max value of the logits
-        clip_upper = self.temperature * 100
+        clip_upper = self.temperature * 100.0
 
         # Scaled pairwise cosine similarities
         logits = torch.matmul(img_e, txt_e.transpose(0,1))  # batch_size x batch_size
-        logits = torch.maximum(logits, clip_upper) * torch.exp(self.temperature) # Scale by temerature
+        logits = torch.minimum(logits * torch.exp(self.temperature), clip_upper) # Scale by temerature
         return logits
 
 
