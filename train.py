@@ -30,7 +30,7 @@ parser.add_argument('-device', type=str, default="cpu", help="Set device to use:
 parser.add_argument('-image_encoder', type=str, default=None, help="Image encoder backbone. One of (ViT) @112, @224, or @336.")
 parser.add_argument('-text_encoder', type=str, default=None, help="Text encoder backbone. One of S (Small), B (Base), or L (Large).")
 parser.add_argument('-max_temperature', type=float, default=100.0, help="Maximum temperature for CLIP loss.")
-parser.add_argument('-batch_size', type=int, default=8, help="Batch size. Is the same as the multimodal embedding dimension.")
+parser.add_argument('-batch_size', type=int, default=128, help="Batch size. Is the same as the multimodal embedding dimension.")
 parser.add_argument('-epochs', type=int, default=32, help="Epochs for training. (ignored in fine-tuning).")
 parser.add_argument('-vocab_size', type=int, default=43001, help="Vocabulary size from trained tokenizer.")
 parser.add_argument('-max_length', type=int, default=34, help="Max length of the token encoding.")
@@ -101,6 +101,3 @@ if __name__ == "__main__":
 
     # Training cycle
     training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, epochs=epochs, device=device)
-
-
-
