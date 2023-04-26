@@ -6,7 +6,6 @@ import torch.utils.data
 
 from tokenizers import Tokenizer
 from torch.utils.data import Dataset
-from torchvision.transforms import transforms
 from torchvision.io import read_image
 import torchvision.transforms as T
 
