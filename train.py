@@ -68,10 +68,10 @@ if __name__ == "__main__":
     image_model = None
     image_resolution = None
     if args.image_encoder == "B@224":
-        image_model = ViTBat224(dim_out=args.image_dim_out)
+        image_model = ViTBat224(dim_out=args.image_dim_out).to(device)
         image_resolution = 224
     if args.image_encoder == "L@224":
-        image_model = ViTLat224(dim_out=args.image_dim_out)
+        image_model = ViTLat224(dim_out=args.image_dim_out).to(device)
         image_resolution = 224
 
     # Pick Text Encoder model
@@ -79,9 +79,9 @@ if __name__ == "__main__":
 
     text_model = None
     if args.text_encoder == "B":
-        text_model = TransformerB(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size)
+        text_model = TransformerB(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size).to(device)
     if args.text_encoder == "L":
-        text_model = TransformerL(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size)
+        text_model = TransformerL(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size).to(device)
 
     # Set CLIP Loss function
     loss_func = CLIPLoss(logits_length=multimodal_embedding_dim).to(device)
