@@ -9,13 +9,13 @@ def training(training_dataset, clip_model, loss_function, optimizer, epochs, dev
             images, queries = images.to(device), queries.to(device)
 
             # Extract feature representations
-            logits = clip_model(images, queries)
+            logits_images, logits_text = clip_model(images, queries)
 
             # Initialize Gradient
             optimizer.zero_grad()
 
             # Compute Loss
-            loss = loss_function(logits)
+            loss = loss_function(logits_images, logits_text)
 
             # Backpropagation
             loss.backward()

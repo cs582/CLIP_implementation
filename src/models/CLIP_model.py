@@ -33,9 +33,11 @@ class CLIPModule(nn.Module):
         txt_e = F.normalize(txt_e, p=2, dim=1) # l2 normalization
 
         # Scaled pairwise cosine similarities
-        logits = torch.matmul(img_e, txt_e.t())  # batch_size x batch_size
-        logits = logits * torch.exp(self.temperature) # Scale by temperature
-        return logits
+        logits_images = torch.matmul(img_e, txt_e.t())  # batch_size x batch_size
+        logits_images = logits_images * torch.exp(self.temperature) # Scale by temperature
+        logits_text = logits_images.t()
+
+        return logits_images, logits_text
 
 
 
