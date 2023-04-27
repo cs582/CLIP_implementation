@@ -25,6 +25,7 @@ parser = argparse.ArgumentParser(
 # Trainer mode
 parser.add_argument('-fine_tuning', type=bool, default=True, help='Perform Fine tuning over one epoch. Requires arg model different from default:None.')
 parser.add_argument('-device', type=str, default="cpu", help="Set device to use: gpu or cpu.")
+parser.add_argument('-load_last_checkpoint', type=bool, default=False, help="Load model from last checkpoint and restart training from there.")
 
 # CLIP Hyper-parameters
 parser.add_argument('-image_encoder', type=str, default=None, help="Image encoder backbone. One of (ViT) @112, @224, or @336.")
@@ -103,4 +104,4 @@ if __name__ == "__main__":
     dataloader = DataLoader(training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=10)
 
     # Training cycle
-    training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, epochs=epochs, device=device)
+    training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, epochs=epochs, device=device, load_last_checkpoint=args.load_last_checkpoint)
