@@ -1,9 +1,23 @@
 from tqdm import tqdm
+from src.utils import save_checkpoint, load_from_checkpoint
 import numpy as np
+import os
+
+# Models directory
+models_dir = "src/models/checkpoints"
 
 
-def training(training_dataset, clip_model, loss_function, optimizer, epochs, device):
-    for epoch in range(0, epochs):
+def training(training_dataset, clip_model, loss_function, optimizer, epochs, device, load_last_checkpoint=False, load_from_given_checkpoint=None):
+    loss_history = []
+
+    epoch_0 = 0
+    if load_last_checkpoint:
+        model_path = max([os.path.join(models_dir, x) for x in os.listdir(models_dir)], key=os.path.getctime)
+        epoch_0, loss_history = load_from_checkpoint(model_path, clip_model, optimizer)
+    elif load_from_given_checkpoint is not None:
+        epoch_0, loss_history = load_from_checkpoint(load_from_given_checkpoint, clip_model, optimizer)
+
+    for epoch in range(epoch_0, epochs):
         pbar = tqdm(total=len(training_dataset))
         for images, queries in training_dataset:
             images, queries = images.to(device), queries.to(device)
@@ -17,11 +31,17 @@ def training(training_dataset, clip_model, loss_function, optimizer, epochs, dev
             # Compute Loss
             loss = loss_function(logits_images, logits_text)
 
+            # Save to loss history
+            loss_history.append(np.round(loss.item(), 5))
+
             # Backpropagation
             loss.backward()
 
             # Optimization
             optimizer.step()
 
-            pbar.set_description(f"Epoch:{epoch}. CURR LOSS:{np.round(loss.item(),3)}")
+            pbar.set_description(f"Epoch:{epoch}. CURR LOSS:{loss_history[-1]}")
             pbar.update(1)
+
+        save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, loss_history=loss_history, models_dir=models_dir)
+
