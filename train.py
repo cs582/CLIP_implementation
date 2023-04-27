@@ -65,6 +65,9 @@ if __name__ == "__main__":
     # Pick Image Encoder model
     assert args.image_encoder in ['B@224', 'L@224']
 
+    # Enable cublasLt for mixed-precision training
+    torch.backends.cudnn.enabled = True
+
     image_model = None
     image_resolution = None
     if args.image_encoder == "B@224":
