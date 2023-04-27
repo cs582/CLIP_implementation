@@ -10,7 +10,11 @@ pattern = re.compile("^[0-9]+\.jpg$")
 
 
 def valid_image_checker(image_dir, x):
-    return pattern.search(x) and min(Image.open(os.path.join(image_dir, x)).size) >= 112
+    try:
+        return pattern.search(x) and min(Image.open(os.path.join(image_dir, x)).size) >= 112
+    except:
+        print(f"Error with image {x}")
+        return False
 
 
 def build():
