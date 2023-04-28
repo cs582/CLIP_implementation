@@ -47,6 +47,7 @@ class TransformerL(nn.Module):
 
         self.additional_tokens = additional_tokens
 
+        # Token Embedding
         self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size, embedding_dim=dim_out)
         self.transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=12, dim_ff=2048)
 
@@ -81,7 +82,9 @@ class TextTransformer(nn.Module):
 
         self.max_length = max_length
 
-        self.tkn_embedding_encoder = nn.Parameter(torch.rand(1, self.dim_model, self.dim_model))
+        # Intermediate encoder COMMENTED FOR TESTING
+        #self.tkn_embedding_encoder = nn.Parameter(torch.rand(1, self.dim_model, self.dim_model))
+        # Positional embedding
         self.pos_encoder = nn.Parameter(torch.rand(1, self.max_length, self.dim_model))
 
         self.transformers = nn.ModuleList([
@@ -95,7 +98,8 @@ class TextTransformer(nn.Module):
 
     def forward(self, x, mask, eos_mask): # b x l_max x dim_v
         # Token embedding and position embedding
-        x = torch.matmul(x, self.tkn_embedding_encoder)     # b x l_max x dim_v -> b x l_max x dim_v
+        # INTERMEDIATE ENCODER COMMENTED FOR TESTING
+        #x = torch.matmul(x, self.tkn_embedding_encoder)     # b x l_max x dim_v -> b x l_max x dim_v
         x = torch.add(x, self.pos_encoder)                  # b x l_max x dim_v
 
         # Transformer layers
