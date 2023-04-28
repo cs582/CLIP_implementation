@@ -7,7 +7,7 @@ import os
 models_dir = "src/models/checkpoints"
 
 
-def training(training_dataset, clip_model, loss_function, optimizer, epochs, device, load_last_checkpoint=False, load_from_given_checkpoint=None):
+def training(training_dataset, clip_model, loss_function, optimizer, epochs, device, fine_tuning=False, load_last_checkpoint=False, load_from_given_checkpoint=None):
     loss_history = []
 
     epoch_0 = 0
@@ -18,8 +18,10 @@ def training(training_dataset, clip_model, loss_function, optimizer, epochs, dev
         epoch_0, loss_history = load_from_checkpoint(load_from_given_checkpoint, clip_model, optimizer)
 
     for epoch in range(epoch_0, epochs):
-        pbar = tqdm(total=len(training_dataset))
-        for images, queries in training_dataset:
+        # Taking 100 steps for fine-tuning
+        steps = len(training_dataset) if not fine_tuning else 100
+        pbar = tqdm(total=steps)
+        for idx, (images, queries) in enumerate(training_dataset):
             images, queries = images.to(device), queries.to(device)
 
             # Extract feature representations
@@ -42,6 +44,9 @@ def training(training_dataset, clip_model, loss_function, optimizer, epochs, dev
 
             pbar.set_description(f"Epoch:{epoch}. CURR LOSS:{loss_history[-1]}")
             pbar.update(1)
+
+            if idx >= steps:
+                break
 
         save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, loss_history=loss_history, models_dir=models_dir)
 

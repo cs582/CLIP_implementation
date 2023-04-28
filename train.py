@@ -23,7 +23,7 @@ parser = argparse.ArgumentParser(
 )
 
 # Trainer mode
-parser.add_argument('-fine_tuning', type=bool, default=True, help='Perform Fine tuning over one epoch. Requires arg model different from default:None.')
+parser.add_argument('-fine_tuning', type=bool, default=False, help='Perform Fine tuning over one epoch. Requires arg model different from default:None.')
 parser.add_argument('-device', type=str, default="cpu", help="Set device to use: gpu or cpu.")
 parser.add_argument('-load_last_checkpoint', type=bool, default=False, help="Load model from last checkpoint and restart training from there.")
 
@@ -87,6 +87,10 @@ if __name__ == "__main__":
     if args.text_encoder == "L":
         text_model = TransformerL(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size).to(device)
 
+    # Load training dataset
+    training_dataset = ImageQueryDataset(dataset_file, image_path, tokenizer_file, args.max_length, device, image_resolution)
+    dataloader = DataLoader(training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=10)
+
     # Set CLIP Loss function
     loss_func = CLIPLoss(logits_length=multimodal_embedding_dim).to(device)
 
@@ -99,9 +103,5 @@ if __name__ == "__main__":
     # Print training information
     training_info_log_message(device, epochs, args.batch_size, args.image_encoder, args.text_encoder, args.image_dim_out, args.text_dim_out, optimizer)
 
-    # Load training dataset
-    training_dataset = ImageQueryDataset(dataset_file, image_path, tokenizer_file, args.max_length, device, image_resolution)
-    dataloader = DataLoader(training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=10)
-
     # Training cycle
-    training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, epochs=epochs, device=device, load_last_checkpoint=args.load_last_checkpoint)
+    training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, epochs=epochs, device=device, fine_tuning=args.fine_tuning, load_last_checkpoint=args.load_last_checkpoint)
