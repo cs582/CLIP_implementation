@@ -7,7 +7,7 @@ import os
 models_dir = "src/models/checkpoints"
 
 
-def training(training_dataset, clip_model, loss_function, optimizer, epochs, device, fine_tuning=False, load_last_checkpoint=False, load_from_given_checkpoint=None):
+def training(training_dataset, clip_model, loss_function, optimizer, scheduler, epochs, device, fine_tuning=False, load_last_checkpoint=False, load_from_given_checkpoint=None):
     loss_history = []
 
     epoch_0 = 0
@@ -41,6 +41,7 @@ def training(training_dataset, clip_model, loss_function, optimizer, epochs, dev
 
             # Optimization
             optimizer.step()
+            scheduler.step()
 
             pbar.set_description(f"Epoch:{epoch}. CURR LOSS:{loss_history[-1]}")
             pbar.update(1)

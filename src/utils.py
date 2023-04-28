@@ -1,6 +1,17 @@
 import os
 import torch
+from torch.optim.lr_scheduler import LambdaLR
 from datetime import datetime as dt
+
+
+def warmup_scheduler(optimizer, warmup_steps, lr_init, lr_max):
+    def lr_lambda(current_step):
+        if current_step < warmup_steps:
+            return lr_init + (lr_max - lr_init) * current_step / warmup_steps
+        else:
+            return lr_max
+
+    return LambdaLR(optimizer, lr_lambda=lr_lambda)
 
 
 def save_checkpoint(model, optimizer, epoch, loss_history, models_dir):
