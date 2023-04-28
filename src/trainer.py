@@ -35,6 +35,9 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
             # Save to loss history
             loss_history.append(np.round(loss.item(), 5))
 
+            # Set pbar description
+            pbar.set_description(f"Epoch:{epoch}. Loss:{loss_history[-1]}. lr:{np.round(scheduler.get_last_lr(), 5)}")
+
             # Backpropagation
             loss.backward()
 
@@ -42,7 +45,6 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
             optimizer.step()
             scheduler.step()
 
-            pbar.set_description(f"Epoch:{epoch}. CURR LOSS:{loss_history[-1]}")
             pbar.update(1)
 
         save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, loss_history=loss_history, models_dir=models_dir)
