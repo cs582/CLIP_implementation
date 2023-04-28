@@ -12,11 +12,12 @@ class TransformerRadford(nn.Module):
         self.layer_norm_mlp = nn.LayerNorm(dim_model)
 
     def forward(self, x, mask):
-        x = torch.add(self.masked_self_attention(x, mask), x)
-        x = self.layer_norm_att(x)
-        x = torch.add(self.mlp(x), x)
-        out = self.layer_norm_mlp(x)
-        return out
+        x_norm = self.layer_norm_att(x)
+        x = torch.add(self.masked_self_attention(x_norm, mask), x)
+
+        x_norm = self.layer_norm_mlp(x)
+        x = torch.add(self.mlp(x_norm), x)
+        return x
 
 
 class MultilayerPerceptron(nn.Module):
@@ -28,10 +29,10 @@ class MultilayerPerceptron(nn.Module):
         self.fc_hidden = nn.Linear(self.dim_model, self.dim_ff)
         self.fc_out = nn.Linear(self.dim_ff, self.dim_model)
 
-        self.relu = nn.ReLU()
+        self.gelu = nn.GELU()
 
     def forward(self, x):
-        x = self.relu(self.fc_hidden(x))
+        x = self.gelu(self.fc_hidden(x))
         x = self.fc_out(x)
         return x
 
