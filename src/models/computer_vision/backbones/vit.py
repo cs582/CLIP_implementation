@@ -40,7 +40,7 @@ class ViTBat224(nn.Module):
         self.layer_norm = nn.LayerNorm(self.vector_size)
 
         # Transformer Encoder Hidden Layers
-        transformer_layer = nn.TransformerEncoderLayer(d_model=self.vector_size, activation='gelu', nhead=self.nhead, dim_feedforward=self.mlp_size)
+        transformer_layer = nn.TransformerEncoderLayer(d_model=self.vector_size, activation='gelu', nhead=self.nhead, dim_feedforward=self.mlp_size, norm_first=True, batch_first=True)
         self.transformer = nn.TransformerEncoder(encoder_layer=transformer_layer, num_layers=self.n_layers)
         self.to_latent = nn.Identity()
 
