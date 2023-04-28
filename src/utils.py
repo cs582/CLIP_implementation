@@ -5,7 +5,7 @@ from datetime import datetime as dt
 
 
 def warmup_scheduler(optimizer, warmup_steps, lr_max):
-    lr_lambda = lambda step: lr_max / warmup_steps if step < warmup_steps else 1.0
+    lr_lambda = lambda step: step * lr_max / warmup_steps if step < warmup_steps else 1.0
     return LambdaLR(optimizer, lr_lambda=lr_lambda)
 
 
