@@ -11,7 +11,7 @@ from src.models.CLIP_model import CLIPModule
 from src.models.computer_vision.backbones.vit import ViTBat224, ViTLat224
 from src.models.natural_language_processing.nlp_backbones import TransformerB, TransformerL
 
-from src.utils import training_info_log_message
+from src.utils import training_info_log_message, warmup_scheduler
 
 
 parser = argparse.ArgumentParser(
@@ -26,6 +26,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('-fine_tuning', type=bool, default=False, help='Perform Fine tuning over one epoch. Requires arg model different from default:None.')
 parser.add_argument('-device', type=str, default="cpu", help="Set device to use: gpu or cpu.")
 parser.add_argument('-load_last_checkpoint', type=bool, default=False, help="Load model from last checkpoint and restart training from there.")
+parser.add_argument('-warmup', type=int, default=2000, help="Warmup steps.")
 
 # CLIP Hyper-parameters
 parser.add_argument('-image_encoder', type=str, default=None, help="Image encoder backbone. One of (ViT) @112, @224, or @336.")
@@ -100,8 +101,11 @@ if __name__ == "__main__":
     # Set Adam Optimizer
     optimizer = torch.optim.AdamW(clip_model.parameters(), lr=args.lr, eps=args.epsilon, betas=(args.beta_1, args.beta_2), weight_decay=args.decay)
 
+    # Warm-up scheduler
+    scheduler = warmup_scheduler(optimizer, warmup_steps=args.warmup, lr_init=0, lr_max=args.lr)
+
     # Print training information
     training_info_log_message(device, epochs, args.batch_size, args.image_encoder, args.text_encoder, args.image_dim_out, args.text_dim_out, optimizer)
 
     # Training cycle
-    training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, epochs=epochs, device=device, fine_tuning=args.fine_tuning, load_last_checkpoint=args.load_last_checkpoint)
+    training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, scheduler=scheduler, epochs=epochs, device=device, fine_tuning=args.fine_tuning, load_last_checkpoint=args.load_last_checkpoint)
