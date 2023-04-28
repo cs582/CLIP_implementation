@@ -35,11 +35,11 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
             # Save to loss history
             loss_history.append(np.round(loss.item(), 5))
 
-            # Set pbar description
-            pbar.set_description(f"Epoch:{epoch}. Loss:{loss_history[-1]}. lr:{np.round(scheduler.get_last_lr(), 5)}")
-
             # Backpropagation
             loss.backward()
+
+            # Set pbar description
+            pbar.set_description(f"Epoch:{epoch}. Loss:{loss_history[-1]}. lr:{np.round(scheduler.get_last_lr(), 5)}")
 
             # Optimization
             optimizer.step()
