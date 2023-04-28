@@ -7,7 +7,7 @@ import os
 models_dir = "src/models/checkpoints"
 
 
-def training(training_dataset, clip_model, loss_function, optimizer, scheduler, epochs, device, fine_tuning=False, load_last_checkpoint=False, load_from_given_checkpoint=None):
+def training(training_dataset, clip_model, loss_function, optimizer, scheduler, epochs, device, load_last_checkpoint=False, load_from_given_checkpoint=None):
     loss_history = []
 
     epoch_0 = 0
@@ -19,8 +19,7 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
 
     for epoch in range(epoch_0, epochs):
         # Taking 100 steps for fine-tuning
-        steps = len(training_dataset) if not fine_tuning else 100
-        pbar = tqdm(total=steps)
+        pbar = tqdm(total=len(training_dataset))
         for idx, (images, queries) in enumerate(training_dataset):
             images, queries = images.to(device), queries.to(device)
 
@@ -45,9 +44,6 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
 
             pbar.set_description(f"Epoch:{epoch}. CURR LOSS:{loss_history[-1]}")
             pbar.update(1)
-
-            if idx >= steps:
-                break
 
         save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, loss_history=loss_history, models_dir=models_dir)
 
