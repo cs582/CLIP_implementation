@@ -82,10 +82,9 @@ class TextTransformer(nn.Module):
 
         self.max_length = max_length
 
-        # Intermediate encoder COMMENTED FOR TESTING
-        #self.tkn_embedding_encoder = nn.Parameter(torch.rand(1, self.dim_model, self.dim_model))
         # Positional embedding
-        self.pos_encoder = nn.Parameter(torch.rand(1, self.max_length, self.dim_model))
+        self.pos_encoder = nn.Parameter(self._get_pos_encoding(max_length, dim_model))
+        #self.pos_encoder = nn.Parameter(torch.rand(1, self.max_length, self.dim_model))
 
         self.transformers = nn.ModuleList([
             TransformerRadford(dim_model=self.dim_model, nhead=self.nhead, dim_ff=self.dim_ff) for _ in range(self.n_layers)
@@ -96,11 +95,10 @@ class TextTransformer(nn.Module):
         # Layer Normalization
         self.layer_norm = nn.LayerNorm(self.dim_model)
 
-    def forward(self, x, mask, eos_mask): # b x l_max x dim_v
-        # Token embedding and position embedding
+        self._initialize_weights()
 
-        # INTERMEDIATE ENCODER COMMENTED FOR TESTING
-        #x = torch.matmul(x, self.tkn_embedding_encoder)     # b x l_max x dim_v -> b x l_max x dim_v
+    def forward(self, x, mask, eos_mask): # b x l_max x dim_v
+        # Add position encoder to token embedded input x
         x = torch.add(x, self.pos_encoder)                  # b x l_max x dim_v
 
         # Transformer layers
@@ -114,5 +112,18 @@ class TextTransformer(nn.Module):
         x = self.to_latent(x)
         x = self.layer_norm(x)
         return x
+
+    def _get_pos_encoding(self, max_length, dim_model):
+        pos = torch.arange(max_length).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, dim_model, 2) * -(math.log(10000.0) / dim_model))
+        pos_encoding = torch.zeros((1, max_length, dim_model))
+        pos_encoding[0, :, 0::2] = torch.sin(pos * div_term)
+        pos_encoding[0, :, 1::2] = torch.cos(pos * div_term)
+        return nn.Parameter(pos_encoding, requires_grad=False)
+
+    def _initialize_weights(self):
+        for p in self.parameters():
+            if p.dim() > 1:
+                nn.init.xavier_uniform_(p)
 
 
