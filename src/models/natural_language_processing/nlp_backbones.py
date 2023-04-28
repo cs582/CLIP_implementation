@@ -95,8 +95,6 @@ class TextTransformer(nn.Module):
 
         # Layer Normalization
         self.layer_norm = nn.LayerNorm(self.dim_model)
-        # self.fc = nn.Linear(self.dim_model, self.dim_model)
-        # self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x, mask, eos_mask): # b x l_max x dim_v
         # Token embedding and position embedding
@@ -115,10 +113,6 @@ class TextTransformer(nn.Module):
         # Feature representation
         x = self.to_latent(x)
         x = self.layer_norm(x)
-
-        # Last forward and softmax commented for TESTING
-        # x = self.fc(x)
-        # x = self.softmax(x)
         return x
 
 
