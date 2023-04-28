@@ -115,8 +115,8 @@ class ViTLat224(nn.Module):
         # Out MLP head with one
         self.mlp_head = nn.Sequential(
             nn.LayerNorm(self.vector_size),
-            nn.Linear(self.vector_size, self.mlp_size),
-            nn.Linear(self.mlp_size, dim_out),
+            nn.Linear(self.vector_size, self.vector_size),
+            nn.Linear(self.vector_size, dim_out),
         )
 
     def forward(self, x):
