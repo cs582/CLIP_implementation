@@ -102,10 +102,10 @@ if __name__ == "__main__":
     optimizer = torch.optim.AdamW(clip_model.parameters(), lr=args.lr, eps=args.epsilon, betas=(args.beta_1, args.beta_2), weight_decay=args.decay)
 
     # Warm-up scheduler
-    scheduler = warmup_scheduler(optimizer, warmup_steps=args.warmup, lr_init=0, lr_max=args.lr)
+    scheduler = warmup_scheduler(optimizer, warmup_steps=args.warmup, lr_init=0.0, lr_max=args.lr)
 
     # Print training information
     training_info_log_message(device, epochs, args.batch_size, args.image_encoder, args.text_encoder, args.image_dim_out, args.text_dim_out, optimizer)
 
     # Training cycle
-    training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, scheduler=scheduler, epochs=epochs, device=device, fine_tuning=args.fine_tuning, load_last_checkpoint=args.load_last_checkpoint)
+    training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, scheduler=scheduler, epochs=epochs, device=device, load_last_checkpoint=args.load_last_checkpoint)
