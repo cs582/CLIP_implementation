@@ -4,6 +4,9 @@ from datetime import datetime as dt
 
 
 def save_checkpoint(model, optimizer, epoch, loss_history, models_dir):
+    if not os.path.exists(models_dir):
+        os.mkdir(models_dir)
+
     PATH = os.path.join(models_dir, f"CLIP_epoch_{epoch}_{dt.strftime(dt.now(), '%Y-%m-%d_%H:%M:%S')}")
 
     torch.save({
