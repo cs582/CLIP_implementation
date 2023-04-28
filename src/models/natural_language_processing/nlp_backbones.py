@@ -93,11 +93,14 @@ class TextTransformer(nn.Module):
 
         self.to_latent = nn.Identity()
 
-        self.fc = nn.Linear(self.dim_model, self.dim_model)
-        self.softmax = nn.Softmax(dim=1)
+        # Layer Normalization
+        self.layer_norm = nn.LayerNorm(self.dim_model)
+        # self.fc = nn.Linear(self.dim_model, self.dim_model)
+        # self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x, mask, eos_mask): # b x l_max x dim_v
         # Token embedding and position embedding
+
         # INTERMEDIATE ENCODER COMMENTED FOR TESTING
         #x = torch.matmul(x, self.tkn_embedding_encoder)     # b x l_max x dim_v -> b x l_max x dim_v
         x = torch.add(x, self.pos_encoder)                  # b x l_max x dim_v
@@ -106,12 +109,16 @@ class TextTransformer(nn.Module):
         for l in range(self.n_layers):
             x = checkpoint(self.transformers[l], x, mask)
 
-        # Get last [EOS] token
+        # Get last [EOS] token at highest layer
         x = x[eos_mask]
-        x = self.to_latent(x)
 
-        x = self.fc(x)
-        x = self.softmax(x)
+        # Feature representation
+        x = self.to_latent(x)
+        x = self.layer_norm(x)
+
+        # Last forward and softmax commented for TESTING
+        # x = self.fc(x)
+        # x = self.softmax(x)
         return x
 
 

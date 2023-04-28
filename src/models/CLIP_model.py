@@ -17,8 +17,8 @@ class CLIPModule(nn.Module):
         self.image_encoder = image_encoder
         self.text_encoder = text_encoder
 
-        self.img_mm_encoder = nn.Parameter(torch.randn(self.dim_img, self.embedding_dim))
-        self.txt_mm_encoder = nn.Parameter(torch.randn(self.dim_text, self.embedding_dim))
+        self.img_mm_encoder = nn.Linear(self.dim_img, self.embedding_dim, bias=False)
+        self.txt_mm_encoder = nn.Linear(self.dim_text, self.embedding_dim, bias=False)
 
     def forward(self, image, text):
         # Extract feature representation of each modality
@@ -26,10 +26,10 @@ class CLIPModule(nn.Module):
         txt_f = self.text_encoder(text)   # batch_suze x dim_text
 
         # Joint multimodal embedding
-        img_e = torch.matmul(img_f, self.img_mm_encoder) # batch_size x dim_emb
+        img_e = self.img_mm_encoder(img_f) # batch_size x dim_emb
         img_e = F.normalize(img_e, p=2, dim=1) # l2 normalization
 
-        txt_e = torch.matmul(txt_f, self.txt_mm_encoder) # batch_size x dim_emb
+        txt_e = self.txt_mm_encoder(txt_f) # batch_size x dim_emb
         txt_e = F.normalize(txt_e, p=2, dim=1) # l2 normalization
 
         # Scaled pairwise cosine similarities
