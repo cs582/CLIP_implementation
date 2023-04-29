@@ -14,7 +14,7 @@ from urllib.request import urlopen
 # -----------------
 
 
-def url_image_save_multithreaded(urls, path, num_workers=10, first_index=0):
+def url_image_save_multithreaded(urls, path, num_workers=20, first_index=0):
     curr_index = first_index
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
         futures = []
