@@ -52,7 +52,7 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
             scheduler.step()
 
             # Save to S3
-            if (idx+1) % 1000 == 0:
+            if (idx+1) % 500 == 0:
                 loss_bytes = json.dumps(loss_history)
                 s3.put_object(Bucket='clip-loss-may-1', Key='clip_loss.json', Body=loss_bytes)
 
