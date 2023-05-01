@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     # Load training dataset
     training_dataset = ImageQueryDataset(dataset_file, image_path, tokenizer_file, args.max_length, device, image_resolution)
-    dataloader = DataLoader(training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=10)
+    dataloader = DataLoader(training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=10, drop_last=True)
 
     # Set CLIP Loss function
     loss_func = CLIPLoss(logits_length=multimodal_embedding_dim).to(device)
