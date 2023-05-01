@@ -1,6 +1,7 @@
 import torch
 import argparse
 
+from torch.utils.tensorboard import SummaryWriter
 from src.trainer import training
 from torch.utils.data import DataLoader
 from src.data.data_loader import ImageQueryDataset
@@ -50,6 +51,8 @@ args = parser.parse_args()
 dataset_file = "src/data/image_gen/WQ-dataset/WQI_local.csv"
 image_path = "src/data/image_gen/WQ-dataset/images"
 tokenizer_file = "src/data/nlp/tokenizers/CLIP-bpe.tokenizer.json"
+
+writer = SummaryWriter('logs')
 
 if __name__ == "__main__":
 
@@ -108,4 +111,4 @@ if __name__ == "__main__":
     training_info_log_message(device, epochs, args.batch_size, args.image_encoder, args.text_encoder, args.image_dim_out, args.text_dim_out, optimizer)
 
     # Training cycle
-    training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, scheduler=scheduler, epochs=epochs, device=device, load_last_checkpoint=args.load_last_checkpoint)
+    training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, scheduler=scheduler, epochs=epochs, device=device, writer=writer, load_last_checkpoint=args.load_last_checkpoint)

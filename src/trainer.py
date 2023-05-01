@@ -3,11 +3,13 @@ from src.utils import save_checkpoint, load_from_checkpoint
 import numpy as np
 import os
 
+
+
 # Models directory
 models_dir = "src/models/checkpoints"
 
 
-def training(training_dataset, clip_model, loss_function, optimizer, scheduler, epochs, device, load_last_checkpoint=False, load_from_given_checkpoint=None):
+def training(training_dataset, clip_model, loss_function, optimizer, scheduler, epochs, device, writer, load_last_checkpoint=False, load_from_given_checkpoint=None):
     loss_history = []
 
     epoch_0 = 0
@@ -40,6 +42,10 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
 
             # Set pbar description
             pbar.set_description(f"Epoch:{epoch}. Loss:{loss_history[-1]}. lr:{scheduler.get_last_lr()[-1]}")
+
+            # To tensorboard
+            writer.add_scalar('Loss/train', loss_history[-1], global_step=epoch)
+            writer.add_scalar('LearningRate/train', scheduler.get_last_lr()[-1], global_step=epoch)
 
             # Optimization
             optimizer.step()
