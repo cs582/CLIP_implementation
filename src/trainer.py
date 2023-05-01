@@ -1,15 +1,19 @@
-from tqdm import tqdm
-from src.utils import save_checkpoint, load_from_checkpoint
 import numpy as np
+import boto3
+import json
 import os
 
+from tqdm import tqdm
+from src.utils import save_checkpoint, load_from_checkpoint
 
+
+s3 = boto3.client('s3')
 
 # Models directory
 models_dir = "src/models/checkpoints"
 
 
-def training(training_dataset, clip_model, loss_function, optimizer, scheduler, epochs, device, writer, load_last_checkpoint=False, load_from_given_checkpoint=None):
+def training(training_dataset, clip_model, loss_function, optimizer, scheduler, epochs, device, load_last_checkpoint=False, load_from_given_checkpoint=None):
     loss_history = []
 
     epoch_0 = 0
@@ -43,13 +47,14 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
             # Set pbar description
             pbar.set_description(f"Epoch:{epoch}. Loss:{loss_history[-1]}. lr:{scheduler.get_last_lr()[-1]}")
 
-            # To tensorboard
-            writer.add_scalar('Loss/train', loss_history[-1], global_step=epoch)
-            writer.add_scalar('LearningRate/train', scheduler.get_last_lr()[-1], global_step=epoch)
-
             # Optimization
             optimizer.step()
             scheduler.step()
+
+            # Save to S3
+            if (idx+1) % 1000 == 0:
+                loss_bytes = json.dumps(loss_history)
+                s3.put_object(Bucket='clip-loss-may-1', Key='clip_loss.json', Body=loss_bytes)
 
             pbar.update(1)
 
