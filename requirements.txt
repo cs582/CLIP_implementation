@@ -4,5 +4,6 @@ numpy
 pandas
 einops
 tokenizers
+tensorboard
 opencv-python
 matplotlib
