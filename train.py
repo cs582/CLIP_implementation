@@ -1,7 +1,8 @@
 import torch
 import argparse
 
-from torch.utils.tensorboard import SummaryWriter
+from tensorboardX import SummaryWriter
+
 from src.trainer import training
 from torch.utils.data import DataLoader
 from src.data.data_loader import ImageQueryDataset
