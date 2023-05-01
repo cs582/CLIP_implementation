@@ -4,7 +4,7 @@ numpy
 pandas
 einops
 tokenizers
-tensorboard
+tensorboard==2.11.1
 tensorboardX
 opencv-python
 matplotlib
