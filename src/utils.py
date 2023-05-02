@@ -4,12 +4,8 @@ from torch.optim.lr_scheduler import LambdaLR
 from datetime import datetime as dt
 
 
-def warmup_scheduler(optimizer, warmup_steps, total_steps, lr_max):
-    def lr_lambda(step):
-        if step < warmup_steps:
-            return step * lr_max / warmup_steps
-        else:
-            return step * (1.0 - lr_max / (total_steps - warmup_steps))
+def warmup_scheduler(optimizer, warmup_steps, lr_max):
+    lr_lambda = lambda step: step * lr_max / warmup_steps if step < warmup_steps else 1.0
     return LambdaLR(optimizer, lr_lambda=lr_lambda)
 
 
