@@ -3,6 +3,7 @@ import boto3
 import json
 import os
 
+from datetime import datetime
 from tqdm import tqdm
 from src.utils import save_checkpoint, load_from_checkpoint
 
@@ -11,10 +12,11 @@ s3 = boto3.client('s3')
 
 # Models directory
 models_dir = "src/models/checkpoints"
+history_filename = f"clip_loss_{datetime.strftime(datetime.now(), '%m-%d')}.json"
 
 
 def training(training_dataset, clip_model, loss_function, optimizer, scheduler, epochs, device, load_last_checkpoint=False, load_from_given_checkpoint=None):
-    loss_history = []
+    history = {"loss": [], "lr": []}
 
     epoch_0 = 0
     if load_last_checkpoint:
@@ -39,13 +41,14 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
             loss = loss_function(logits_images, logits_text)
 
             # Save to loss history
-            loss_history.append(np.round(loss.item(), 5))
+            history["loss"].append(np.round(loss.item(), 5))
+            history["lr"].append(scheduler.get_last_lr()[-1])
 
             # Backpropagation
             loss.backward()
 
             # Set pbar description
-            pbar.set_description(f"Epoch:{epoch}. Loss:{loss_history[-1]}. lr:{scheduler.get_last_lr()[-1]}")
+            pbar.set_description(f"Epoch:{epoch}. Loss:{history['loss'][-1]}. lr:{history['lr'][-1]}")
 
             # Optimization
             optimizer.step()
@@ -53,10 +56,10 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
 
             # Save to S3
             if (idx+1) % 500 == 0:
-                loss_bytes = json.dumps(loss_history)
-                s3.put_object(Bucket='clip-loss-may-1', Key='clip_loss.json', Body=loss_bytes)
+                history_bytes = json.dumps(history)
+                s3.put_object(Bucket='clip-loss-may-1', Key=history_filename, Body=history_bytes)
 
             pbar.update(1)
 
-        save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, loss_history=loss_history, models_dir=models_dir)
+        save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, loss_history=history["loss"], models_dir=models_dir)
 
