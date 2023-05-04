@@ -59,6 +59,10 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
                 history_bytes = json.dumps(history)
                 s3.put_object(Bucket='clip-loss-may-1', Key=history_filename, Body=history_bytes)
 
+            # Save model for caution
+            if (idx+1) % 5000 == 0:
+                save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, loss_history=history["loss"], models_dir=models_dir)
+
             pbar.update(1)
 
         save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, loss_history=history["loss"], models_dir=models_dir)
