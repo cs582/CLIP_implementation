@@ -9,7 +9,7 @@ from src.data.data_loader import ImageQueryDataset
 from src.models.CLIP_Loss import CLIPLoss
 from src.models.CLIP_model import CLIPModule
 
-from src.models.computer_vision.backbones.vit import ViTBat224, ViTLat224
+from src.models.computer_vision.backbones.vit import ViTBaseOver16at112, ViTBaseOver32at224, ViTSmallOver8at112, ViTSmallOver16at112, ViTLat224
 from src.models.natural_language_processing.nlp_backbones import TransformerB, TransformerL
 
 from src.utils import training_info_log_message, warmup_scheduler
@@ -67,19 +67,25 @@ if __name__ == "__main__":
     device = torch.device('cuda:0') if args.device=="gpu" else torch.device('cpu')
 
     # Pick Image Encoder model
-    assert args.image_encoder in ['B@224', 'L@224']
+    assert args.image_encoder in ['B/32@224', 'B/16@112', 'S/8@112', 'S/16@112']
 
     # Enable cublasLt for mixed-precision training
     torch.backends.cudnn.enabled = True
 
     image_model = None
     image_resolution = None
-    if args.image_encoder == "B@224":
-        image_model = ViTBat224(dim_out=args.image_dim_out).to(device)
+    if args.image_encoder == "B/32@224":
+        image_model = ViTBaseOver32at224(dim_out=args.image_dim_out).to(device)
         image_resolution = 224
-    if args.image_encoder == "L@224":
-        image_model = ViTLat224(dim_out=args.image_dim_out).to(device)
-        image_resolution = 224
+    if args.image_encoder == "B/16@112":
+        image_model = ViTBaseOver16at112(dim_out=args.image_dim_out).to(device)
+        image_resolution = 112
+    if args.image_encoder == "S/8@112":
+        image_model = ViTSmallOver8at112(dim_out=args.image_dim_out).to(device)
+        image_resolution = 112
+    if args.image_encoder == "S/16@112":
+        image_model = ViTSmallOver16at112(dim_out=args.image_dim_out).to(device)
+        image_resolution = 112
 
     # Pick Text Encoder model
     assert args.text_encoder in ['B', 'L']
