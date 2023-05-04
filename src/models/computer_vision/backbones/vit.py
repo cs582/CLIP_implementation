@@ -19,7 +19,7 @@ class ViTSmallOver16at112(nn.Module):
         # Latent vector size D
         self.vector_size = 512
         # FF dim
-        self.mlp_size = 4096
+        self.mlp_size = 2048
         # Number of heads
         self.nhead = 8
 
@@ -88,7 +88,7 @@ class ViTSmallOver8at112(nn.Module):
         # Latent vector size D
         self.vector_size = 512
         # FF dim
-        self.mlp_size = 4096
+        self.mlp_size = 2048
         # Number of heads
         self.nhead = 8
 
@@ -157,7 +157,7 @@ class ViTBaseOver16at112(nn.Module):
         # Latent vector size D
         self.vector_size = 768
         # FF dim
-        self.mlp_size = 4096
+        self.mlp_size = 3072
         # Number of heads
         self.nhead = 12
 
@@ -226,7 +226,7 @@ class ViTBaseOver32at224(nn.Module):
         # Latent vector size D
         self.vector_size = 768
         # FF dim
-        self.mlp_size = 4096
+        self.mlp_size = 3072
         # Number of heads
         self.nhead = 12
 
