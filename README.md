@@ -50,6 +50,54 @@ and then 2 to test only the full CLIP model.
 python unit_tests.py -cpu_heavy=True -gpu_heavy=True -test_n=0
 ```
 
+## Data
+
+The dataset used in this project was created from scratch for this specific task,
+it was created by scraping through Wikipedia and Unsquash and I named it WI-10M.
+
+The steps to build this dataset are the following:
+
+1. Download a Wikipedia Dumpfile or use Wikipedia's API to retrieve all article's titles. 
+2. Scrape through the whole pages' body searching for all words in english and counting each word's occurrence. 
+3. Retain all words that occurred more than a hundred times.
+```sh
+# Tasks 1, 2, and 3
+python src/data/image_gen/word_scraping.py
+```
+4. Get up to 10,000 images per label from ```unsquash.com```'s API.
+```sh
+# Task 4
+python src/data/image_gen/image_scraping.py
+```
+5. Step 4 produces several json files, so the text step is to join these JSON files.
+```sh
+# Task 5
+python data -task=1
+```
+6. Step 4 also gets only the address of each image, but each file should be downloaded for better performance.
+```sh
+# Task 6
+python data -task=2
+```
+7. Lastly, using all downloaded images, we build a second dataset with all valid images in the
+```data/image_gen/WQ-dataset/images``` directory. This sets it all up in a nice CSV file ready
+to be used in our Training.
+```sh
+# Task 7
+python data -task=4
+```
+
+## Tokenization
+
+In order to train the tokenizer, it's necessary to build a corpus text. In this case,
+the corpus is built by using the queries of each image and just sticking them together. Then this corpus
+is used to train the BytePairEncoding tokenizer.
+```sh
+python data -task=3.5
+python data -task=3
+```
+
+
 ## Training
 
 To train the machine learning model, you can choose from 2 Text-Encoders (Base and Large)
