@@ -21,9 +21,10 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
     epoch_0 = 0
     if load_last_checkpoint:
         model_path = max([os.path.join(models_dir, x) for x in os.listdir(models_dir)], key=os.path.getctime)
-        epoch_0, loss_history = load_from_checkpoint(model_path, clip_model, optimizer)
+        epoch_0, history, scheduler = load_from_checkpoint(model_path, clip_model, optimizer)
+
     elif load_from_given_checkpoint is not None:
-        epoch_0, loss_history = load_from_checkpoint(load_from_given_checkpoint, clip_model, optimizer)
+        epoch_0, history, scheduler = load_from_checkpoint(load_from_given_checkpoint, clip_model, optimizer)
 
     for epoch in range(epoch_0, epochs):
         # Taking 100 steps for fine-tuning
@@ -52,18 +53,18 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
 
             # Optimization
             optimizer.step()
-            scheduler.step()
+            #scheduler.step()
 
             # Save to S3
-            if (idx+1) % 2000 == 0:
+            if (idx+1) % 750 == 0:
                 history_bytes = json.dumps(history)
                 s3.put_object(Bucket='clip-loss-may-1', Key=history_filename, Body=history_bytes)
 
             # Save model for caution
             if (idx+1) % 5000 == 0:
-                save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, loss_history=history["loss"], models_dir=models_dir)
+                save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, history=history, models_dir=models_dir, scheduler=scheduler)
 
             pbar.update(1)
 
-        save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, loss_history=history["loss"], models_dir=models_dir)
+        save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, history=history, models_dir=models_dir, scheduler=scheduler)
 

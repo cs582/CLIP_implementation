@@ -9,7 +9,7 @@ def warmup_scheduler(optimizer, warmup_steps, lr_max):
     return LambdaLR(optimizer, lr_lambda=lr_lambda)
 
 
-def save_checkpoint(model, optimizer, epoch, loss_history, models_dir):
+def save_checkpoint(model, optimizer, epoch, scheduler, history, models_dir):
     if not os.path.exists(models_dir):
         os.mkdir(models_dir)
 
@@ -19,7 +19,7 @@ def save_checkpoint(model, optimizer, epoch, loss_history, models_dir):
         'epoch': epoch,
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
-        'loss_history': loss_history,
+        'loss_history': history,
     }, PATH)
 
     print(f"CLIP saved as {PATH}")
@@ -35,7 +35,7 @@ def load_from_checkpoint(model_filepath, model, optimizer):
 
     print(f"CLIP successfully loaded from {model_filepath}")
 
-    return epoch, loss_history
+    return epoch, loss_history, None
 
 
 def training_info_log_message(device, epochs, batch_size, image_encoder, text_encoder, image_dim_out, text_dim_out, optimizer):
