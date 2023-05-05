@@ -21,10 +21,10 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
     epoch_0 = 0
     if load_last_checkpoint:
         model_path = max([os.path.join(models_dir, x) for x in os.listdir(models_dir)], key=os.path.getctime)
-        epoch_0, history, scheduler = load_from_checkpoint(model_path, clip_model, optimizer)
+        epoch_0, history["loss"], scheduler = load_from_checkpoint(model_path, clip_model, optimizer)
 
     elif load_from_given_checkpoint is not None:
-        epoch_0, history, scheduler = load_from_checkpoint(load_from_given_checkpoint, clip_model, optimizer)
+        epoch_0, history["loss"], scheduler = load_from_checkpoint(load_from_given_checkpoint, clip_model, optimizer)
 
     for epoch in range(epoch_0, epochs):
         # Taking 100 steps for fine-tuning
