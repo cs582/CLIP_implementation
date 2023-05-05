@@ -3,7 +3,6 @@ import boto3
 import json
 import os
 
-from datetime import datetime
 from tqdm import tqdm
 from src.utils import save_checkpoint, load_from_checkpoint
 
@@ -58,7 +57,7 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
             scheduler.step()
 
             # Save to S3
-            if (idx+1) % 1000 == 0:
+            if (idx+1) % 2000 == 0:
                 history_bytes = json.dumps(history_loss)
                 s3.put_object(Bucket='clip-loss-may-1', Key=history_filename, Body=history_bytes)
 
