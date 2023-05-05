@@ -21,15 +21,14 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
     epoch_0 = 0
     if load_last_checkpoint:
         model_path = max([os.path.join(models_dir, x) for x in os.listdir(models_dir)], key=os.path.getctime)
-        epoch_0, history_loss, scheduler = load_from_checkpoint(model_path, clip_model, optimizer)
+        epoch_0, history_loss = load_from_checkpoint(model_path, clip_model, scheduler, optimizer)
         epoch_0 += 1
 
     elif load_from_given_checkpoint is not None:
-        epoch_0, history_loss, scheduler = load_from_checkpoint(load_from_given_checkpoint, clip_model, optimizer)
+        epoch_0, history_loss = load_from_checkpoint(load_from_given_checkpoint, clip_model, scheduler, optimizer)
         epoch_0 += 1
 
     for epoch in range(epoch_0, epochs):
-        # Taking 100 steps for fine-tuning
         pbar = tqdm(total=len(training_dataset))
         for idx, (images, queries) in enumerate(training_dataset):
             images, queries = images.to(device), queries.to(device)
@@ -45,17 +44,17 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
 
             # Save to loss history
             history_loss.append(np.round(loss.item(), 5))
-            #last_lr = np.round(scheduler.get_last_lr(), 5)
+            last_lr = np.round(scheduler.get_last_lr(), 5)
 
             # Backpropagation
             loss.backward()
 
-            # Set pbar description % Hard coded, change for other tests
-            pbar.set_description(f"Epoch:{epoch}. Loss:{history_loss[-1]}. lr:{5e-4}")
+            # Set pbar description
+            pbar.set_description(f"Epoch:{epoch}. Loss:{history_loss[-1]}. lr:{last_lr}")
 
             # Optimization
             optimizer.step()
-            #scheduler.step()
+            scheduler.step()
 
             # Save to S3
             if (idx+1) % 1000 == 0:

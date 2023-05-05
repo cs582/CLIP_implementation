@@ -9,7 +9,7 @@ from src.data.data_loader import ImageQueryDataset
 from src.models.CLIP_Loss import CLIPLoss
 from src.models.CLIP_model import CLIPModule
 
-from src.models.computer_vision.backbones.vit import ViTBaseOver16at112, ViTBaseOver32at224, ViTSmallOver8at112, ViTSmallOver16at112, ViTLat224
+from src.models.computer_vision.backbones.vit import ViTBaseOver16at112, ViTBaseOver32at224, ViTSmallOver8at112, ViTSmallOver16at112
 from src.models.natural_language_processing.nlp_backbones import TransformerB, TransformerL
 
 from src.utils import training_info_log_message, warmup_scheduler
@@ -110,8 +110,7 @@ if __name__ == "__main__":
     optimizer = torch.optim.AdamW(clip_model.parameters(), lr=args.lr, eps=args.epsilon, betas=(args.beta_1, args.beta_2), weight_decay=args.decay)
 
     # Warm-up scheduler
-    #scheduler = warmup_scheduler(optimizer, warmup_steps=args.warmup, lr_max=args.lr)
-    scheduler = None
+    scheduler = warmup_scheduler(optimizer, warmup_steps=args.warmup, lr_max=args.lr)
 
     # Print training information
     training_info_log_message(device, epochs, args.batch_size, args.image_encoder, args.text_encoder, args.image_dim_out, args.text_dim_out, optimizer)
