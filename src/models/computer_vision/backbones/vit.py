@@ -226,7 +226,7 @@ class ViTBaseOver32at224(nn.Module):
         # Latent vector size D
         self.vector_size = 768
         # FF dim
-        self.mlp_size = 3072
+        self.mlp_size = 4096
         # Number of heads
         self.nhead = 12
 
