@@ -16,15 +16,15 @@ history_filename = f"clip_loss_{datetime.strftime(datetime.now(), '%m-%d')}.json
 
 
 def training(training_dataset, clip_model, loss_function, optimizer, scheduler, epochs, device, load_last_checkpoint=False, load_from_given_checkpoint=None):
-    history = {"loss": [], "lr": []}
+    history_loss = []
 
     epoch_0 = 0
     if load_last_checkpoint:
         model_path = max([os.path.join(models_dir, x) for x in os.listdir(models_dir)], key=os.path.getctime)
-        epoch_0, history["loss"], scheduler = load_from_checkpoint(model_path, clip_model, optimizer)
+        epoch_0, history_loss, scheduler = load_from_checkpoint(model_path, clip_model, optimizer)
 
     elif load_from_given_checkpoint is not None:
-        epoch_0, history["loss"], scheduler = load_from_checkpoint(load_from_given_checkpoint, clip_model, optimizer)
+        epoch_0, history_loss, scheduler = load_from_checkpoint(load_from_given_checkpoint, clip_model, optimizer)
 
     for epoch in range(epoch_0, epochs):
         # Taking 100 steps for fine-tuning
@@ -42,29 +42,29 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
             loss = loss_function(logits_images, logits_text)
 
             # Save to loss history
-            history["loss"].append(np.round(loss.item(), 5))
-            history["lr"].append(scheduler.get_last_lr()[-1])
+            history_loss.append(np.round(loss.item(), 5))
+            #last_lr = np.round(scheduler.get_last_lr(), 5)
 
             # Backpropagation
             loss.backward()
 
-            # Set pbar description
-            pbar.set_description(f"Epoch:{epoch}. Loss:{history['loss'][-1]}. lr:{history['lr'][-1]}")
+            # Set pbar description % Hard coded, change for other tests
+            pbar.set_description(f"Epoch:{epoch}. Loss:{history_loss[-1]}. lr:{5e-4}")
 
             # Optimization
             optimizer.step()
             #scheduler.step()
 
             # Save to S3
-            if (idx+1) % 750 == 0:
-                history_bytes = json.dumps(history)
+            if (idx+1) % 1000 == 0:
+                history_bytes = json.dumps(history_loss)
                 s3.put_object(Bucket='clip-loss-may-1', Key=history_filename, Body=history_bytes)
 
             # Save model for caution
             if (idx+1) % 5000 == 0:
-                save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, history=history, models_dir=models_dir, scheduler=scheduler)
+                save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, history=history_loss, models_dir=models_dir, scheduler=scheduler)
 
             pbar.update(1)
 
-        save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, history=history, models_dir=models_dir, scheduler=scheduler)
+        save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, history=history_loss, models_dir=models_dir, scheduler=scheduler)
 
