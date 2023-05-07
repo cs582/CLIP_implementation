@@ -15,6 +15,14 @@ from urllib.request import urlopen
 
 
 def url_image_save_multithreaded(urls, path, num_workers=20, first_index=0):
+    """
+    Download images in multithread from a list of urls.
+    :param urls: (list) List of images' urls.
+    :param path: (str) Directory to save the images.
+    :param num_workers: (int) Maximum number of processes to run. Suggested number_of_cores + 4
+    :param first_index: (int) First index.
+    :return: List of local addresses of all downloaded images.
+    """
     curr_index = first_index
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
         futures = []
@@ -28,6 +36,13 @@ def url_image_save_multithreaded(urls, path, num_workers=20, first_index=0):
 
 
 def download_image_sync(url, path, name):
+    """
+    Helper function to download an image from a given URL using Pillow.
+    :param url: (str) Image URL.
+    :param path: (str) Local images address.
+    :param name: (str) Image saving name.
+    :return: (str) if successful else None
+    """
     try:
         resp = urlopen(url)
         image = np.asarray(bytearray(resp.read()), dtype="uint8")
@@ -44,6 +59,11 @@ def download_image_sync(url, path, name):
 
 
 def task1_join_json_files(pairs_folder):
+    """
+    Helper function to join all JSON files and store them in a csv named WQI_mini.csv.
+    :param pairs_folder: (str) folder with all images URLs and queries extracted in JSON files.
+    :return: None
+    """
     data_frames = []
 
     for file_name in os.listdir(pairs_folder):
@@ -74,6 +94,12 @@ def task1_join_json_files(pairs_folder):
 
 
 def task2_download_and_save_images(pairs_folder, args):
+    """
+    Download all images in WQI_mini.csv and store them in a local directory.
+    :param pairs_folder: (str) folder to store all pairs.
+    :param args: (parser.args) console arguments.
+    :return: None
+    """
     # Get csv file address
     csv_filepath = f"{pairs_folder}/WQI_mini.csv"
 
@@ -105,6 +131,12 @@ def task2_download_and_save_images(pairs_folder, args):
 
 
 def task3_5_queries_to_txt(pairs_folder, tokenizer_folder):
+    """
+    Save all queries into a text file as a corpus for tokenizer.
+    :param pairs_folder: (str) Local folder to store all pairs.
+    :param tokenizer_folder: (str) Folder to store the corpus, same place as the tokenizer.
+    :return:
+    """
     # Get csv file address
     csv_filepath = f"{pairs_folder}/WQI_mini.csv"
 
