@@ -44,7 +44,7 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
 
             # Save to loss history
             history_loss.append(np.round(loss.item(), 5))
-            last_lr = np.round(scheduler.get_last_lr(), 5)
+            last_lr = np.round(scheduler.get_last_lr(), 9)
 
             # Backpropagation
             loss.backward()
