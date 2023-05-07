@@ -93,8 +93,8 @@ In order to train the tokenizer, it's necessary to build a corpus text. In this 
 the corpus is built by using the queries of each image and just sticking them together. Then this corpus
 is used to train the BytePairEncoding tokenizer.
 ```sh
-python data -task=3.5
-python data -task=3
+python data.py -task=3.5
+python data.py -task=3
 ```
 
 
@@ -112,7 +112,7 @@ Then you can also choose to tune the following hypper-parameters: ```temperature
 ```beta_2```, ```epsilon```, (learning rate) ```lr```, width of the text encoder ```text_dim_out```, 
 width of the image encoder ```image_dim_out```, multi embedding dimension ```embedding_dim```
 
-```sh
+```
 CLIP training cycle with evaluation.
 
 optional arguments:
