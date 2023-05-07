@@ -116,42 +116,26 @@ width of the image encoder ```image_dim_out```, multi embedding dimension ```emb
 CLIP training cycle with evaluation.
 
 optional arguments:
--h, --help            show this help message and exit
--fine_tuning FINE_TUNING
-Perform Fine tuning over one epoch. Requires arg model
-different from default:None.
--device DEVICE        Set device to use: gpu or cpu.
--load_last_checkpoint LOAD_LAST_CHECKPOINT
-Load model from last checkpoint and restart training
-from there.
--warmup WARMUP        Warmup steps.
--image_encoder IMAGE_ENCODER
-Image encoder backbone. One of (ViT) @112, @224, or
-@336.
--text_encoder TEXT_ENCODER
-Text encoder backbone. One of S (Small), B (Base), or
-L (Large).
--max_temperature MAX_TEMPERATURE
-Maximum temperature for CLIP loss.
--batch_size BATCH_SIZE
-Batch size. Is the same as the multimodal embedding
-dimension.
--epochs EPOCHS        Epochs for training. (ignored in fine-tuning).
--vocab_size VOCAB_SIZE
-Vocabulary size from trained tokenizer.
--max_length MAX_LENGTH
-Max length of the token encoding.
--decay DECAY          Weight decay.
--beta_1 BETA_1        Adam optimizer beta_1.
--beta_2 BETA_2        Adam optimizer beta_2. Recommended 0.98 for ViT.
--epsilon EPSILON      Adam optimizer epsilon. Recommended 1e-6 for ViT.
--lr LR                Learning rate.
--text_dim_out TEXT_DIM_OUT
-Text encoder output dimension.
--image_dim_out IMAGE_DIM_OUT
-Image encoder output dimension.
--embedding_dim EMBEDDING_DIM
-Embedding dimension CLIP.
+-h, --help                                    show this help message and exit
+-fine_tuning FINE_TUNING                      Perform Fine tuning over one epoch. Requires arg model different from default:None.
+-device DEVICE                                Set device to use: gpu or cpu.
+-load_last_checkpoint LOAD_LAST_CHECKPOINT    Load model from last checkpoint and restart training  from there.
+-warmup WARMUP                                Warmup steps.
+-image_encoder IMAGE_ENCODER                  Image encoder backbone. One of (ViT) @112, @224, or @336.
+-text_encoder TEXT_ENCODER                    Text encoder backbone. One of S (Small), B (Base), or L (Large).
+-max_temperature MAX_TEMPERATURE              Maximum temperature for CLIP loss.
+-batch_size BATCH_SIZE                        Batch size. Is the same as the multimodal embedding dimension.
+-epochs EPOCHS                                Epochs for training. (ignored in fine-tuning).
+-vocab_size VOCAB_SIZE                        Vocabulary size from trained tokenizer.
+-max_length MAX_LENGTH                        Max length of the token encoding.
+-decay DECAY                                  Weight decay.
+-beta_1 BETA_1                                Adam optimizer beta_1.
+-beta_2 BETA_2                                Adam optimizer beta_2. Recommended 0.98 for ViT.
+-epsilon EPSILON                              Adam optimizer epsilon. Recommended 1e-6 for ViT.
+-lr LR                                        Learning rate.
+-text_dim_out TEXT_DIM_OUT                    Text encoder output dimension.
+-image_dim_out IMAGE_DIM_OUT                  Image encoder output dimension.
+-embedding_dim EMBEDDING_DIM                  Embedding dimension CLIP.
 ```
 
 
