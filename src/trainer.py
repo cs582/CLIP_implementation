@@ -14,6 +14,20 @@ models_dir = "src/models/checkpoints"
 
 
 def training(training_dataset, clip_model, loss_function, optimizer, scheduler, epochs, device, model_name, load_last_checkpoint=False, load_from_given_checkpoint=None):
+    """
+    Training loop.
+    :param training_dataset: (Dataloader) training data.
+    :param clip_model: (torch.nn.Module) CLIP model.
+    :param loss_function: (torch.nn.Module) CLIP loss function.
+    :param optimizer: (torch.nn.Optimizer) Torch optimizer.
+    :param scheduler: (object) Learning rate scheduler.
+    :param epochs: (int) Number of epochs.
+    :param device: (torch.device) Torch device.
+    :param model_name: (str) Image encoder name.
+    :param load_last_checkpoint: (bool) Load from the last epoch (default=False).
+    :param load_from_given_checkpoint: (str) Gives it a specific model to load.
+    :return:
+    """
     history_filename = f"clip_loss_{model_name}.json"
 
     history_loss = []
