@@ -72,19 +72,19 @@ python src/data/image_gen/image_scraping.py
 5. Step 4 produces several json files, so the text step is to join these JSON files.
 ```sh
 # Task 5
-python data -task=1
+python data.py -task=1
 ```
 6. Step 4 also gets only the address of each image, but each file should be downloaded for better performance.
 ```sh
 # Task 6
-python data -task=2
+python data.py -task=2
 ```
 7. Lastly, using all downloaded images, we build a second dataset with all valid images in the
 ```data/image_gen/WQ-dataset/images``` directory. This sets it all up in a nice CSV file ready
 to be used in our Training.
 ```sh
 # Task 7
-python data -task=4
+python data.py -task=4
 ```
 
 ## Tokenization
