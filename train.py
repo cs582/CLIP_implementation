@@ -10,7 +10,7 @@ from src.models.CLIP_Loss import CLIPLoss
 from src.models.CLIP_model import CLIPModule
 
 from src.models.computer_vision.backbones.vit import ViTBaseOver16at112, ViTBaseOver32at224, ViTSmallOver8at112, ViTSmallOver16at112
-from src.models.natural_language_processing.nlp_backbones import TransformerB, TransformerL
+from src.models.natural_language_processing.nlp_backbones import GPTBase, GPTLarge
 
 from src.utils import training_info_log_message, warmup_scheduler
 
@@ -92,9 +92,9 @@ if __name__ == "__main__":
 
     text_model = None
     if args.text_encoder == "B":
-        text_model = TransformerB(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size).to(device)
+        text_model = GPTBase(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size).to(device)
     if args.text_encoder == "L":
-        text_model = TransformerL(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size).to(device)
+        text_model = GPTLarge(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size).to(device)
 
     # Load training dataset
     training_dataset = ImageQueryDataset(dataset_file, image_path, tokenizer_file, args.max_length, device, image_resolution)
