@@ -9,9 +9,9 @@ from src.models.natural_language_processing.nlp_token_embedding import TokenEmbe
 additional_tokens = {"[SOS]": 43001, "[EOS]": 43000}
 
 
-class TransformerB(nn.Module):
+class GPTBase(nn.Module):
     def __init__(self, dim_out, batch_size, vocab_size, max_length):
-        super(TransformerB, self).__init__()
+        super(GPTBase, self).__init__()
         self.batch_size = batch_size
         self.max_length = max_length
 
@@ -40,9 +40,9 @@ class TransformerB(nn.Module):
         return x
 
 
-class TransformerL(nn.Module):
+class GPTLarge(nn.Module):
     def __init__(self, dim_out, batch_size, vocab_size, max_length):
-        super(TransformerL, self).__init__()
+        super(GPTLarge, self).__init__()
         self.batch_size = batch_size
         self.max_length = max_length
 
@@ -85,7 +85,6 @@ class TextTransformer(nn.Module):
 
         # Positional embedding
         self.pos_encoder = nn.Parameter(self._get_pos_encoding(max_length, dim_model))
-        #self.pos_encoder = nn.Parameter(torch.rand(1, self.max_length, self.dim_model))
 
         self.transformers = nn.ModuleList([
             TransformerRadford(dim_model=self.dim_model, nhead=self.nhead, dim_ff=self.dim_ff) for _ in range(self.n_layers)
