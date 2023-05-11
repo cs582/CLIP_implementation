@@ -2,4 +2,6 @@ notebooks
 .DS_Store
 .idea
 src/data/image_gen/WQ-dataset
+src/data/nlp/tokenizers
+src/data/image_gen/
 data
