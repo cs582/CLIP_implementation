@@ -6,6 +6,8 @@
       <excludeFolder url="file://$MODULE_DIR$/.idea/ZeppelinRemoteNotebooks" />
       <excludeFolder url="file://$MODULE_DIR$/.idea/inspectionProfiles" />
       <excludeFolder url="file://$MODULE_DIR$/notebooks" />
+      <excludeFolder url="file://$MODULE_DIR$/src/data/image_gen/WQ-dataset" />
+      <excludeFolder url="file://$MODULE_DIR$/src/data/nlp/tokenizers" />
       <excludeFolder url="file://$MODULE_DIR$/src/data/nlp/wkpages" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.7 (computervision)" jdkType="Python SDK" />
