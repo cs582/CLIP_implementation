@@ -5,6 +5,7 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.idea/ZeppelinRemoteNotebooks" />
       <excludeFolder url="file://$MODULE_DIR$/.idea/inspectionProfiles" />
+      <excludeFolder url="file://$MODULE_DIR$/data/cryptopunks/imgs" />
       <excludeFolder url="file://$MODULE_DIR$/data/cryptopunks/json_files" />
       <excludeFolder url="file://$MODULE_DIR$/notebooks" />
       <excludeFolder url="file://$MODULE_DIR$/src/data/image_gen/WQ-dataset" />
