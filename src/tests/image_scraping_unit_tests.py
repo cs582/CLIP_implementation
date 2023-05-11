@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from eval_loop.data.image_gen.utils import retrieve_pairs
+from src.data.image_gen.utils import retrieve_pairs
 
 
 class ImageScrappingUnitTests(unittest.TestCase):

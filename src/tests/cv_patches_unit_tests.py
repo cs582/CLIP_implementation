@@ -1,9 +1,9 @@
 import unittest
 import torch
 import time
-from eval_loop.models.computer_vision.cv_utils import my_images_to_pathces_implementation as img_to_patches1
-from eval_loop.models.computer_vision.cv_utils import optimized_images_to_patches_implementation as img_to_patches2
-from eval_loop.models.computer_vision.cv_utils import eignops_images_to_patches_optimization as img_to_patches3
+from src.models.computer_vision.cv_utils import my_images_to_pathces_implementation as img_to_patches1
+from src.models.computer_vision.cv_utils import optimized_images_to_patches_implementation as img_to_patches2
+from src.models.computer_vision.cv_utils import eignops_images_to_patches_optimization as img_to_patches3
 
 
 class UtilsTest(unittest.TestCase):

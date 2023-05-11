@@ -2,9 +2,9 @@ import math
 import torch
 import torch.nn as nn
 from torch.utils.checkpoint import checkpoint
-from eval_loop.models.natural_language_processing.nlp_modules import TransformerRadford
+from src.models.natural_language_processing.nlp_modules import TransformerRadford
 
-from eval_loop.models.natural_language_processing.nlp_token_embedding import TokenEmbedder
+from src.models.natural_language_processing.nlp_token_embedding import TokenEmbedder
 
 additional_tokens = {"[SOS]": 43001, "[EOS]": 43000}
 

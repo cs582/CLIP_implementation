@@ -2,8 +2,8 @@ import unittest
 import torch
 import time
 
-from eval_loop.models.computer_vision.backbones.resnet34 import RN34at224, RN34at336
-from eval_loop.models.computer_vision.backbones.vit import ViTat224, ViTat336
+from src.models.computer_vision.backbones.resnet34 import RN34at224, RN34at336
+from src.models.computer_vision.backbones.vit import ViTat224, ViTat336
 
 
 class BackbonesUnitTest(unittest.TestCase):

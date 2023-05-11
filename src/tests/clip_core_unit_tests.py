@@ -6,10 +6,10 @@ from torch.cuda.amp import autocast, GradScaler
 
 import numpy as np
 
-from eval_loop.models.CLIP_model import CLIPModule
-from eval_loop.models.computer_vision.backbones.vit import ViTat112, ViTat224
-from eval_loop.models.natural_language_processing.nlp_backbones import TransformerB
-from eval_loop.models.CLIP_Loss import CLIPLoss
+from src.models.CLIP_model import CLIPModule
+from src.models.computer_vision.backbones.vit import ViTBaseOver16at112, ViTBaseOver32at224
+from src.models.natural_language_processing.nlp_backbones import GPTBase, GPTLarge
+from src.models.CLIP_Loss import CLIPLoss
 
 
 class CLIPUnitTest(unittest.TestCase):
@@ -28,8 +28,8 @@ class CLIPUnitTest(unittest.TestCase):
         dim_img = 768
 
         # Initialize encoders
-        image_encoder = ViTat224(dim_out=dim_img)
-        text_encoder = TransformerB(dim_out=dim_text, batch_size=batch_size, vocab_size=vocab_size, max_length=max_length)
+        image_encoder = ViTBaseOver32at224(dim_out=dim_img)
+        text_encoder = GPTBase(dim_out=dim_text, batch_size=batch_size, vocab_size=vocab_size, max_length=max_length)
 
         # Initialize CLIP
         clip_model = CLIPModule(image_encoder, text_encoder, dim_img, dim_text, embedding_dim, temperature)
@@ -73,8 +73,8 @@ class CLIPGPUUnitTest(unittest.TestCase):
         torch.backends.cudnn.enabled = True
 
         # Initialize encoders
-        image_encoder = ViTat224(dim_out=dim_img)
-        text_encoder = TransformerB(dim_out=dim_text, batch_size=batch_size, vocab_size=vocab_size, max_length=max_length)
+        image_encoder = ViTBaseOver32at224(dim_out=dim_img)
+        text_encoder = GPTBase(dim_out=dim_text, batch_size=batch_size, vocab_size=vocab_size, max_length=max_length)
 
         # Initialize CLIP
         clip_model = CLIPModule(image_encoder, text_encoder, dim_img, dim_text, embedding_dim, temperature).to(device)
@@ -141,8 +141,8 @@ class CLIPGPUUnitTest(unittest.TestCase):
         torch.backends.cudnn.enabled = True
 
         # Initialize encoders
-        image_encoder = ViTat112(dim_out=dim_img)
-        text_encoder = TransformerB(dim_out=dim_text, batch_size=batch_size, vocab_size=vocab_size, max_length=max_length)
+        image_encoder = ViTBaseOver32at224(dim_out=dim_img)
+        text_encoder = GPTBase(dim_out=dim_text, batch_size=batch_size, vocab_size=vocab_size, max_length=max_length)
 
         # Initialize CLIP
         clip_model = CLIPModule(image_encoder, text_encoder, dim_img, dim_text, embedding_dim, temperature).to(device)
