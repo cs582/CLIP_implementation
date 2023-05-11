@@ -44,7 +44,7 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
         epoch_0 += 1
 
     for epoch in range(epoch_0, epochs):
-        pbar = tqdm(total=len(training_dataset))
+        pbar = tqdm(total=min(len(training_dataset), max_steps - len(history_loss)))
         for idx, (images, queries) in enumerate(training_dataset):
             images, queries = images.to(device), queries.to(device)
 
