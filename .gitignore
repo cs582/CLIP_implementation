@@ -3,4 +3,4 @@ notebooks
 .idea
 src/data/image_gen/WQ-dataset
 src/data/nlp/tokenizers
-data
+data/cryptopunks/json_files
