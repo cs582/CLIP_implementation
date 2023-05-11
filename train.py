@@ -34,7 +34,8 @@ parser.add_argument('-image_encoder', type=str, default=None, help="Image encode
 parser.add_argument('-text_encoder', type=str, default=None, help="Text encoder backbone. One of S (Small), B (Base), or L (Large).")
 parser.add_argument('-max_temperature', type=float, default=100.0, help="Maximum temperature for CLIP loss.")
 parser.add_argument('-batch_size', type=int, default=128, help="Batch size. Is the same as the multimodal embedding dimension.")
-parser.add_argument('-epochs', type=int, default=32, help="Epochs for training. (ignored in fine-tuning).")
+parser.add_argument('-epochs', type=int, default=5, help="Epochs for training. (ignored in fine-tuning).")
+parser.add_argument('-max_steps', type=int, default=148710, help="Max training steps. (ignored in fine-tuning).")
 parser.add_argument('-vocab_size', type=int, default=43001, help="Vocabulary size from trained tokenizer.")
 parser.add_argument('-max_length', type=int, default=34, help="Max length of the token encoding.")
 parser.add_argument('-decay', type=float, default=0.2, help="Weight decay.")
@@ -57,8 +58,10 @@ if __name__ == "__main__":
 
     if args.fine_tuning:
         epochs = 1
+        max_steps = 10000
     else:
         epochs = args.epochs
+        max_steps = args.max_steps
 
     # Get multimodal embedding dim which is equal to the batch size
     multimodal_embedding_dim = args.batch_size
@@ -116,4 +119,4 @@ if __name__ == "__main__":
     training_info_log_message(device, epochs, args.batch_size, args.image_encoder, args.text_encoder, args.image_dim_out, args.text_dim_out, optimizer)
 
     # Training cycle
-    training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, scheduler=scheduler, epochs=epochs, device=device, model_name=args.image_encoder, load_last_checkpoint=args.load_last_checkpoint)
+    training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, scheduler=scheduler, epochs=epochs, max_steps=max_steps, device=device, model_name=args.image_encoder, load_last_checkpoint=args.load_last_checkpoint)
