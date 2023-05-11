@@ -3,7 +3,7 @@ import torch
 import time
 import numpy as np
 
-from src.models.natural_language_processing.nlp_modules import MaskedSelfAttention, MaskedMultiHeadSelfAttention, TransformerRadford
+from eval_loop.models.natural_language_processing.nlp_modules import MaskedSelfAttention, MaskedMultiHeadSelfAttention, TransformerRadford
 
 
 class TransformerRadfordUnitTest(unittest.TestCase):

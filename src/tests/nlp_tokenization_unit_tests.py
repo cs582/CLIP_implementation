@@ -1,7 +1,7 @@
 import unittest
 import time
 
-from src.models.natural_language_processing.nlp_tokenization import BytePairEncoderTokenizer
+from eval_loop.models.natural_language_processing.nlp_tokenization import BytePairEncoderTokenizer
 
 
 class TokenizationUnitTest(unittest.TestCase):

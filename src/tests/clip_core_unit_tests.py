@@ -6,10 +6,10 @@ from torch.cuda.amp import autocast, GradScaler
 
 import numpy as np
 
-from src.models.CLIP_model import CLIPModule
-from src.models.computer_vision.backbones.vit import ViTat112, ViTat224
-from src.models.natural_language_processing.nlp_backbones import TransformerB
-from src.models.CLIP_Loss import CLIPLoss
+from eval_loop.models.CLIP_model import CLIPModule
+from eval_loop.models.computer_vision.backbones.vit import ViTat112, ViTat224
+from eval_loop.models.natural_language_processing.nlp_backbones import TransformerB
+from eval_loop.models.CLIP_Loss import CLIPLoss
 
 
 class CLIPUnitTest(unittest.TestCase):

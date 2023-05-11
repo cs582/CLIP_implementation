@@ -2,7 +2,7 @@ import unittest
 import torch
 import time
 
-from src.models.computer_vision.cv_modules import BlurPool2d, Convolution1, Convolution2, Convolution3, Convolution4, Convolution5, AttentionPooling
+from eval_loop.models.computer_vision.cv_modules import BlurPool2d, Convolution1, Convolution2, Convolution3, Convolution4, Convolution5, AttentionPooling
 
 
 class ResnetModulesUnitTest(unittest.TestCase):

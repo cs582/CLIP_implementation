@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from src.models.computer_vision.cv_modules import Convolution1, Convolution2, Convolution3, Convolution4, Convolution5, TransformerEncoderBlock, AttentionPooling
+from eval_loop.models.computer_vision.cv_modules import Convolution1, Convolution2, Convolution3, Convolution4, Convolution5, TransformerEncoderBlock, AttentionPooling
 
 
 class RN34at224(nn.Module):

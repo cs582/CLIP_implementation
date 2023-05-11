@@ -4,7 +4,7 @@ import time
 
 import numpy as np
 
-from src.models.natural_language_processing.nlp_backbones import TransformerB, TransformerL
+from eval_loop.models.natural_language_processing.nlp_backbones import TransformerB, TransformerL
 
 
 class BackbonesTextUnitTest(unittest.TestCase):

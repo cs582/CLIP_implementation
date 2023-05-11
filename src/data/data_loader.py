@@ -11,7 +11,7 @@ import torchvision.transforms as T
 
 
 class ImageQueryDataset(Dataset):
-    def __init__(self, dataset_file, image_path, tokenizer_file, max_length, device, img_res=112):
+    def __init__(self, dataset_file, image_path, tokenizer_file, max_length, device, start_from=None, end_at=None, img_res=112):
         """
         ImageQueryDataset Dataset object. This object initializes the dataset for the training loop.
         :param dataset_file: (str) Path dataset csv.
@@ -39,8 +39,14 @@ class ImageQueryDataset(Dataset):
         self.tokenizer = Tokenizer.from_file(tokenizer_file)
 
         # Read dataset from csv file
-        self.data = pd.read_csv(dataset_file).values
-        np.random.shuffle(self.data)
+        self.data = pd.read_csv(dataset_file).values[start_from:end_at]
+
+        # Get first and last index
+        first_idx = start_from if start_from is not None else 0
+        last_idx = end_at if end_at is not None else len(self.data)
+
+        # Shuffle data
+        np.random.shuffle(self.data[first_idx: last_idx])
 
         print("Dataset Initialization DONE.")
 
