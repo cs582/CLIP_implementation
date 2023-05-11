@@ -4,7 +4,7 @@ import json
 import os
 
 from tqdm import tqdm
-from eval_loop.utils import save_checkpoint, load_from_checkpoint
+from src.utils import save_checkpoint, load_from_checkpoint
 
 
 s3 = boto3.client('s3')

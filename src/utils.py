@@ -37,7 +37,7 @@ def save_checkpoint(model, optimizer, epoch, scheduler, history, models_dir):
     print(f"CLIP saved as {PATH}")
 
 
-def load_from_checkpoint(model_filepath, model, scheduler, optimizer):
+def load_from_checkpoint(model_filepath, model, scheduler=None, optimizer=None):
     """
     Load torch model from given path.
 
@@ -50,10 +50,14 @@ def load_from_checkpoint(model_filepath, model, scheduler, optimizer):
 
     checkpoint = torch.load(model_filepath)
     model.load_state_dict(checkpoint['model_state_dict'])
-    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    scheduler.load_state_dict(checkpoint['scheduler'])
     epoch = checkpoint['epoch']
     loss_history = checkpoint['loss_history']
+
+    if optimizer is not None:
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+
+    if scheduler is not None:
+        scheduler.load_state_dict(checkpoint['scheduler'])
 
     print(f"CLIP successfully loaded from {model_filepath}")
 
