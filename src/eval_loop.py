@@ -28,7 +28,7 @@ def eval(eval_dataset, clip_model, loss_function, device, model_name, load_from_
 
     loss_eval = []
 
-    pbar = tqdm(total=len(eval_dataset))
+    pbar = tqdm(total=len(eval_dataset), desc="Eval. Loop.")
     for idx, (images, queries) in enumerate(eval_dataset):
         images, queries = images.to(device), queries.to(device)
 
@@ -38,9 +38,6 @@ def eval(eval_dataset, clip_model, loss_function, device, model_name, load_from_
         # Compute Loss
         loss = loss_function(logits_images, logits_text)
         loss_eval.append(loss.item())
-
-        # Set pbar description
-        pbar.set_description(f"Eval Loop")
 
         pbar.update(1)
 
