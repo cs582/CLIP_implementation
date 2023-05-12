@@ -71,18 +71,21 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
             optimizer.step()
             scheduler.step()
 
+            pbar.update(1)
+
             # Save to S3
             if (idx+1) % 2000 == 0:
                 history_bytes = json.dumps(history_loss)
                 s3.put_object(Bucket='clip-loss-may-1', Key=history_filename, Body=history_bytes)
 
             if len(history_loss) >= max_steps:
+                print("DONE!!!")
+                save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, history=history_loss, models_dir=models_dir, scheduler=scheduler)
                 break
-
-            pbar.update(1)
-
-        save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, history=history_loss, models_dir=models_dir, scheduler=scheduler)
 
         if len(history_loss) >= max_steps:
             break
+
+        save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, history=history_loss, models_dir=models_dir, scheduler=scheduler)
+
 
