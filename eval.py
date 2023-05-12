@@ -24,6 +24,7 @@ parser = argparse.ArgumentParser(
 # Trainer mode
 parser.add_argument('-device', type=str, default="cpu", help="Set device to use: gpu or cpu.")
 parser.add_argument('-checkpoint', type=bool, default=False, help="Load model from last checkpoint and restart training from there.")
+parser.add_argument('-dataset', type=str, default="imagenet", help="Specify the dataset to load data from.")
 
 # CLIP Hyper-parameters
 parser.add_argument('-image_encoder', type=str, default=None, help="Image encoder backbone. One of (ViT) @112, @224, or @336.")
@@ -37,12 +38,19 @@ parser.add_argument('-embedding_dim', type=int, default=512, help="Embedding dim
 
 args = parser.parse_args()
 
-dataset_file = "src/data/image_gen/WQ-dataset/WQI_local.csv"
-image_path = "src/data/image_gen/WQ-dataset/images"
 tokenizer_file = "src/data/nlp/tokenizers/CLIP-bpe.tokenizer.json"
 
-
 if __name__ == "__main__":
+
+    if args.dataset == "imagenet":
+        dataset_file = "data/imagenet/imagenet.csv"
+        image_path = "data/imagenet/images"
+    if args.dataset == "cryptopunks":
+        dataset_file = "data/cryptopunks/cryptopunks.csv"
+        image_path = "data/cryptopunks/imgs/imgs"
+    if args.dataset == "cifar":
+        dataset_file = "data/cifar/cifar.csv"
+        image_path = "data/cifar/images"
 
     # Get multimodal embedding dim which is equal to the batch size
     multimodal_embedding_dim = args.batch_size
@@ -94,4 +102,4 @@ if __name__ == "__main__":
     training_info_log_message(device, None, args.batch_size, args.image_encoder, args.text_encoder, args.image_dim_out, args.text_dim_out, None)
 
     # Training cycle
-    eval(eval_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, device=device, model_name=args.image_encoder, load_from_given_checkpoint=args.checkpoint)
+    eval(eval_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, device=device, load_from_given_checkpoint=args.checkpoint)
