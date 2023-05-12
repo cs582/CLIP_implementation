@@ -40,7 +40,7 @@ def read_labels(iclabels):
 
     return iclabels_map
 
-def save_imagenet_locally(x, y, imdir, iclabels):
+def create_pairs(x, y, imdir, iclabels):
     """
     Save images in an image directory and create csv file.
     :param x: imagenet images
@@ -68,8 +68,8 @@ def save_imagenet_locally(x, y, imdir, iclabels):
         # Append pairs
         pairs.append([queries[y[idx]], img_name])
 
-    df = pd.DataFrame(pairs, columns=["query", "img"])
-    df.to_csv("data/imagenet/imagenet.csv", index=False)
+    return pairs
+
 
 
 def build():
@@ -77,9 +77,15 @@ def build():
     datadir = "data/imagenet/"
     iclabels = "data/imagenet/map_clsloc.txt"
 
+    csv_filename = "data/imagenet/imagenet.csv"
+
     imdir = os.path.join(datadir, "images")
 
     x, y = load_imagenet(datadir, img_size=64)
-    save_imagenet_locally(x, y, imdir, iclabels)
+    pairs = create_pairs(x, y, imdir, iclabels)
+
+    df = pd.DataFrame(pairs, columns=["query", "image"])
+    df.to_csv(csv_filename, index=False)
+    print(f"Saved as {csv_filename}")
 
     return
