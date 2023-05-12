@@ -3,7 +3,7 @@ import os
 import argparse
 
 from src.data.data_utils import task1_join_json_files, task2_download_and_save_images, task3_5_queries_to_txt
-from src.data import build_WKIT_dataset, build_imagenet_dataset, build_nft_dataset
+from src.data import build_WKIT_dataset, build_imagenet_cifar_dataset, build_nft_dataset
 from src.models.natural_language_processing.nlp_tokenization import train_bpe
 
 parser = argparse.ArgumentParser(
@@ -51,5 +51,8 @@ if __name__ == "__main__":
         build_nft_dataset.build()
 
     if args.task == 6:
-        build_imagenet_dataset.build()
+        build_imagenet_cifar_dataset.build("imagenet")
+
+    if args.task == 7:
+        build_imagenet_cifar_dataset.build("cifar10")
 
