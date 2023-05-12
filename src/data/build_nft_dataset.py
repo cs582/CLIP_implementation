@@ -13,6 +13,8 @@ def create_description(t, accessories):
 
 def build():
 
+    csv_filename = "data/cryptopunks/cryptopunks.csv"
+
     # Load data
     nfts = { f"{idx}.png": None for idx in range(0, 10000) }
     with open("data/cryptopunks/txn_history-2021-10-07.jsonl", "r") as f:
@@ -21,7 +23,6 @@ def build():
             img, t, des = transact['punk_id'], transact['type'][0], transact['accessories']
             nfts[f"{img}.png"] = create_description(t, des)
 
-    df = pd.DataFrame([ [y, x] for x, y in nfts.items()], columns=["query", "img"])
-    print(df.shape)
-    print(df.head())
-    return
+    df = pd.DataFrame([ [y, x] for x, y in nfts.items()], columns=["query", "image"])
+    df.to_csv(csv_filename)
+    print(f"saved as {csv_filename}")
