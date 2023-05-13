@@ -9,7 +9,7 @@ from src.data.data_loader import ImageQueryDataset
 from src.models.CLIP_Loss import CLIPLoss
 from src.models.CLIP_model import CLIPModule
 
-from src.models.computer_vision.backbones.vit import ViTBaseOver16at112, ViTBaseOver32at224, ViTSmallOver8at112, ViTSmallOver16at112
+from src.models.computer_vision.backbones.vit import ViTBaseOver16at112, ViTBaseOver32at224, ViTSmallOver16at112, ViTMicroOver14at112
 from src.models.natural_language_processing.nlp_backbones import GPTBase, GPTLarge
 
 from src.utils import training_info_log_message
@@ -38,6 +38,8 @@ parser.add_argument('-embedding_dim', type=int, default=512, help="Embedding dim
 
 args = parser.parse_args()
 
+dataset_file = None
+image_path = None
 tokenizer_file = "src/data/nlp/tokenizers/CLIP-bpe.tokenizer.json"
 
 if __name__ == "__main__":
@@ -48,9 +50,9 @@ if __name__ == "__main__":
     if args.dataset == "cryptopunks":
         dataset_file = "data/cryptopunks/cryptopunks.csv"
         image_path = "data/cryptopunks/imgs/imgs"
-    if args.dataset == "cifar":
-        dataset_file = "data/cifar/cifar.csv"
-        image_path = "data/cifar/images"
+    if args.dataset == "cifar10":
+        dataset_file = "data/cifar10/cifar10.csv"
+        image_path = "data/cifar10/images"
 
     # Get multimodal embedding dim which is equal to the batch size
     multimodal_embedding_dim = args.batch_size
@@ -72,11 +74,11 @@ if __name__ == "__main__":
     if args.image_encoder == "B/16@112":
         image_model = ViTBaseOver16at112(dim_out=args.image_dim_out).to(device)
         image_resolution = 112
-    if args.image_encoder == "S/8@112":
-        image_model = ViTSmallOver8at112(dim_out=args.image_dim_out).to(device)
-        image_resolution = 112
     if args.image_encoder == "S/16@112":
         image_model = ViTSmallOver16at112(dim_out=args.image_dim_out).to(device)
+        image_resolution = 112
+    if args.image_encoder == "M/14@112":
+        image_model = ViTMicroOver14at112(dim_out=args.image_dim_out).to(device)
         image_resolution = 112
 
     # Pick Text Encoder model

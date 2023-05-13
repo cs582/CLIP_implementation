@@ -44,7 +44,8 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
         epoch_0 += 1
 
     for epoch in range(epoch_0, epochs):
-        pbar = tqdm(total=min(len(training_dataset), max_steps - len(history_loss)))
+        batch_length = min(len(training_dataset), max_steps - len(history_loss))
+        pbar = tqdm(total=batch_length)
         for idx, (images, queries) in enumerate(training_dataset):
             images, queries = images.to(device), queries.to(device)
 
@@ -74,7 +75,7 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
             pbar.update(1)
 
             # Save to S3
-            if (idx+1) % 2000 == 0:
+            if (idx+1) % 2000 == 0 or (idx+1) == batch_length:
                 history_bytes = json.dumps(history_loss)
                 s3.put_object(Bucket='clip-loss-may-1', Key=history_filename, Body=history_bytes)
 

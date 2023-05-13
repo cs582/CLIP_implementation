@@ -1,10 +1,7 @@
-import numpy as np
 import boto3
-import json
-import os
 
 from tqdm import tqdm
-from src.utils import save_checkpoint, load_from_checkpoint
+from src.utils import load_from_checkpoint
 
 
 s3 = boto3.client('s3')
@@ -37,7 +34,7 @@ def eval(eval_dataset, clip_model, loss_function, device, load_from_given_checkp
         images, queries = images.to(device), queries.to(device)
 
         # Extract feature representations
-        logits_images, logits_text = clip_model(images, queries)
+        logits_text, logits_images = clip_model(queries)
 
         # Compute Loss
         loss = loss_function(logits_images, logits_text)
