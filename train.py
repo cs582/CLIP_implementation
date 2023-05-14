@@ -10,7 +10,7 @@ from src.models.CLIP_Loss import CLIPLoss
 from src.models.CLIP_model import CLIPModule
 
 from src.models.computer_vision.backbones.vit import ViTBaseOver16at112, ViTBaseOver32at224, ViTSmallOver16at112, ViTMicroOver14at112
-from src.models.natural_language_processing.nlp_backbones import GPTBase, GPTLarge
+from src.models.natural_language_processing.nlp_backbones import GPTSmall, GPTBase, GPTLarge
 
 from src.utils import training_info_log_message, warmup_scheduler
 
@@ -91,9 +91,11 @@ if __name__ == "__main__":
         image_resolution = 112
 
     # Pick Text Encoder model
-    assert args.text_encoder in ['B', 'L']
+    assert args.text_encoder in ['S', 'B', 'L']
 
     text_model = None
+    if args.text_encoder == "S":
+        text_model = GPTSmall(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size).to(device)
     if args.text_encoder == "B":
         text_model = GPTBase(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size).to(device)
     if args.text_encoder == "L":
