@@ -20,6 +20,18 @@ class CLIPModule(nn.Module):
         self.img_mm_encoder = nn.Linear(self.dim_img, self.embedding_dim, bias=False)
         self.txt_mm_encoder = nn.Linear(self.dim_text, self.embedding_dim, bias=False)
 
+    def txt_encoder(self, x):
+        x = self.text_encoder(x)
+        x = self.txt_mm_encoder(x)
+        x = F.normalize(x, p=2, dim=1)
+        return x
+
+    def img_encoder(self, x):
+        x = self.image_encoder(x)
+        x = self.img_mm_encoder(x)
+        x = F.normalize(x, p=2, dim=1)
+        return x
+
     def forward(self, image, text):
         # Extract feature representation of each modality
         img_f = self.image_encoder(image) # batch_size x dim_img
