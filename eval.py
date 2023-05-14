@@ -2,7 +2,7 @@ import torch
 import argparse
 
 
-from src.eval_loop import eval
+from src import zero_shot_WKIT_nft_eval
 from torch.utils.data import DataLoader
 from src.data.data_loader import ImageQueryDataset
 
@@ -10,7 +10,7 @@ from src.models.CLIP_Loss import CLIPLoss
 from src.models.CLIP_model import CLIPModule
 
 from src.models.computer_vision.backbones.vit import ViTBaseOver16at112, ViTBaseOver32at224, ViTSmallOver16at112, ViTMicroOver14at112
-from src.models.natural_language_processing.nlp_backbones import GPTBase, GPTLarge
+from src.models.natural_language_processing.nlp_backbones import GPTSmall, GPTBase, GPTLarge
 
 from src.utils import training_info_log_message
 
@@ -44,15 +44,12 @@ tokenizer_file = "src/data/nlp/tokenizers/CLIP-bpe.tokenizer.json"
 
 if __name__ == "__main__":
 
-    if args.dataset == "imagenet":
-        dataset_file = "data/imagenet/imagenet.csv"
-        image_path = "data/imagenet/images"
+    if args.dataset == "WKIT":
+        dataset_file = "src/data/image_gen/WQ-dataset/WQI_eval.csv"
+        image_path = "src/data/image_gen/WQ-dataset/images"
     if args.dataset == "cryptopunks":
         dataset_file = "data/cryptopunks/cryptopunks.csv"
         image_path = "data/cryptopunks/imgs/imgs"
-    if args.dataset == "cifar10":
-        dataset_file = "data/cifar10/cifar10.csv"
-        image_path = "data/cifar10/images"
 
     # Get multimodal embedding dim which is equal to the batch size
     multimodal_embedding_dim = args.batch_size
@@ -85,6 +82,8 @@ if __name__ == "__main__":
     assert args.text_encoder in ['B', 'L']
 
     text_model = None
+    if args.text_encoder == "S":
+        text_model = GPTSmall(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size).to(device)
     if args.text_encoder == "B":
         text_model = GPTBase(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size).to(device)
     if args.text_encoder == "L":
@@ -104,4 +103,4 @@ if __name__ == "__main__":
     training_info_log_message(device, None, args.batch_size, args.image_encoder, args.text_encoder, args.image_dim_out, args.text_dim_out, None)
 
     # Training cycle
-    eval(eval_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, device=device, load_from_given_checkpoint=args.checkpoint)
+    zero_shot_WKIT_nft_eval.eval(eval_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, device=device, load_from_given_checkpoint=args.checkpoint)
