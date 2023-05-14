@@ -73,7 +73,7 @@ def create_pairs(x, y, zero_index, imdir, queries):
         Image.fromarray(x[idx]).save(filename)
 
         # Append pairs
-        pairs.append([queries[y[idx]], img_name])
+        pairs.append([queries[y[idx]], img_name, y[idx]])
 
     return pairs
 
@@ -114,7 +114,7 @@ def build(dataset):
         x, y = load_dataset(datadir, 'val_data', img_size=64, dataset=dataset)
         pairs = create_pairs(x, y, 0, imdir, queries)
 
-    df = pd.DataFrame(pairs, columns=["query", "image"])
+    df = pd.DataFrame(pairs, columns=["query", "image", "label"])
     df.to_csv(csv_filename, index=False)
     print(f"Saved as {csv_filename}")
 
