@@ -95,11 +95,11 @@ if __name__ == "__main__":
 
     text_model = None
     if args.text_encoder == "S":
-        text_model = GPTSmall(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size).to(device)
+        text_model = GPTSmall(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length).to(device)
     if args.text_encoder == "B":
-        text_model = GPTBase(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size).to(device)
+        text_model = GPTBase(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length).to(device)
     if args.text_encoder == "L":
-        text_model = GPTLarge(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, batch_size=args.batch_size).to(device)
+        text_model = GPTLarge(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length).to(device)
 
     # Load training dataset
     training_dataset = ImageQueryDataset(dataset_file, image_path, tokenizer_file, args.max_length, device, image_resolution)
