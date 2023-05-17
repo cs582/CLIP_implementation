@@ -35,7 +35,7 @@ parser.add_argument('-text_encoder', type=str, default=None, help="Text encoder 
 parser.add_argument('-max_temperature', type=float, default=100.0, help="Maximum temperature for CLIP loss.")
 parser.add_argument('-batch_size', type=int, default=128, help="Batch size. Is the same as the multimodal embedding dimension.")
 parser.add_argument('-epochs', type=int, default=5, help="Epochs for training. (ignored in fine-tuning).")
-parser.add_argument('-max_steps', type=int, default=148710, help="Max training steps. (ignored in fine-tuning).")
+parser.add_argument('-max_steps', type=int, default=188910, help="Max training steps. (ignored in fine-tuning).")
 parser.add_argument('-vocab_size', type=int, default=43001, help="Vocabulary size from trained tokenizer.")
 parser.add_argument('-max_length', type=int, default=34, help="Max length of the token encoding.")
 parser.add_argument('-decay', type=float, default=0.2, help="Weight decay.")
@@ -114,8 +114,8 @@ if __name__ == "__main__":
     # Set Adam Optimizer
     optimizer = torch.optim.AdamW(clip_model.parameters(), lr=args.lr, eps=args.epsilon, betas=(args.beta_1, args.beta_2), weight_decay=args.decay)
 
-    # Warm-up scheduler
-    scheduler = warmup_scheduler(optimizer, warmup_steps=args.warmup, lr_max=args.lr)
+    # Warm-up scheduler(optimizer, warmup_steps, warmup_start, lr_max, max_steps)
+    scheduler = warmup_scheduler(optimizer, warmup_steps=args.warmup, warmup_start=0.0, lr_max=args.lr, max_steps=args.max_steps)
 
     # Print training information
     training_info_log_message(device, epochs, args.batch_size, args.image_encoder, args.text_encoder, args.image_dim_out, args.text_dim_out, optimizer)
