@@ -24,10 +24,11 @@ parser = argparse.ArgumentParser(
 )
 
 # Trainer mode
-parser.add_argument('-fine_tuning', type=bool, default=False, help='Perform Fine tuning over one epoch. Requires arg model different from default:None.')
 parser.add_argument('-device', type=str, default="cpu", help="Set device to use: gpu or cpu.")
 parser.add_argument('-load_last_checkpoint', type=bool, default=False, help="Load model from last checkpoint and restart training from there.")
 parser.add_argument('-warmup', type=int, default=2000, help="Warmup steps.")
+parser.add_argument('-use_checkpoint', type=bool, default=True, help="Use checkpointing for training.")
+parser.add_argument('-accumulate', type=int, default=64, help="Accumulate N batches.")
 
 # CLIP Hyper-parameters
 parser.add_argument('-image_encoder', type=str, default=None, help="Image encoder backbone. One of (ViT) @112, @224, or @336.")
@@ -35,8 +36,7 @@ parser.add_argument('-text_encoder', type=str, default=None, help="Text encoder 
 parser.add_argument('-max_temperature', type=float, default=100.0, help="Maximum temperature for CLIP loss.")
 parser.add_argument('-batch_size', type=int, default=128, help="Batch size. Is the same as the multimodal embedding dimension.")
 parser.add_argument('-epochs', type=int, default=5, help="Epochs for training. (ignored in fine-tuning).")
-parser.add_argument('-max_steps', type=int, default=188910, help="Max training steps. (ignored in fine-tuning).")
-parser.add_argument('-vocab_size', type=int, default=43001, help="Vocabulary size from trained tokenizer.")
+parser.add_argument('-vocab_size', type=int, default=43002, help="Vocabulary size from trained tokenizer.")
 parser.add_argument('-max_length', type=int, default=34, help="Max length of the token encoding.")
 parser.add_argument('-decay', type=float, default=0.2, help="Weight decay.")
 parser.add_argument('-beta_1', type=float, default=0.9, help="Adam optimizer beta_1.")
@@ -56,12 +56,11 @@ tokenizer_file = "src/data/nlp/tokenizers/CLIP-bpe.tokenizer.json"
 
 if __name__ == "__main__":
 
-    if args.fine_tuning:
-        epochs = 1
-        max_steps = 10000
-    else:
-        epochs = args.epochs
-        max_steps = args.max_steps
+    # Epochs
+    epochs = args.epochs
+
+    # Accumulate
+    accumulate = args.accumulate
 
     # Get multimodal embedding dim which is equal to the batch size
     multimodal_embedding_dim = args.batch_size
@@ -71,9 +70,6 @@ if __name__ == "__main__":
 
     # Pick Image Encoder model
     assert args.image_encoder in ['B/32@224', 'B/16@112', 'S/8@112', 'S/16@112']
-
-    # Enable cublasLt for mixed-precision training
-    torch.backends.cudnn.enabled = True
 
     image_model = None
     image_resolution = None
@@ -95,15 +91,18 @@ if __name__ == "__main__":
 
     text_model = None
     if args.text_encoder == "S":
-        text_model = GPTSmall(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length).to(device)
+        text_model = GPTSmall(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, use_checkpoint=args.use_checkpoint).to(device)
     if args.text_encoder == "B":
-        text_model = GPTBase(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length).to(device)
+        text_model = GPTBase(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, use_checkpoint=args.use_checkpoint).to(device)
     if args.text_encoder == "L":
-        text_model = GPTLarge(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length).to(device)
+        text_model = GPTLarge(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, use_checkpoint=args.use_checkpoint).to(device)
 
     # Load training dataset
     training_dataset = ImageQueryDataset(dataset_file, image_path, tokenizer_file, args.max_length, device, image_resolution)
-    dataloader = DataLoader(training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=10, drop_last=True)
+    dataloader = DataLoader(training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=16, pin_memory=True, drop_last=True)
+
+    # Calculate max-steps
+    max_steps = epochs * len(dataloader) // multimodal_embedding_dim
 
     # Set CLIP Loss function
     loss_func = CLIPLoss(logits_length=multimodal_embedding_dim).to(device)
@@ -115,10 +114,10 @@ if __name__ == "__main__":
     optimizer = torch.optim.AdamW(clip_model.parameters(), lr=args.lr, eps=args.epsilon, betas=(args.beta_1, args.beta_2), weight_decay=args.decay)
 
     # Warm-up scheduler(optimizer, warmup_steps, warmup_start, lr_max, max_steps)
-    scheduler = warmup_scheduler(optimizer, warmup_steps=args.warmup, warmup_start=0.0, lr_max=args.lr, max_steps=args.max_steps)
+    scheduler = warmup_scheduler(optimizer, warmup_steps=args.warmup, warmup_start=0.0, lr_max=args.lr, max_steps=max_steps)
 
     # Print training information
     training_info_log_message(device, epochs, args.batch_size, args.image_encoder, args.text_encoder, args.image_dim_out, args.text_dim_out, optimizer)
 
     # Training cycle
-    training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, scheduler=scheduler, epochs=epochs, max_steps=max_steps, device=device, model_name=args.image_encoder, load_last_checkpoint=args.load_last_checkpoint)
+    training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, scheduler=scheduler, accumulate=accumulate, epochs=epochs, device=device, model_name=args.image_encoder, load_last_checkpoint=args.load_last_checkpoint)
