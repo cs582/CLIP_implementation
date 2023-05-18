@@ -34,19 +34,12 @@ class CLIPModule(nn.Module):
 
     def forward(self, image, text):
         # Extract feature representation of each modality
-        img_f = self.image_encoder(image) # batch_size x dim_img
-        txt_f = self.text_encoder(text)   # batch_suze x dim_text
-
-        # Joint multimodal embedding
-        img_e = self.img_mm_encoder(img_f) # batch_size x dim_emb
-        img_e = F.normalize(img_e, p=2, dim=1) # l2 normalization
-
-        txt_e = self.txt_mm_encoder(txt_f) # batch_size x dim_emb
-        txt_e = F.normalize(txt_e, p=2, dim=1) # l2 normalization
+        img_f = self.img_encoder(image) # batch_size x dim_img
+        txt_f = self.txt_encoder(text)   # batch_suze x dim_text
 
         # Scaled pairwise cosine similarities
-        logits_images = torch.matmul(img_e, txt_e.t())  # batch_size x batch_size
-        logits_images = logits_images * torch.clamp_max(torch.exp(self.temperature), max=np.log(100.0)) # Scale by temperature
+        logits_images = torch.matmul(img_f, txt_f.t())  # batch_size x batch_size
+        logits_images = logits_images * torch.clamp(torch.exp(self.temperature), min=0.01, max=100.0) # Scale by temperature
         logits_text = logits_images.t()
 
         return logits_images, logits_text
