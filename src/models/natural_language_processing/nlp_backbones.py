@@ -10,21 +10,22 @@ additional_tokens = {"[SOS]": 43001, "[EOS]": 43000}
 
 
 class GPTSmall(nn.Module):
-    def __init__(self, dim_out, vocab_size, max_length):
+    def __init__(self, dim_out, vocab_size, max_length, use_checkpoint):
         super(GPTSmall, self).__init__()
         self.max_length = max_length
 
         self.additional_tokens = additional_tokens
 
-        # The embedder takes size vocabulary_size+1 because it should ignore the dummy token 0
-        self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size+1, embedding_dim=dim_out)
-        self.transformer = TextTransformer(dim_model=dim_out, n_layers=8, max_length=max_length, nhead=8, dim_ff=1024)
+        # The embedder takes size vocabulary_size because it should ignore the dummy token 0
+        self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size, embedding_dim=dim_out)
+        self.transformer = TextTransformer(dim_model=dim_out, n_layers=8, max_length=max_length, nhead=8, dim_ff=1024, use_checkpoint=use_checkpoint)
 
     def forward(self, x):
         b, _ = x.shape
 
-        mask = torch.zeros(b, self.max_length, self.max_length, dtype=torch.bool)
-        eos_mask = torch.zeros(b, self.max_length, dtype=torch.bool)
+        # Creating masks
+        mask = torch.zeros(b, self.max_length, self.max_length, device=torch.device("cuda:0"), dtype=torch.bool)
+        eos_mask = torch.zeros(b, self.max_length, device=torch.device("cuda:0"), dtype=torch.bool)
 
         # Create masks
         eos_mask[:, :] = (x == self.additional_tokens["[EOS]"])
@@ -40,21 +41,22 @@ class GPTSmall(nn.Module):
 
 
 class GPTBase(nn.Module):
-    def __init__(self, dim_out,  vocab_size, max_length):
+    def __init__(self, dim_out,  vocab_size, max_length, use_checkpoint):
         super(GPTBase, self).__init__()
         self.max_length = max_length
 
         self.additional_tokens = additional_tokens
 
         # The embedder takes size vocabulary_size+1 because it should ignore the dummy token 0
-        self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size+1, embedding_dim=dim_out)
-        self.transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=8, dim_ff=2048)
+        self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size, embedding_dim=dim_out)
+        self.transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=8, dim_ff=2048, use_checkpoint=use_checkpoint)
 
     def forward(self, x):
         b, _ = x.shape
 
-        mask = torch.zeros(b, self.max_length, self.max_length, dtype=torch.bool)
-        eos_mask = torch.zeros(b, self.max_length, dtype=torch.bool)
+        # Creating masks
+        mask = torch.zeros(b, self.max_length, self.max_length, device=torch.device("cuda:0"), dtype=torch.bool)
+        eos_mask = torch.zeros(b, self.max_length, device=torch.device("cuda:0"), dtype=torch.bool)
 
         # Create masks
         eos_mask[:, :] = (x == self.additional_tokens["[EOS]"])
@@ -70,7 +72,7 @@ class GPTBase(nn.Module):
 
 
 class GPTLarge(nn.Module):
-    def __init__(self, dim_out, vocab_size, max_length):
+    def __init__(self, dim_out, vocab_size, max_length, use_checkpoint):
         super(GPTLarge, self).__init__()
         self.max_length = max_length
 
@@ -78,13 +80,14 @@ class GPTLarge(nn.Module):
 
         # Token Embedding
         self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size, embedding_dim=dim_out)
-        self.transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=12, dim_ff=2048)
+        self.transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=12, dim_ff=2048, use_checkpoint=use_checkpoint)
 
     def forward(self, x):
         b, _ = x.shape
 
-        mask = torch.zeros(b, self.max_length, self.max_length, dtype=torch.bool)
-        eos_mask = torch.zeros(b, self.max_length, dtype=torch.bool)
+        # Creating masks
+        mask = torch.zeros(b, self.max_length, self.max_length, device=torch.device("cuda:0"), dtype=torch.bool)
+        eos_mask = torch.zeros(b, self.max_length, device=torch.device("cuda:0"), dtype=torch.bool)
 
         # Create masks
         eos_mask[:, :] = (x == self.additional_tokens["[EOS]"])
@@ -100,11 +103,13 @@ class GPTLarge(nn.Module):
 
 
 class TextTransformer(nn.Module):
-    def __init__(self, n_layers, dim_model, max_length, dim_ff, nhead):
+    def __init__(self, n_layers, dim_model, max_length, dim_ff, nhead, use_checkpoint):
         super(TextTransformer, self).__init__()
 
         self.n_layers = n_layers
         self.nhead = nhead
+
+        self.use_checkpoint = use_checkpoint
 
         self.dim_model = dim_model
         self.dim_ff = dim_ff
@@ -127,11 +132,14 @@ class TextTransformer(nn.Module):
 
     def forward(self, x, mask, eos_mask): # b x l_max x dim_v
         # Add position encoder to token embedded input x
-        x = torch.add(x, self.pos_encoder)                  # b x l_max x dim_v
+        x = torch.add(x, self.pos_encoder)
 
         # Transformer layers
         for l in range(self.n_layers):
-            x = checkpoint(self.transformers[l], x, mask)
+            if self.use_checkpoint:
+                x = checkpoint(self.transformers[l], x, mask)
+            else:
+                x = self.transformers[l](x, mask)
 
         # Get last [EOS] token at highest layer
         x = x[eos_mask]
