@@ -16,7 +16,7 @@ s3 = boto3.client('s3')
 models_dir = "src/models/checkpoints"
 
 
-def training(training_dataset, clip_model, loss_function, optimizer, scheduler, epochs, device, model_name, load_last_checkpoint=False, load_from_given_checkpoint=None):
+def training(training_dataset, clip_model, loss_function, optimizer, scheduler, accumulate, epochs, device, model_name, load_last_checkpoint=False, load_from_given_checkpoint=None):
     """
     Training loop.
     :param training_dataset: (Dataloader) training data.
@@ -49,9 +49,6 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
     optimizer.zero_grad(set_to_none=True)
     scaler = GradScaler()
 
-    # Every N batches
-    accumulate = 64
-
     for epoch in range(epoch_0, epochs):
         pbar = tqdm(total=len(training_dataset))
         for idx, (images, queries) in enumerate(training_dataset):
@@ -67,7 +64,6 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
             # Save to loss history
             history_loss.append(np.round(loss.item(), 5))
             last_lr = np.round(scheduler.get_last_lr(), 9)
-
 
             # Full Precision Back-propagation
             scaler.scale(loss).backward()
