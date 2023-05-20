@@ -71,12 +71,13 @@ def load_from_checkpoint(model_filepath, model, scheduler=None, optimizer=None):
     return epoch, loss_history
 
 
-def training_info_log_message(device, use_checkpoint, epochs, accumulate, batch_size, image_encoder, text_encoder, image_dim_out, text_dim_out, optimizer):
+def training_info_log_message(device, use_checkpoint, epochs, max_steps, accumulate, batch_size, image_encoder, text_encoder, image_dim_out, text_dim_out, optimizer):
     """
     Prints the training loop information.
 
     :param device: (torch.device) device.
     :param epochs: (int) number of epochs.
+    :param max_steps: (int) maximum number of steps.
     :param accumulate: (int) number of batches to accumulate.
     :param batch_size: (int) batch size.
     :param image_encoder: (str) image encoder name.
@@ -92,6 +93,7 @@ def training_info_log_message(device, use_checkpoint, epochs, accumulate, batch_
     ____________________________________________
     Device:         {torch.cuda.get_device_name() if device == torch.device("cuda:0") else "CPU"}
     Epochs:         {epochs}
+    Max Steps:      {max_steps}
     Use Checkpoint: {use_checkpoint}
     Accumulate:     {accumulate}
     Batch size:     {batch_size}
