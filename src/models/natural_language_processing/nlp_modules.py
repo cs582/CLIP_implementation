@@ -79,9 +79,9 @@ class MaskedSelfAttention(nn.Module):
         self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x, mask=None): # b x l_max x dim_v
-        q = torch.einsum('blx,odk->bld', x, self.wq) # b x l_max x dim_q
-        k = torch.einsum('blx,odk->bld', x, self.wk) # b x l_max x dim_k
-        v = torch.einsum('blx,odv->bld', x, self.wv) # b x l_max x dim_v
+        q = torch.einsum('blx,odk->blk', x, self.wq) # b x l_max x dim_q
+        k = torch.einsum('blx,odk->blk', x, self.wk) # b x l_max x dim_k
+        v = torch.einsum('blx,odv->blv', x, self.wv) # b x l_max x dim_v
 
         s = torch.einsum('bqd,bkd->bqk', q, k) # b x l_max x l_max
         if mask is not None:
