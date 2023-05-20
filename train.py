@@ -27,7 +27,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('-device', type=str, default="cpu", help="Set device to use: gpu or cpu.")
 parser.add_argument('-load_last_checkpoint', type=bool, default=False, help="Load model from last checkpoint and restart training from there.")
 parser.add_argument('-warmup', type=int, default=2000, help="Warmup steps.")
-parser.add_argument('-use_checkpoint', type=bool, default=True, help="Use checkpointing for training.")
+parser.add_argument('-use_checkpoint', type=bool, default=False, help="Use checkpointing for training.")
 parser.add_argument('-accumulate', type=int, default=64, help="Accumulate N batches.")
 
 # CLIP Hyper-parameters
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     dataloader = DataLoader(training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=16, pin_memory=True, drop_last=True)
 
     # Calculate max-steps
-    max_steps = epochs * len(dataloader) // multimodal_embedding_dim
+    max_steps = len(dataloader) * epochs
 
     # Set CLIP Loss function
     loss_func = CLIPLoss(logits_length=multimodal_embedding_dim).to(device)
