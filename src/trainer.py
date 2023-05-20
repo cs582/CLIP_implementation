@@ -52,6 +52,8 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
     for epoch in range(epoch_0, epochs):
         pbar = tqdm(total=len(training_dataset))
         for idx, (images, queries) in enumerate(training_dataset):
+            images = images.to(device, non_blocking=True)
+            queries = queries.to(device, non_blocking=True)
 
             # Mixed Precision Forward Pass
             with torch.cuda.amp.autocast():
