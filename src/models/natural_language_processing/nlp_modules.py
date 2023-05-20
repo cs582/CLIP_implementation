@@ -88,7 +88,7 @@ class MaskedSelfAttention(nn.Module):
         s = torch.einsum('bqd,bkd->bqk', q, k) # b x l_max x l_max
         print(s.shape)
         if mask is not None:
-            s = s.masked_fill(~mask.unsqueeze(1), -1000.0)
+            s = s.masked_fill(~mask, -1000.0)
         s = s / (self.dim_k ** 0.5) # regularization
         s = self.softmax(s)
         print(s.shape, v.shape)
