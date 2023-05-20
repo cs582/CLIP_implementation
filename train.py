@@ -98,7 +98,7 @@ if __name__ == "__main__":
 
     # Load training dataset
     training_dataset = ImageQueryDataset(dataset_file, image_path, tokenizer_file, args.max_length, device, image_resolution)
-    dataloader = DataLoader(training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=16, pin_memory=True, drop_last=True)
+    dataloader = DataLoader(training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=8, pin_memory=True, drop_last=True)
 
     # Calculate max-steps
     max_steps = len(dataloader) * epochs
