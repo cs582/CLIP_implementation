@@ -116,7 +116,7 @@ if __name__ == "__main__":
     scheduler = warmup_scheduler(optimizer, warmup_steps=args.warmup, warmup_start=0.0, lr_max=args.lr, max_steps=max_steps)
 
     # Print training information
-    training_info_log_message(device, args.use_checkpoint, epochs, accumulate, args.batch_size, args.image_encoder, args.text_encoder, args.image_dim_out, args.text_dim_out, optimizer)
+    training_info_log_message(device, args.use_checkpoint, epochs, max_steps, accumulate, args.batch_size, args.image_encoder, args.text_encoder, args.image_dim_out, args.text_dim_out, optimizer)
 
     # Training cycle
     training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, scheduler=scheduler, accumulate=accumulate, epochs=epochs, device=device, model_name=args.image_encoder, load_last_checkpoint=args.load_last_checkpoint)
