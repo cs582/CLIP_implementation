@@ -68,7 +68,7 @@ if __name__ == "__main__":
     device = torch.device('cuda:0') if args.device=="gpu" else torch.device('cpu')
 
     # Pick Image Encoder model
-    assert args.image_encoder in ['B/32@224', 'B/16@112', 'S/8@112', 'S/16@112']
+    assert args.image_encoder in ['B/32@224', 'B/16@112', 'S/8@112', 'M/14@112']
 
     image_model = None
     image_resolution = None
