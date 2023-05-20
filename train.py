@@ -55,10 +55,6 @@ tokenizer_file = "src/data/nlp/tokenizers/CLIP-bpe.tokenizer.json"
 
 
 if __name__ == "__main__":
-
-    # Multi-processing
-    mp.set_start_method('spawn')
-
     # Epochs
     epochs = args.epochs
 
