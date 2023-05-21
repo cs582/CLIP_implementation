@@ -50,7 +50,7 @@ parser.add_argument('-embedding_dim', type=int, default=512, help="Embedding dim
 args = parser.parse_args()
 
 dataset_file = "src/data/image_gen/WQ-dataset/WQI_local.csv"
-image_path = "src/data/image_gen/WQ-dataset/images"
+image_path = "/data/WKIT_images"
 tokenizer_file = "src/data/nlp/tokenizers/CLIP-bpe.tokenizer.json"
 
 

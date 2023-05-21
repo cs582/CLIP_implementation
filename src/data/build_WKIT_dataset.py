@@ -17,9 +17,9 @@ def valid_image_checker(image_dir, x):
         return False
 
 
-def build():
+def build(image_dir):
     wq_dataset_file = "src/data/image_gen/WQ-dataset/WQI_mini.csv"
-    image_dir = "src/data/image_gen/WQ-dataset/images"
+    #image_dir = "src/data/image_gen/WQ-dataset/images"
 
     # Read csv file with queries
     print(f"Reading {wq_dataset_file}")

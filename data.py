@@ -26,6 +26,7 @@ if __name__ == "__main__":
 
     pairs_folder = "src/data/image_gen/WQ-dataset"
     tokenizer_folder = "src/data/nlp/tokenizers"
+    images_folder = "/data/carlos"
 
     if not os.path.exists(tokenizer_folder):
         os.mkdir(tokenizer_folder)
@@ -45,7 +46,7 @@ if __name__ == "__main__":
         train_bpe(tokenizer_folder)
 
     if args.task == 4:
-        build_WKIT_dataset.build()
+        build_WKIT_dataset.build(images_folder)
 
     if args.task == 5:
         build_nft_dataset.build()
