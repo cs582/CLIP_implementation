@@ -91,7 +91,7 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
                 pbar.update(accumulate)
 
             # Save to S3
-            if (idx+1) % 5000 == 0 or (idx+1) == len(training_dataset):
+            if (idx+1) % 2500 == 0 or (idx+1) == len(training_dataset):
                 history_bytes = json.dumps(history_loss)
                 s3.put_object(Bucket='clip-loss-may-1', Key=history_filename, Body=history_bytes)
 
