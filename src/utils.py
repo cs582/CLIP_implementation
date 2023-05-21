@@ -102,5 +102,4 @@ def training_info_log_message(device, use_checkpoint, epochs, max_steps, accumul
     Optimizer:      {optimizer}
     _____________________________________________
     """
-
     print(text)
