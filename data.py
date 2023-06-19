@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     pairs_folder = "src/data/image_gen/WQ-dataset"
     tokenizer_folder = "src/data/nlp/tokenizers"
-    images_folder = "/data/carlos"
+    images_folder = "/data/carlos/images"
 
     if not os.path.exists(tokenizer_folder):
         os.mkdir(tokenizer_folder)
