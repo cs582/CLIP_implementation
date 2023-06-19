@@ -97,8 +97,8 @@ if __name__ == "__main__":
         text_model = GPTLarge(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, use_checkpoint=args.use_checkpoint).to(device)
 
     # Load training dataset
-    training_dataset = ImageQueryDataset(dataset_file, image_path, tokenizer_file, args.max_length, device, image_resolution)
-    dataloader = DataLoader(training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=8, pin_memory=True, drop_last=True)
+    training_dataset = ImageQueryDataset(dataset_file=dataset_file, image_path=image_path, tokenizer_file=tokenizer_file, max_length=args.max_length, device=device, img_res=image_resolution)
+    dataloader = DataLoader(dataset=training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=8, pin_memory=True, drop_last=True)
 
     # Calculate max-steps
     max_steps = len(dataloader) * epochs

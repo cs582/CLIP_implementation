@@ -3,6 +3,7 @@ import boto3
 import torch
 import json
 import os
+import tensorboardX
 
 
 from torch.cuda.amp import GradScaler
@@ -31,7 +32,8 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
     :param load_from_given_checkpoint: (str) Gives it a specific model to load.
     :return:
     """
-    history_filename = f"clip_loss_{model_name}.json"
+    # history_filename = f"clip_loss_{model_name}.json"
+    writer = tensorboardX.SummaryWriter()
 
     history_loss = []
 
@@ -90,10 +92,16 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
                 # Update progress bar
                 pbar.update(accumulate)
 
-            # Save to S3
-            if (idx+1) % 2500 == 0 or (idx+1) == len(training_dataset):
-                history_bytes = json.dumps(history_loss)
-                s3.put_object(Bucket='clip-loss-may-1', Key=history_filename, Body=history_bytes)
+                # See Training in Tensorboard
+                writer.add_scalar('Loss', history_loss[-1], len(history_loss))
+
+
+            # # Save to S3
+            # if (idx+1) % 2500 == 0 or (idx+1) == len(training_dataset):
+            #     history_bytes = json.dumps(history_loss)
+            #     s3.put_object(Bucket='clip-loss-may-1', Key=history_filename, Body=history_bytes)
+
+
 
         # Save at every epoch
         save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, history=history_loss, models_dir=models_dir, scheduler=scheduler)
