@@ -26,6 +26,7 @@ class ImageQueryDataset(Dataset):
         self.img_res = img_res
         self.max_length = max_length
         self.device = device
+        self.last_index = None
 
         # Set image path
         self.image_path = image_path
@@ -52,6 +53,7 @@ class ImageQueryDataset(Dataset):
 
     def __len__(self):
         return len(self.data)
+
 
     def __getitem__(self, index):
         query, x = self.data[index]

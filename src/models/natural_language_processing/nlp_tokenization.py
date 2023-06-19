@@ -13,12 +13,10 @@ def train_bpe(tokenizer_folder):
     # Define special tokens
     special_tokens = ['[EOS]', '[SOS]']
 
-    # Add special tokens to the vocabulary
-    tokenizer.add_tokens(special_tokens)
-
     # And then train
     trainer = trainers.BpeTrainer(
-        vocab_size=43000,
+        special_tokens=special_tokens,
+        vocab_size=20000,
         min_frequency=2,
         initial_alphabet=pre_tokenizers.ByteLevel.alphabet(),
     )
