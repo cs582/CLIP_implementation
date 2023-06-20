@@ -93,15 +93,7 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
                 pbar.update(accumulate)
 
                 # See Training in Tensorboard
-                writer.add_scalar('Loss', history_loss[-1], len(history_loss))
-
-
-            # # Save to S3
-            # if (idx+1) % 2500 == 0 or (idx+1) == len(training_dataset):
-            #     history_bytes = json.dumps(history_loss)
-            #     s3.put_object(Bucket='clip-loss-may-1', Key=history_filename, Body=history_bytes)
-
-
+                writer.add_scalar(f'{model_name} Loss', history_loss[-1], len(history_loss))
 
         # Save at every epoch
         save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, history=history_loss, models_dir=models_dir, scheduler=scheduler)

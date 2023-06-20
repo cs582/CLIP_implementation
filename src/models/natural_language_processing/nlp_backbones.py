@@ -6,7 +6,8 @@ from src.models.natural_language_processing.nlp_modules import TransformerRadfor
 
 from src.models.natural_language_processing.nlp_token_embedding import TokenEmbedder
 
-additional_tokens = {"[SOS]": 43001, "[EOS]": 43000}
+additional_tokens = {"[EOS]": 0, "[SOS]": 1}
+
 
 
 class GPTSmall(nn.Module):
