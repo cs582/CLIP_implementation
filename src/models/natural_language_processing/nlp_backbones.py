@@ -10,9 +10,10 @@ additional_tokens = {"[EOS]": 0, "[SOS]": 1}
 
 
 class GPTSmall(nn.Module):
-    def __init__(self, dim_out, vocab_size, max_length, use_checkpoint):
+    def __init__(self, dim_out, vocab_size, max_length, use_checkpoint, device):
         super(GPTSmall, self).__init__()
         self.max_length = max_length
+        self.device = device
 
         self.additional_tokens = additional_tokens
 
@@ -24,8 +25,8 @@ class GPTSmall(nn.Module):
         b, _ = x.shape
 
         # Creating masks
-        mask = torch.zeros(b, self.max_length, self.max_length, device=torch.device("cuda:0"), dtype=torch.bool)
-        eos_mask = torch.zeros(b, self.max_length, device=torch.device("cuda:0"), dtype=torch.bool)
+        mask = torch.zeros(b, self.max_length, self.max_length, device=self.device, dtype=torch.bool)
+        eos_mask = torch.zeros(b, self.max_length, device=self.device, dtype=torch.bool)
 
         # Create masks
         eos_mask[:, :] = (x == self.additional_tokens["[EOS]"])
@@ -41,9 +42,10 @@ class GPTSmall(nn.Module):
 
 
 class GPTBase(nn.Module):
-    def __init__(self, dim_out,  vocab_size, max_length, use_checkpoint):
+    def __init__(self, dim_out,  vocab_size, max_length, use_checkpoint, device):
         super(GPTBase, self).__init__()
         self.max_length = max_length
+        self.device = device
 
         self.additional_tokens = additional_tokens
 
@@ -55,8 +57,8 @@ class GPTBase(nn.Module):
         b, _ = x.shape
 
         # Creating masks
-        mask = torch.zeros(b, self.max_length, self.max_length, device=torch.device("cuda:0"), dtype=torch.bool)
-        eos_mask = torch.zeros(b, self.max_length, device=torch.device("cuda:0"), dtype=torch.bool)
+        mask = torch.zeros(b, self.max_length, self.max_length, device=self.device, dtype=torch.bool)
+        eos_mask = torch.zeros(b, self.max_length, device=self.device, dtype=torch.bool)
 
         # Create masks
         eos_mask[:, :] = (x == self.additional_tokens["[EOS]"])
@@ -72,9 +74,10 @@ class GPTBase(nn.Module):
 
 
 class GPTLarge(nn.Module):
-    def __init__(self, dim_out, vocab_size, max_length, use_checkpoint):
+    def __init__(self, dim_out, vocab_size, max_length, use_checkpoint, device):
         super(GPTLarge, self).__init__()
         self.max_length = max_length
+        self.device = device
 
         self.additional_tokens = additional_tokens
 
@@ -86,8 +89,8 @@ class GPTLarge(nn.Module):
         b, _ = x.shape
 
         # Creating masks
-        mask = torch.zeros(b, self.max_length, self.max_length, device=torch.device("cuda:0"), dtype=torch.bool)
-        eos_mask = torch.zeros(b, self.max_length, device=torch.device("cuda:0"), dtype=torch.bool)
+        mask = torch.zeros(b, self.max_length, self.max_length, device=self.device, dtype=torch.bool)
+        eos_mask = torch.zeros(b, self.max_length, device=self.device, dtype=torch.bool)
 
         # Create masks
         eos_mask[:, :] = (x == self.additional_tokens["[EOS]"])
