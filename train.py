@@ -1,6 +1,5 @@
 import torch
 import argparse
-import torch.multiprocessing as mp
 
 from src.trainer import training
 from torch.utils.data import DataLoader
@@ -36,8 +35,8 @@ parser.add_argument('-text_encoder', type=str, default=None, help="Text encoder 
 parser.add_argument('-max_temperature', type=float, default=100.0, help="Maximum temperature for CLIP loss.")
 parser.add_argument('-batch_size', type=int, default=128, help="Batch size. Is the same as the multimodal embedding dimension.")
 parser.add_argument('-epochs', type=int, default=5, help="Epochs for training. (ignored in fine-tuning).")
-parser.add_argument('-vocab_size', type=int, default=43002, help="Vocabulary size from trained tokenizer.")
-parser.add_argument('-max_length', type=int, default=34, help="Max length of the token encoding.")
+parser.add_argument('-vocab_size', type=int, default=20000, help="Vocabulary size from trained tokenizer.")
+parser.add_argument('-max_length', type=int, default=32, help="Max length of the token encoding.")
 parser.add_argument('-decay', type=float, default=0.2, help="Weight decay.")
 parser.add_argument('-beta_1', type=float, default=0.9, help="Adam optimizer beta_1.")
 parser.add_argument('-beta_2', type=float, default=0.98, help="Adam optimizer beta_2. Recommended 0.98 for ViT.")
@@ -90,14 +89,14 @@ if __name__ == "__main__":
 
     text_model = None
     if args.text_encoder == "S":
-        text_model = GPTSmall(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, use_checkpoint=args.use_checkpoint).to(device)
+        text_model = GPTSmall(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, use_checkpoint=args.use_checkpoint, device=device).to(device)
     if args.text_encoder == "B":
-        text_model = GPTBase(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, use_checkpoint=args.use_checkpoint).to(device)
+        text_model = GPTBase(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, use_checkpoint=args.use_checkpoint, device=device).to(device)
     if args.text_encoder == "L":
-        text_model = GPTLarge(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, use_checkpoint=args.use_checkpoint).to(device)
+        text_model = GPTLarge(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, use_checkpoint=args.use_checkpoint, device=device).to(device)
 
     # Load training dataset
-    training_dataset = ImageQueryDataset(dataset_file=dataset_file, image_path=image_path, tokenizer_file=tokenizer_file, max_length=args.max_length, device=device, img_res=image_resolution)
+    training_dataset = ImageQueryDataset(dataset_file=dataset_file, image_path=image_path, tokenizer_file=tokenizer_file, max_length=args.max_length, img_res=image_resolution)
     dataloader = DataLoader(dataset=training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=8, pin_memory=True, drop_last=True)
 
     # Calculate max-steps

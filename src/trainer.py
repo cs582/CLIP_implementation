@@ -1,7 +1,5 @@
 import numpy as np
-import boto3
 import torch
-import json
 import os
 import tensorboardX
 
@@ -10,12 +8,8 @@ from torch.cuda.amp import GradScaler
 from tqdm import tqdm
 from src.utils import save_checkpoint, load_from_checkpoint
 
-
-s3 = boto3.client('s3')
-
 # Models directory
 models_dir = "src/models/checkpoints"
-
 
 def training(training_dataset, clip_model, loss_function, optimizer, scheduler, accumulate, epochs, device, model_name, load_last_checkpoint=False, load_from_given_checkpoint=None):
     """
@@ -32,7 +26,6 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
     :param load_from_given_checkpoint: (str) Gives it a specific model to load.
     :return:
     """
-    # history_filename = f"clip_loss_{model_name}.json"
     writer = tensorboardX.SummaryWriter()
 
     history_loss = []
@@ -75,25 +68,23 @@ def training(training_dataset, clip_model, loss_function, optimizer, scheduler, 
             # Set pbar description
             pbar.set_description(f"Epoch:{epoch}. Loss:{history_loss[-1]}. lr:{last_lr}")
 
-            # Update every n batches
-            if (idx+1) % accumulate == 0 or (idx+1) == len(training_dataset):
-                # Optimization
-                scaler.step(optimizer)
+            # Optimization
+            scaler.step(optimizer)
 
-                # Take learning rate step
-                scheduler.step()
+            # Take learning rate step
+            scheduler.step()
 
-                # Update scaler
-                scaler.update()
+            # Update scaler
+            scaler.update()
 
-                # Reset the gradients to None
-                optimizer.zero_grad(set_to_none=True)
+            # Reset the gradients to None
+            optimizer.zero_grad(set_to_none=True)
 
-                # Update progress bar
-                pbar.update(accumulate)
+            # Update progress bar
+            pbar.update(accumulate)
 
-                # See Training in Tensorboard
-                writer.add_scalar(f'{model_name} Loss', history_loss[-1], len(history_loss))
+            # See Training in Tensorboard
+            writer.add_scalar(f'{model_name} Loss', history_loss[-1], len(history_loss))
 
         # Save at every epoch
         save_checkpoint(model=clip_model, optimizer=optimizer, epoch=epoch, history=history_loss, models_dir=models_dir, scheduler=scheduler)
