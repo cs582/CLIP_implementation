@@ -9,7 +9,6 @@ from src.models.natural_language_processing.nlp_token_embedding import TokenEmbe
 additional_tokens = {"[EOS]": 0, "[SOS]": 1}
 
 
-
 class GPTSmall(nn.Module):
     def __init__(self, dim_out, vocab_size, max_length, use_checkpoint):
         super(GPTSmall, self).__init__()

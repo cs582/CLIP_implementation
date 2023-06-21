@@ -11,21 +11,19 @@ import torchvision.transforms as T
 
 
 class ImageQueryDataset(Dataset):
-    def __init__(self, dataset_file, image_path, tokenizer_file, max_length, device, start_from=None, end_at=None, img_res=112):
+    def __init__(self, dataset_file, image_path, tokenizer_file, max_length, start_from=None, end_at=None, img_res=112):
         """
         ImageQueryDataset Dataset object. This object initializes the dataset for the training loop.
         :param dataset_file: (str) Path dataset csv.
         :param image_path: (str) Path to images.
         :param tokenizer_file: (str) Path to tokenizer.
         :param max_length: (int) Maximum length of a sentence.
-        :param device: (torch.device) Torch training device.
         :param img_res: (int) Image resolution, receives a single integer, will be used for both dimensions (img_res, img_res).
         """
         print("Initializing Dataset...")
         # Initial parameters
         self.img_res = img_res
         self.max_length = max_length
-        self.device = device
         self.last_index = None
 
         # Set image path
