@@ -27,7 +27,6 @@ parser.add_argument('-device', type=str, default="cpu", help="Set device to use:
 parser.add_argument('-load_last_checkpoint', type=bool, default=False, help="Load model from last checkpoint and restart training from there.")
 parser.add_argument('-warmup', type=int, default=2000, help="Warmup steps.")
 parser.add_argument('-use_checkpoint', type=bool, default=False, help="Use checkpointing for training.")
-parser.add_argument('-accumulate', type=int, default=64, help="Accumulate N batches.")
 
 # CLIP Hyper-parameters
 parser.add_argument('-image_encoder', type=str, default=None, help="Image encoder backbone. One of (ViT) @112, @224, or @336.")
@@ -49,73 +48,92 @@ parser.add_argument('-embedding_dim', type=int, default=512, help="Embedding dim
 args = parser.parse_args()
 
 dataset_file = "src/data/image_gen/WQ-dataset/WQI_local.csv"
-image_path = "/data/WKIT_images"
+image_path = "/data/carlos/images"
 tokenizer_file = "src/data/nlp/tokenizers/CLIP-bpe.tokenizer.json"
 
 
 if __name__ == "__main__":
-    # Epochs
+    # CLIP Hyper-parameters
+    image_encoder = args.image_encoder
+    text_encoder = args.text_encoder
+    max_temperature = args.max_temperature
+    vocab_size = args.vocab_size
+    clip_embedding_dim = args.embedding_dim
+
+    # Training Hyper-parameters
+    batch_size = args.batch_size
+    max_length = args.max_length
     epochs = args.epochs
+    warmup = args.warmup
+    decay = args.decay
+    beta_1 = args.beta_1
+    beta_2 = args.beta_2
+    epsilon = args.epsilon
+    lr = args.lr
 
-    # Accumulate
-    accumulate = args.accumulate
+    # Text-encoder Hyper-parameters
+    text_dim_out = args.text_dim_out
 
-    # Get multimodal embedding dim which is equal to the batch size
-    multimodal_embedding_dim = args.batch_size
+    # Image-encoder Hyper-parameters
+    image_dim_out = args.image_dim_out
+
+    # Other Hyper-parameters
+    load_last_checkpoint = args.load_last_checkpoint
+    use_checkpoint = args.use_checkpoint
 
     # Get device
     device = torch.device('cuda:0') if args.device=="gpu" else torch.device('cpu')
 
     # Pick Image Encoder model
-    assert args.image_encoder in ['B/32@224', 'B/16@112', 'S/8@112', 'M/14@112']
+    assert image_encoder in ['B/32@224', 'B/16@112', 'S/8@112', 'M/14@112']
 
     image_model = None
     image_resolution = None
-    if args.image_encoder == "B/32@224":
-        image_model = ViTBaseOver32at224(dim_out=args.image_dim_out).to(device)
+    if image_encoder == "B/32@224":
+        image_model = ViTBaseOver32at224(dim_out=image_dim_out).to(device)
         image_resolution = 224
-    if args.image_encoder == "B/16@112":
-        image_model = ViTBaseOver16at112(dim_out=args.image_dim_out).to(device)
+    if image_encoder == "B/16@112":
+        image_model = ViTBaseOver16at112(dim_out=image_dim_out).to(device)
         image_resolution = 112
-    if args.image_encoder == "S/16@112":
-        image_model = ViTSmallOver16at112(dim_out=args.image_dim_out).to(device)
+    if image_encoder == "S/16@112":
+        image_model = ViTSmallOver16at112(dim_out=image_dim_out).to(device)
         image_resolution = 112
-    if args.image_encoder == "M/14@112":
-        image_model = ViTMicroOver14at112(dim_out=args.image_dim_out).to(device)
+    if image_encoder == "M/14@112":
+        image_model = ViTMicroOver14at112(dim_out=image_dim_out).to(device)
         image_resolution = 112
 
     # Pick Text Encoder model
-    assert args.text_encoder in ['S', 'B', 'L']
+    assert text_encoder in ['S', 'B', 'L']
 
     text_model = None
-    if args.text_encoder == "S":
-        text_model = GPTSmall(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, use_checkpoint=args.use_checkpoint, device=device).to(device)
-    if args.text_encoder == "B":
-        text_model = GPTBase(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, use_checkpoint=args.use_checkpoint, device=device).to(device)
-    if args.text_encoder == "L":
-        text_model = GPTLarge(dim_out=args.text_dim_out, vocab_size=args.vocab_size, max_length=args.max_length, use_checkpoint=args.use_checkpoint, device=device).to(device)
+    if text_encoder == "S":
+        text_model = GPTSmall(dim_out=text_dim_out, vocab_size=vocab_size, max_length=max_length, use_checkpoint=use_checkpoint, device=device).to(device)
+    if text_encoder == "B":
+        text_model = GPTBase(dim_out=text_dim_out, vocab_size=vocab_size, max_length=max_length, use_checkpoint=use_checkpoint, device=device).to(device)
+    if text_encoder == "L":
+        text_model = GPTLarge(dim_out=text_dim_out, vocab_size=vocab_size, max_length=max_length, use_checkpoint=use_checkpoint, device=device).to(device)
 
     # Load training dataset
-    training_dataset = ImageQueryDataset(dataset_file=dataset_file, image_path=image_path, tokenizer_file=tokenizer_file, max_length=args.max_length, img_res=image_resolution)
-    dataloader = DataLoader(dataset=training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=8, pin_memory=True, drop_last=True)
+    training_dataset = ImageQueryDataset(dataset_file=dataset_file, image_path=image_path, tokenizer_file=tokenizer_file, max_length=max_length, img_res=image_resolution)
+    dataloader = DataLoader(dataset=training_dataset, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True, drop_last=True)
 
     # Calculate max-steps
     max_steps = len(dataloader) * epochs
 
     # Set CLIP Loss function
-    loss_func = CLIPLoss(logits_length=multimodal_embedding_dim).to(device)
+    loss_func = CLIPLoss(logits_length=batch_size).to(device)
 
     # Call CLIP core model
-    clip_model = CLIPModule(image_encoder=image_model, text_encoder=text_model, dim_img=args.image_dim_out, dim_text=args.text_dim_out, embedding_dim=args.embedding_dim, temperature=0.07).to(device)
+    clip_model = CLIPModule(image_encoder=image_model, text_encoder=text_model, dim_img=image_dim_out, dim_text=text_dim_out, embedding_dim=clip_embedding_dim, temperature=0.07).to(device)
 
     # Set Adam Optimizer
-    optimizer = torch.optim.AdamW(clip_model.parameters(), lr=args.lr, eps=args.epsilon, betas=(args.beta_1, args.beta_2), weight_decay=args.decay)
+    optimizer = torch.optim.AdamW(clip_model.parameters(), lr=lr, eps=epsilon, betas=(beta_1, beta_2), weight_decay=decay)
 
     # Warm-up scheduler(optimizer, warmup_steps, warmup_start, lr_max, max_steps)
-    scheduler = warmup_scheduler(optimizer, warmup_steps=args.warmup, warmup_start=0.0, lr_max=args.lr, max_steps=max_steps)
+    scheduler = warmup_scheduler(optimizer, warmup_steps=warmup, warmup_start=0.0, lr_max=lr, max_steps=max_steps)
 
     # Print training information
-    training_info_log_message(device, args.use_checkpoint, epochs, max_steps, accumulate, args.batch_size, args.image_encoder, args.text_encoder, args.image_dim_out, args.text_dim_out, optimizer)
+    training_info_log_message(device=device, use_checkpoint=use_checkpoint, vocab_size=vocab_size, epochs=epochs, max_steps=max_steps, batch_size=batch_size, image_encoder=image_encoder, text_encoder=text_encoder, image_dim_out=image_dim_out, text_dim_out=text_dim_out, optimizer=optimizer)
 
     # Training cycle
-    training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, scheduler=scheduler, accumulate=accumulate, epochs=epochs, device=device, model_name=args.image_encoder, load_last_checkpoint=args.load_last_checkpoint)
+    training(training_dataset=dataloader, clip_model=clip_model, loss_function=loss_func, optimizer=optimizer, scheduler=scheduler, epochs=epochs, device=device, model_name=image_encoder, load_last_checkpoint=load_last_checkpoint)
