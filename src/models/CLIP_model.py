@@ -34,8 +34,8 @@ class CLIPModule(nn.Module):
 
     def forward(self, image, text):
         # Extract feature representation of each modality
-        img_f = self.img_encoder(image) # batch_size x dim_img
-        txt_f = self.txt_encoder(text)   # batch_suze x dim_text
+        img_f = self.img_encoder(image) # batch_size x embedding_dim
+        txt_f = self.txt_encoder(text)   # batch_size x embedding_dim
 
         # Scaled pairwise cosine similarities
         logits_images = torch.matmul(img_f, txt_f.t())  # batch_size x batch_size

@@ -11,7 +11,7 @@ def train_bpe(tokenizer_folder):
     tokenizer.post_processor = processors.ByteLevel(trim_offsets=True)
 
     # Define special tokens
-    special_tokens = ['[EOS]', '[SOS]']
+    special_tokens = ['[NON]', '[EOS]', '[SOS]']
 
     # And then train
     trainer = trainers.BpeTrainer(

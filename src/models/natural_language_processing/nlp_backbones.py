@@ -1,12 +1,13 @@
 import math
 import torch
 import torch.nn as nn
+from tokenizers import Tokenizer
 from torch.utils.checkpoint import checkpoint
 from src.models.natural_language_processing.nlp_modules import TransformerRadford
 
 from src.models.natural_language_processing.nlp_token_embedding import TokenEmbedder
 
-additional_tokens = {"[EOS]": 0, "[SOS]": 1}
+tokenizer = Tokenizer.from_file("src/data/nlp/tokenizers/CLIP-bpe.tokenizer.json")
 
 
 class GPTSmall(nn.Module):
@@ -14,8 +15,6 @@ class GPTSmall(nn.Module):
         super(GPTSmall, self).__init__()
         self.max_length = max_length
         self.device = device
-
-        self.additional_tokens = additional_tokens
 
         # The embedder takes size vocabulary_size because it should ignore the dummy token 0
         self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size, embedding_dim=dim_out)
@@ -29,7 +28,7 @@ class GPTSmall(nn.Module):
         eos_mask = torch.zeros(b, self.max_length, device=self.device, dtype=torch.bool)
 
         # Create masks
-        eos_mask[:, :] = (x == self.additional_tokens["[EOS]"])
+        eos_mask[:, :] = (x == tokenizer.token_to_id('[EOS]'))
         for small_b in range(b):
             sentence_length = (x[small_b] != 0).sum()
             mask[small_b, :sentence_length, :sentence_length] = torch.triu(torch.ones(sentence_length, sentence_length), diagonal=1).T
@@ -47,11 +46,10 @@ class GPTBase(nn.Module):
         self.max_length = max_length
         self.device = device
 
-        self.additional_tokens = additional_tokens
-
         # The embedder takes size vocabulary_size+1 because it should ignore the dummy token 0
         self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size, embedding_dim=dim_out)
         self.transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=8, dim_ff=2048, use_checkpoint=use_checkpoint)
+
 
     def forward(self, x):
         b, _ = x.shape
@@ -61,7 +59,7 @@ class GPTBase(nn.Module):
         eos_mask = torch.zeros(b, self.max_length, device=self.device, dtype=torch.bool)
 
         # Create masks
-        eos_mask[:, :] = (x == self.additional_tokens["[EOS]"])
+        eos_mask[:, :] = (x == tokenizer.token_to_id('[EOS]'))
         for small_b in range(b):
             sentence_length = (x[small_b] != 0).sum()
             mask[small_b, :sentence_length, :sentence_length] = torch.triu(torch.ones(sentence_length, sentence_length), diagonal=1).T
@@ -79,8 +77,6 @@ class GPTLarge(nn.Module):
         self.max_length = max_length
         self.device = device
 
-        self.additional_tokens = additional_tokens
-
         # Token Embedding
         self.token_embedder = TokenEmbedder(vocabulary_size=vocab_size, embedding_dim=dim_out)
         self.transformer = TextTransformer(dim_model=dim_out, n_layers=12, max_length=max_length, nhead=12, dim_ff=2048, use_checkpoint=use_checkpoint)
@@ -93,7 +89,7 @@ class GPTLarge(nn.Module):
         eos_mask = torch.zeros(b, self.max_length, device=self.device, dtype=torch.bool)
 
         # Create masks
-        eos_mask[:, :] = (x == self.additional_tokens["[EOS]"])
+        eos_mask[:, :] = (x == tokenizer.token_to_id('[EOS]'))
         for small_b in range(b):
             sentence_length = (x[small_b] != 0).sum()
             mask[small_b, :sentence_length, :sentence_length] = torch.triu(torch.ones(sentence_length, sentence_length), diagonal=1).T
