@@ -9,9 +9,9 @@ def warmup_scheduler(optimizer, warmup_steps, warmup_start, lr_max, max_steps):
         if step < warmup_steps:
             return warmup_start + step * (lr_max - warmup_start) / warmup_steps
         elif step < max_steps:
-            return warmup_start - step * (lr_max - warmup_start) / (max_steps - warmup_steps)
+            return lr_max - (step - warmup_steps) * (lr_max - warmup_start) / (max_steps - warmup_steps)
         else:
-            return warmup_start
+            return lr_max / 10
 
     return LambdaLR(optimizer, lr_lambda=lr_lambda)
 
@@ -71,14 +71,14 @@ def load_from_checkpoint(model_filepath, model, scheduler=None, optimizer=None):
     return epoch, loss_history
 
 
-def training_info_log_message(device, use_checkpoint, epochs, max_steps, accumulate, batch_size, image_encoder, text_encoder, image_dim_out, text_dim_out, optimizer):
+def training_info_log_message(device, use_checkpoint, vocab_size, epochs, max_steps, batch_size, image_encoder, text_encoder, image_dim_out, text_dim_out, optimizer):
     """
     Prints the training loop information.
 
     :param device: (torch.device) device.
+    :param vocab_size: (int) vocabulary size.
     :param epochs: (int) number of epochs.
     :param max_steps: (int) maximum number of steps.
-    :param accumulate: (int) number of batches to accumulate.
     :param batch_size: (int) batch size.
     :param image_encoder: (str) image encoder name.
     :param text_encoder: (str) text encoder name.
@@ -95,8 +95,8 @@ def training_info_log_message(device, use_checkpoint, epochs, max_steps, accumul
     Epochs:         {epochs}
     Max Steps:      {max_steps}
     Use Checkpoint: {use_checkpoint}
-    Accumulate:     {accumulate}
     Batch size:     {batch_size}
+    Vocab Size:     {vocab_size}
     Image Encoder:  ViT{image_encoder} (dim = {image_dim_out})
     Text Encoder:   {text_encoder}  (dim = {text_dim_out})
     Optimizer:      {optimizer}
