@@ -11,6 +11,7 @@ from src.models.CLIP_model import CLIPModule
 from src.models.computer_vision.backbones.vit import ViTBaseOver16at112, ViTSmallOver16at112, ViTMicroOver14at112
 from src.models.natural_language_processing.nlp_backbones import GPTSmall, GPTBase
 
+
 from src.utils import training_info_log_message
 
 
@@ -29,14 +30,14 @@ parser.add_argument('-use_checkpoint', type=bool, default=False, help="Use check
 # CLIP Hyper-parameters
 parser.add_argument('-max_temperature', type=float, default=100.0, help="Maximum temperature for CLIP loss.")
 parser.add_argument('-batch_size', type=int, default=128, help="Batch size. Is the same as the multimodal embedding dimension.")
-parser.add_argument('-epochs', type=int, default=5, help="Epochs for training. (ignored in fine-tuning).")
+parser.add_argument('-epochs', type=int, default=4, help="Epochs for training. (ignored in fine-tuning).")
 parser.add_argument('-vocab_size', type=int, default=20000, help="Vocabulary size from trained tokenizer.")
 parser.add_argument('-max_length', type=int, default=32, help="Max length of the token encoding.")
 parser.add_argument('-decay', type=float, default=0.2, help="Weight decay.")
 parser.add_argument('-beta_1', type=float, default=0.9, help="Adam optimizer beta_1.")
 parser.add_argument('-beta_2', type=float, default=0.98, help="Adam optimizer beta_2. Recommended 0.98 for ViT.")
 parser.add_argument('-epsilon', type=float, default=1e-6, help="Adam optimizer epsilon. Recommended 1e-6 for ViT.")
-parser.add_argument('-lr', type=float, default=5e-4, help="Learning rate.")
+parser.add_argument('-lr', type=float, default=4e-5, help="Learning rate.")
 parser.add_argument('-text_dim_out', type=int, default=512, help="Text encoder output dimension.")
 parser.add_argument('-image_dim_out', type=int, default=768, help="Image encoder output dimension.")
 parser.add_argument('-embedding_dim', type=int, default=512, help="Embedding dimension CLIP.")
@@ -112,7 +113,7 @@ if __name__ == "__main__":
 
     # Print training information
     for i, (image_encoder_name, text_encoder_name, optimizer) in enumerate(zip(image_encoder_names, text_encoder_names, optimizers)):
-        training_info_log_message(f'cuda:{i}', use_checkpoint, epochs, max_steps, 1, args.batch_size, image_encoder_name, text_encoder_name, image_dim_out, text_dim_out, optimizer)
+        training_info_log_message(device=f'cuda:{i}', use_checkpoint=use_checkpoint, vocab_size=vocab_size, epochs=epochs, max_steps=max_steps, batch_size=batch_size, image_encoder=image_encoder_name, text_encoder=text_encoder_name, image_dim_out=image_dim_out, text_dim_out=text_dim_out, optimizer=optimizer)
 
     # Training cycle
     parallel_training(training_dataset=training_dataset, clip_models=clip_models, losses=losses, optimizers=optimizers, epochs=epochs, lr_max=lr, warmup_steps=warmup_steps, max_steps=max_steps, model_names=image_encoder_names)
