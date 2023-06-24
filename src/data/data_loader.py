@@ -54,9 +54,18 @@ class ImageQueryDataset(Dataset):
 
 
     def __getitem__(self, index):
-        query, x = self.data[index]
-
-        image = read_image(os.path.join(self.image_path, x)).to(dtype=torch.float32)
+        try:
+            query, x = self.data[index]
+            image = read_image(os.path.join(self.image_path, x)).to(dtype=torch.float32)
+        except:
+            try:
+                print(f"Image {index} failed. Trying with index 1")
+                query, x = self.data[1]
+                image = read_image(os.path.join(self.image_path, x)).to(dtype=torch.float32)
+            except:
+                print(f"Image {index} failed. Trying with index 2")
+                query, x = self.data[2]
+                image = read_image(os.path.join(self.image_path, x)).to(dtype=torch.float32)
 
         _, h, w = image.shape
         factor = self.img_res / min(w, h)
@@ -70,6 +79,7 @@ class ImageQueryDataset(Dataset):
         if self.transform is not None:
             try:
                 image = self.transform(image)
+                image = torch.where(torch.isnan(image) | torch.isinf(image), torch.tensor(0.0), image)
             except:
                 print(f"{image.shape}")
 
