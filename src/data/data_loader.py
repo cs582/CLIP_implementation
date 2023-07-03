@@ -73,7 +73,7 @@ class ImageQueryDataset(Dataset):
         new_width = int(w * factor) + 1
         new_height = int(h * factor) + 1
 
-        image = T.Resize((new_height, new_width))(image)
+        image = T.Resize((new_height, new_width), antialias=True)(image)
 
         # Apply any data transformations if specified
         if self.transform is not None:

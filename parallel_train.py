@@ -40,12 +40,12 @@ parser.add_argument('-epsilon', type=float, default=1e-6, help="Adam optimizer e
 parser.add_argument('-lr', type=float, default=4e-5, help="Learning rate.")
 parser.add_argument('-text_dim_out', type=int, default=512, help="Text encoder output dimension.")
 parser.add_argument('-image_dim_out', type=int, default=768, help="Image encoder output dimension.")
-parser.add_argument('-embedding_dim', type=int, default=512, help="Embedding dimension CLIP.")
+parser.add_argument('-clip_embedding_dim', type=int, default=512, help="Embedding dimension CLIP.")
 
 args = parser.parse_args()
 
 dataset_file = "src/data/image_gen/WQ-dataset/WQI_local.csv"
-image_path = "/data/WKIT_images"
+image_path = "/data/carlos/images"
 tokenizer_file = "src/data/nlp/tokenizers/CLIP-bpe.tokenizer.json"
 
 
@@ -90,8 +90,8 @@ if __name__ == "__main__":
     text_model_2 = GPTSmall(dim_out=text_dim_out, vocab_size=vocab_size, max_length=max_length, use_checkpoint=use_checkpoint, device='cuda:2').to('cuda:2')
 
     # Load training dataset
-    training_dataset = ImageQueryDataset(dataset_file=dataset_file, image_path=image_path, tokenizer_file=tokenizer_file, max_length=args.max_length, img_res=image_resolution)
-    dataloader = DataLoader(dataset=training_dataset, batch_size=multimodal_embedding_dim, shuffle=True, num_workers=8, pin_memory=True, drop_last=True)
+    training_dataset = ImageQueryDataset(dataset_file=dataset_file, image_path=image_path, tokenizer_file=tokenizer_file, max_length=max_length, img_res=image_resolution)
+    dataloader = DataLoader(dataset=training_dataset, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True, drop_last=True)
 
     # Calculate max-steps
     max_steps = len(dataloader) * epochs
@@ -101,8 +101,8 @@ if __name__ == "__main__":
 
     # Call CLIP core model
     clip_model_0 = CLIPModule(image_encoder=image_model_0, text_encoder=text_model_0, dim_img=image_dim_out, dim_text=text_dim_out, embedding_dim=clip_embedding_dim, temperature=0.07).to('cuda:0')
-    clip_model_1 = CLIPModule(image_encoder=image_model_0, text_encoder=text_model_0, dim_img=image_dim_out, dim_text=text_dim_out, embedding_dim=clip_embedding_dim, temperature=0.07).to('cuda:1')
-    clip_model_2 = CLIPModule(image_encoder=image_model_0, text_encoder=text_model_0, dim_img=image_dim_out, dim_text=text_dim_out, embedding_dim=clip_embedding_dim, temperature=0.07).to('cuda:2')
+    clip_model_1 = CLIPModule(image_encoder=image_model_1, text_encoder=text_model_1, dim_img=image_dim_out, dim_text=text_dim_out, embedding_dim=clip_embedding_dim, temperature=0.07).to('cuda:1')
+    clip_model_2 = CLIPModule(image_encoder=image_model_2, text_encoder=text_model_2, dim_img=image_dim_out, dim_text=text_dim_out, embedding_dim=clip_embedding_dim, temperature=0.07).to('cuda:2')
     clip_models = (clip_model_0, clip_model_1, clip_model_2)
 
     # Set Adam Optimizer
@@ -116,4 +116,4 @@ if __name__ == "__main__":
         training_info_log_message(device=f'cuda:{i}', use_checkpoint=use_checkpoint, vocab_size=vocab_size, epochs=epochs, max_steps=max_steps, batch_size=batch_size, image_encoder=image_encoder_name, text_encoder=text_encoder_name, image_dim_out=image_dim_out, text_dim_out=text_dim_out, optimizer=optimizer)
 
     # Training cycle
-    parallel_training(training_dataset=training_dataset, clip_models=clip_models, losses=losses, optimizers=optimizers, epochs=epochs, lr_max=lr, warmup_steps=warmup_steps, max_steps=max_steps, model_names=image_encoder_names)
+    parallel_training(training_dataset=dataloader, clip_models=clip_models, losses=losses, optimizers=optimizers, epochs=epochs, lr_max=lr, warmup_steps=warmup_steps, max_steps=max_steps, model_names=image_encoder_names)

@@ -76,8 +76,8 @@ def parallel_training(training_dataset, clip_models, losses, optimizers, epochs,
                 # Extract feature representations for each model
                 logits_images = []
                 logits_text = []
-                for model, images, queries in zip(models, image_batches, query_batches):
-                    logits_image, logits_t = model(images, queries)
+                for model, images_model, queries_model in zip(models, image_batches, query_batches):
+                    logits_image, logits_t = model(images_model, queries_model)
                     logits_images.append(logits_image)
                     logits_text.append(logits_t)
 
@@ -106,7 +106,7 @@ def parallel_training(training_dataset, clip_models, losses, optimizers, epochs,
 
             # Update progress bar
             pbar.update(1)
-            pbar.set_description(f"lr: {last_lr}")
+            pbar.set_description(f"lr: {last_lr}, loss [1: {history_loss[f'model_0'][-1]}] [2: {history_loss[f'model_1'][-1]}] [3: {history_loss[f'model_2'][-1]}")
 
             # See Training in Tensorboard
             for i, model in enumerate(models):
