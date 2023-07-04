@@ -53,9 +53,18 @@ python unit_tests.py -cpu_heavy=True -gpu_heavy=True -test_n=0
 ## Data
 
 The dataset used in this project was created from scratch for this specific task,
-it was created by scraping through Wikipedia and Unsquash and I named it WI-10M.
+it was created by scraping through Wikipedia and Unsquash and I named it WKIT-24M.
 
-The steps to build this dataset are the following:
+<em>The following steps are to recreate the dataset from scratch. However, the full online
+dataset is already available and you can cite it as shown bellow</em>.
+
+> 
+
+<em>If you already posses the csv called 'WKIT_24M_dataset.csv', you can jump to the next sub section</em>.
+
+### Dataset construction
+
+The steps to build this dataset were the following:
 
 1. Download a Wikipedia Dumpfile or use Wikipedia's API to retrieve all article's titles. 
 2. Scrape through the whole pages' body searching for all words in english and counting each word's occurrence. 
@@ -74,20 +83,28 @@ python src/data/image_gen/image_scraping.py
 # Task 5
 python data.py -task=1
 ```
-6. Step 4 also gets only the address of each image, but each file should be downloaded for better performance.
+
+### Online to Local dataset
+
+We now hold all links to the images in WKIT-24M.
+
+6. At this point we can download the images to the local device for better performance by running
+the following command. You can change the location to store the images by modifying the
+```data.py``` file's line 28 to your desired folder instead of ```/data/carlos/images```.
 ```sh
-# Task 6
 python data.py -task=2
 ```
-7. Lastly, using all downloaded images, we build a second dataset with all valid images in the
-```data/image_gen/WQ-dataset/images``` directory. This sets it all up in a nice CSV file ready
+
+7. Assuming the local dataset is already located in the right folder, we build a second dataset with all valid images in the
+```path/to/images``` directory which is ```/data/carlos/images``` by default.
+This sets it all up in a nice CSV file ready
 to be used in our Training.
 ```sh
 # Task 7
 python data.py -task=4
 ```
 
-## Tokenization
+### Tokenization
 
 In order to train the tokenizer, it's necessary to build a corpus text. In this case,
 the corpus is built by using the queries of each image and just sticking them together. Then this corpus
@@ -138,12 +155,15 @@ optional arguments:
 -embedding_dim EMBEDDING_DIM                  Embedding dimension CLIP.
 ```
 
+Example: Here is the command to train the largest model in the paper which uses a Base Image and Text encoders
+at a resolution of 224x224 pixels, a batch size of 128 pairs and 2000 warmup steps. Other hyperparameters can be
+set or modified as necessary.
 
 ```sh
-python train.py
+nohup python train.py -device="gpu" -image_encoder="B/32@224" -text_encoder="B" -vocab_size=20000 -batch_size=128 -warmup=2000 -max_length=32 -lr=5e-4 -epochs=4 &
 ```
 
-## Preliminary Results
+## Results
 
 
 
