@@ -60,7 +60,7 @@ def download_image_sync(url, path, name):
 
 def task1_join_json_files(pairs_folder):
     """
-    Helper function to join all JSON files and store them in a csv named WQI_mini.csv.
+    Helper function to join all JSON files and store them in a csv named WKIT_24M_dataset.csv.
     :param pairs_folder: (str) folder with all images URLs and queries extracted in JSON files.
     :return: None
     """
@@ -86,7 +86,7 @@ def task1_join_json_files(pairs_folder):
     # Concatenate dataframes
     data = pd.concat(data_frames, ignore_index=True).drop_duplicates()
 
-    data.to_csv(f"{pairs_folder}/WQI_mini.csv", header=True)
+    data.to_csv(f"{pairs_folder}/WKIT_24M_dataset.csv", header=True)
 
 # ----------------
 # Task 2
@@ -95,13 +95,13 @@ def task1_join_json_files(pairs_folder):
 
 def task2_download_and_save_images(pairs_folder, args):
     """
-    Download all images in WQI_mini.csv and store them in a local directory.
+    Download all images in WKIT_24M_dataset.csv and store them in a local directory.
     :param pairs_folder: (str) folder to store all pairs.
     :param args: (parser.args) console arguments.
     :return: None
     """
     # Get csv file address
-    csv_filepath = f"{pairs_folder}/WQI_mini.csv"
+    csv_filepath = f"{pairs_folder}/WKIT_24M_dataset.csv"
 
     # Read csv file
     print(f"reading {csv_filepath}")
@@ -138,7 +138,7 @@ def task3_5_queries_to_txt(pairs_folder, tokenizer_folder):
     :return:
     """
     # Get csv file address
-    csv_filepath = f"{pairs_folder}/WQI_mini.csv"
+    csv_filepath = f"{pairs_folder}/WKIT_24M_dataset.csv"
 
     # Read csv file
     print(f"reading {csv_filepath}")

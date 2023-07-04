@@ -18,7 +18,7 @@ def valid_image_checker(image_dir, x):
 
 
 def build(image_dir):
-    wq_dataset_file = "src/data/image_gen/WQ-dataset/WQI_mini.csv"
+    wq_dataset_file = "src/data/image_gen/WQ-dataset/WKIT_24M_dataset.csv"
 
     # Read csv file with queries
     print(f"Reading {wq_dataset_file}")
@@ -46,7 +46,7 @@ def build(image_dir):
     pairs = [[q, img] for q, img in zip(queries, img_in_dir)]
 
     # Save pairs in DataFrame
-    wqi_local_file = "src/data/image_gen/WQ-dataset/WQI_local.csv"
+    wqi_local_file = "src/data/image_gen/WQ-dataset/WKIT_local.csv"
     print(f"Saving as {wqi_local_file}")
     pd.DataFrame(pairs, columns=["Q", "IMG"]).to_csv(wqi_local_file, index=False, header=True)
     print(f"Successfully saved WQI_local as {wqi_local_file}")
