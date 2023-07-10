@@ -176,7 +176,9 @@ the cosine similarities for 7 images and their descriptions.
 
 ### Zero-shoot capabilities
 
-
+| Dataset | Zero-Shoot Classification Accuracy |
+| --- | --- |
+| CIFAR-10 | 18.0% |
 
 ## About the Author
 
