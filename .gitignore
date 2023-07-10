@@ -4,7 +4,6 @@ notebooks
 .ipynb_checkpoints
 src/data/image_gen/WQ-dataset
 src/data/nlp/tokenizers
-demo.ipynb
 data/cifar10
 data/cryptopunks
 data/imagenet
