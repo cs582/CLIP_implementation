@@ -68,7 +68,7 @@ def load_from_checkpoint(model_filepath, model, scheduler=None, optimizer=None):
 
     print(f"CLIP successfully loaded from {model_filepath}")
 
-    return epoch, loss_history
+    return model, epoch, loss_history
 
 
 def training_info_log_message(device, use_checkpoint, vocab_size, epochs, max_steps, batch_size, image_encoder, text_encoder, image_dim_out, text_dim_out, optimizer):

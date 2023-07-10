@@ -165,6 +165,16 @@ nohup python train.py -device="gpu" -image_encoder="B/32@224" -text_encoder="B" 
 
 ## Results
 
+The following results show the performance of the models
+after being trained for 4 epochs only on a single RTX TITAN X
+(a total of 7.3 days).
+
+This is a demo of the largest model (ViT-B@224px), it shows
+the cosine similarities for 7 images and their descriptions.
+
+![image-clip-sample](results/demo.png)
+
+### Zero-shoot capabilities
 
 
 
@@ -175,6 +185,7 @@ Carlos Gustavo Salas Flores – [LinkedIn](https://www.linkedin.com/in/carlosgus
 Distributed under the MIT license. See ``LICENSE.txt`` for more information.
 
 [https://github.com/cs582](https://github.com/cs582/)
+
 
 
 <!-- Markdown link & img dfn's -->
