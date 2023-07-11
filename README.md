@@ -176,7 +176,7 @@ input resolution (which is the only different factor) doesn't make a significant
 While far from a strong conclusion, this might serve as compelling evidence to prove this statement.
 
 The following results show the performance of the models
-after being trained for 4 epochs only on a singl[Downloads](..%2F..%2FDownloads)e RTX TITAN X
+after being trained for 4 epochs only on a single RTX TITAN X
 (a total of 7.3 days).
 
 This is a demo of the largest model (ViT-B@224px), it shows
@@ -184,7 +184,7 @@ the cosine similarities for 7 images and their descriptions.
 
 ![image-clip-sample](results/demo.png)
 
-### Zero-shoot capabilities
+### Zero-shoot Evaluation
 
 | Dataset\Model        | ViTB/32 @ 224 | ViTB/16 @ 112 |
 |----------------------|---------------| ---- |
