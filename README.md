@@ -193,7 +193,7 @@ the cosine similarities for 7 images and their descriptions.
 
 ### Bias and Typographic attacks
 
-![computer-sign](results/biastest/2.png | width=100)
+![computer-sign](results/biastest/2.png)
 ![computer-mac](results/biastest/4.png)
 
 ![iPhone-sign](results/biastest/0.png)
