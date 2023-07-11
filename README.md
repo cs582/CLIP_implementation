@@ -165,8 +165,18 @@ nohup python train.py -device="gpu" -image_encoder="B/32@224" -text_encoder="B" 
 
 ## Results
 
+For this paper we trained two models only: ViTB/32@224px and ViT/16@112px.
+
+The lineplot below shows the training of both models trained.
+
+![loss-analysis](results/loss_analysis.png)
+
+Both models seem to have been learned at the same rate which might imply that the
+input resolution (which is the only different factor) doesn't make a significant difference.
+While far from a strong conclusion, this might serve as compelling evidence to prove this statement.
+
 The following results show the performance of the models
-after being trained for 4 epochs only on a single RTX TITAN X
+after being trained for 4 epochs only on a singl[Downloads](..%2F..%2FDownloads)e RTX TITAN X
 (a total of 7.3 days).
 
 This is a demo of the largest model (ViT-B@224px), it shows
@@ -176,9 +186,18 @@ the cosine similarities for 7 images and their descriptions.
 
 ### Zero-shoot capabilities
 
-| Dataset | Zero-Shoot Classification Accuracy |
-| --- | --- |
-| CIFAR-10 | 18.0% |
+| Dataset\Model        | ViTB/32 @ 224 | ViTB/16 @ 112 |
+|----------------------|---------------| ---- |
+| CIFAR-10             | 18.08%        | |
+| ImageNet-Val (top-1) | 0.17%         | |
+
+### Bias and Typographic attacks
+
+![computer-sign](results/biastest/2.png | width=100)
+![computer-mac](results/biastest/4.png)
+
+![iPhone-sign](results/biastest/0.png)
+![iphone-image](results/biastest/6.png)
 
 ## About the Author
 
