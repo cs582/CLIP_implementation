@@ -18,7 +18,7 @@ def valid_image_checker(image_dir, x):
 
 
 def build(image_dir):
-    wq_dataset_file = "src/data/image_gen/WQ-dataset/WKIT_24M_dataset.csv"
+    wq_dataset_file = "src/data/image_gen/WQ-dataset/WKIT_dataset.csv"
 
     # Read csv file with queries
     print(f"Reading {wq_dataset_file}")
