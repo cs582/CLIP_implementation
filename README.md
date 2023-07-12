@@ -192,10 +192,12 @@ python imagenet.py
 python cifar10.py
 ```
 
-| Dataset\Model        | ViTB/32 @ 224 | ViTB/16 @ 112 |
-|----------------------|---------------| ---- |
-| CIFAR-10             | 18.08%        | |
-| ImageNet-Val (top-1) | 0.17%         | |
+| Dataset\Model        | ViTB/32 @ 224 | ViTB/16 @ 112 | Random |
+|----------------------|---------------|---------------|--------|
+| CIFAR-10             | 18.08%        | --            | --     |
+| ImageNet-Val (top-1) | 0.17%         | --            | --     |
+| Caltech101           | --            | --            | --     |
+| MNIST                | --            | --            | --     |
 
 ### Bias and Typographic attacks
 
