@@ -186,6 +186,12 @@ the cosine similarities for 7 images and their descriptions.
 
 ### Zero-shoot Evaluation
 
+To run benchmarks use the folowing commands
+```shell
+python imagenet.py
+python cifar10.py
+```
+
 | Dataset\Model        | ViTB/32 @ 224 | ViTB/16 @ 112 |
 |----------------------|---------------| ---- |
 | CIFAR-10             | 18.08%        | |
