@@ -7,4 +7,7 @@ src/data/nlp/tokenizers
 data/cifar10
 data/cryptopunks
 data/imagenet
+data/biastest
+data/demoimages
+data/caltech101
 __pycache__

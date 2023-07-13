@@ -186,18 +186,20 @@ the cosine similarities for 7 images and their descriptions.
 
 ### Zero-shoot Evaluation
 
-To run benchmarks use the folowing commands
+To run benchmarks use the following commands. For example to
+run the benchmarks on ViTB/32@224px you can run
+
 ```shell
-python imagenet.py
-python cifar10.py
+python imagenet.py --clip="B224px" -epoch=3
+python cifar10.py --clip="B224px" -epoch=3
+python caltech101.py --clip="B224px" -epoch=3
 ```
 
 | Dataset\Model        | ViTB/32 @ 224 | ViTB/16 @ 112 | Random |
 |----------------------|---------------|---------------|--------|
-| CIFAR-10             | 18.08%        | --            | --     |
-| ImageNet-Val (top-1) | 0.17%         | --            | --     |
-| Caltech101           | --            | --            | --     |
-| MNIST                | --            | --            | --     |
+| CIFAR-10             | 17.89%        | 19.45%        | ~10%   |
+| Caltech101           | 2.21%         | 2.55%         | ~1%    |
+| ImageNet-Val (top-1) | 0.15%         | 0.20%         | ~0.1%  |
 
 ### Bias and Typographic attacks
 

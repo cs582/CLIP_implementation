@@ -13,14 +13,13 @@ from src.models.natural_language_processing.nlp_backbones import GPTSmall, GPTBa
 
 import torch
 import torchvision
-import torchvision.transforms as transforms
 
 parser = argparse.ArgumentParser(
-    prog='CIFAR-10 evaluation.',
-    description='CIFAR-10 evaluation of CLIP.'
+    prog='Caltech101 evaluation.',
+    description='Caltech101 evaluation of CLIP.'
 )
 
-parser.add_argument('-clip', type=str, default="B224PX", help="Choose CLIP Model")
+parser.add_argument('-clip', type=str, default="B224px", help="Choose CLIP Model")
 parser.add_argument('-epoch', type=int, default=3, help="Choose Training Stage.")
 
 args = parser.parse_args()
@@ -111,14 +110,9 @@ def load_clip(clip_model, epoch):
 
 if __name__=="__main__":
 
-    transform = transforms.Compose(
-        [transforms.ToTensor()]
-    )
+    transform = T.ToTensor()
 
     batch_size = 64
-
-    classes = ('plane', 'car', 'bird', 'cat',
-               'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
 
     templates = [
         'a photo of a {}.',
@@ -141,7 +135,7 @@ if __name__=="__main__":
         'a photo of the big {}.',
     ]
 
-    image_path = "data/imagenet"
+    image_path = "data/caltech101"
     tokenizer_file = "src/data/nlp/tokenizers/CLIP-bpe.tokenizer.json"
 
     device = f'cuda:1'
@@ -158,10 +152,11 @@ if __name__=="__main__":
     image_dim_out = 768
 
     print("Started...")
-    testset = torchvision.datasets.CIFAR10(root='./data', train=False,
-                                           download=False, transform=transform)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                                             shuffle=False, num_workers=2)
+    testset = torchvision.datasets.ImageFolder(root='./data/caltech101/101_ObjectCategories',
+                                               transform=T.ToTensor(),
+                                               target_transform=T.Lambda(lambda y: torch.tensor(y)))
+
+    classes = testset.classes
 
     print("Loading Model...")
     clip, img_res = load_clip(model_size, epoch)
@@ -179,20 +174,31 @@ if __name__=="__main__":
 
     correct = 0
 
-    print("Evaluating images...")
-    for images, y_true in tqdm.tqdm(testloader, total=len(testloader)):
-        _, h, w = images[0].shape
+
+    def treat_image(img):
+
+        _, h, w = img.shape
         factor = img_res / min(w, h)
 
-        new_width = int(w * factor)
-        new_height = int(h * factor)
+        new_width = int(w * factor) + 1
+        new_height = int(h * factor) + 1
 
-        images = T.Resize((new_height, new_width), antialias=True)(images)
-        images = T.RandomCrop((img_res, img_res))(images)
+        img = T.Resize((new_height, new_width), antialias=True)(img)
+        img = T.RandomCrop((img_res, img_res))(img)
+
+        return img
+
+    print("Evaluating images...")
+    n_batches = len(testset) // batch_size
+    for i in tqdm.tqdm(range(n_batches), total=n_batches):
+        p0, p1 = i*batch_size, (i+1)*batch_size
+
+        images = torch.stack([treat_image(testset[k][0]) for k in range(p0, p1)])
+        y_true = torch.stack([testset[k][1] for k in range(p0, p1)])
 
         image_encoding = clip.img_encoder(images)
 
         y_hat = (image_encoding @ zero_shot_weights.t()).argmax(dim=-1)
         correct += (y_hat == y_true).sum().item()
 
-    print("Zero-Shoot Classification on CIFAR10", (correct / len(testset)) * 100.0)
+    print("Zero-Shoot Classification on Caltech101", (correct / len(testset)) * 100.0)

@@ -12,9 +12,19 @@ from src.models.natural_language_processing.nlp_backbones import GPTSmall, GPTBa
 
 import numpy as np
 import torch
+import argparse
 import torchvision
 import torchvision.transforms as transforms
 
+parser = argparse.ArgumentParser(
+    prog='ImageNet evaluation.',
+    description='ImageNet evaluation of CLIP.'
+)
+
+parser.add_argument('-clip', type=str, default="B224PX", help="Choose CLIP Model")
+parser.add_argument('-epoch', type=int, default=3, help="Choose Training Stage.")
+
+args = parser.parse_args()
 
 def load_clip_backbone(image_encoder, text_encoder, device):
     """
@@ -65,7 +75,7 @@ def tokenize(tokenizer, query, max_length):
 
     return encoded_query
 
-def load_clip(clip_model):
+def load_clip(clip_model, epoch):
     """
     Load CLIP model.
     """
@@ -73,12 +83,30 @@ def load_clip(clip_model):
 
     if clip_model == "B224px":
         clip = load_clip_backbone(image_encoder="B/32@224", text_encoder="B", device=torch.device('cpu'))
-        clip, _, loss_hist = load_from_checkpoint(os.path.join(checkpointsdir, "CLIP_epoch_3_2023-07-01_21:04:05"), clip)
+        if epoch == -1:
+            return clip, 224
+        if epoch == 0:
+            _, loss_hist = load_from_checkpoint(os.path.join(checkpointsdir, "CLIP_epoch_0_2023-06-26_10:18:36"), clip)
+        if epoch == 1:
+            _, loss_hist = load_from_checkpoint(os.path.join(checkpointsdir, "CLIP_epoch_1_2023-06-28_06:12:08"), clip)
+        if epoch == 2:
+            _, loss_hist = load_from_checkpoint(os.path.join(checkpointsdir, "CLIP_epoch_2_2023-06-30_01:36:39"), clip)
+        if epoch == 3:
+            _, loss_hist = load_from_checkpoint(os.path.join(checkpointsdir, "CLIP_epoch_3_2023-07-01_21:04:05"), clip)
         return clip, 224
 
     if clip_model == "B112px":
         clip = load_clip_backbone(image_encoder="B/16@112", text_encoder="B", device=torch.device('cpu'))
-        clip, _, loss_hist = load_from_checkpoint(os.path.join(checkpointsdir, "CLIP_epoch_2_2023-07-09_23:50:00"), clip)
+        if epoch == -1:
+            return clip, 112
+        if epoch == 0:
+            _, loss_hist = load_from_checkpoint(os.path.join(checkpointsdir, "CLIP_epoch_0_2023-07-06_08:11:02"), clip)
+        if epoch == 1:
+            _, loss_hist = load_from_checkpoint(os.path.join(checkpointsdir, "CLIP_epoch_1_2023-07-08_04:22:18"), clip)
+        if epoch == 2:
+            _, loss_hist = load_from_checkpoint(os.path.join(checkpointsdir, "CLIP_epoch_2_2023-07-09_23:50:00"), clip)
+        if epoch == 3:
+            _, loss_hist = load_from_checkpoint(os.path.join(checkpointsdir, "CLIP_epoch_3_2023-07-13_09:59:29"), clip)
         return clip, 112
 
 
@@ -132,6 +160,9 @@ if __name__=="__main__":
     device = f'cuda:1'
     use_checkpoint = False
 
+    model_size = args.clip
+    epoch = args.epoch
+
     vocab_size = 20000
     clip_embedding_dim = 512
     max_length = 32
@@ -160,8 +191,7 @@ if __name__=="__main__":
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True)
 
     print("Loading Model...")
-    model_size = "B224px"
-    clip, img_res = load_clip(model_size)
+    clip, img_res = load_clip(model_size, epoch)
 
     tokenizer = Tokenizer.from_file(tokenizer_file)
 
