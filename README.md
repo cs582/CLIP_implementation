@@ -203,11 +203,11 @@ python caltech101.py --clip="B224px" -epoch=3
 
 ### Bias and Typographic attacks
 
-![computer-sign](results/biastest/2.png)
-![computer-mac](results/biastest/4.png)
+![result-1](results/biastest/2.png)
+![result-2](results/biastest/3.png)
 
-![iPhone-sign](results/biastest/0.png)
-![iphone-image](results/biastest/6.png)
+![result-3](results/biastest/6.png)
+![result-4](results/biastest/7.png)
 
 ## About the Author
 
