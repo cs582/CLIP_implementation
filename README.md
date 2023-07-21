@@ -19,6 +19,23 @@ paper is later important for image generation in DALL-E-2.
 Based on the orignal work by OpenAI
 > Radford, A., Kim, J. W., Hallacy, C., Ramesh, A., Goh, G., Agarwal, S., ... & Sutskever, I. (2021, July). Learning transferable visual models from natural language supervision. In International conference on machine learning (pp. 8748-8763). PMLR.
 
+## Check out the CC-BY 4.0 Dataset published on Harvard Dataverse
+Carlos-Gustavo Salas-Flores; Dongmian Zou; Luyao Zhang, 2023, "Replication Data for: Making Text-Image Connection Formal and Practical", https://doi.org/10.7910/DVN/PKEGOX, Harvard Dataverse, V1, UNF:6:4AcLlL5JRL+1/+8MmqaQTQ== [fileUNF]
+
+```
+@data{DVN/PKEGOX_2023,
+author = {Carlos-Gustavo Salas-Flores and Dongmian Zou and Luyao Zhang},
+publisher = {Harvard Dataverse},
+title = {{Replication Data for: Making Text-Image Connection Formal and Practical}},
+UNF = {UNF:6:4AcLlL5JRL+1/+8MmqaQTQ==},
+year = {2023},
+version = {V1},
+doi = {10.7910/DVN/PKEGOX},
+url = {https://doi.org/10.7910/DVN/PKEGOX}
+}
+
+```
+
 ## Installation
 
 OS X & Linux:
