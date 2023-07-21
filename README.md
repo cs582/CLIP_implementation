@@ -1,6 +1,6 @@
 # Low Resource Implementation of Contrastive Language-Image Pre-Training (CLIP)
 > From scratch implementation (at smaller scale due to limited resources) of CLIP. CLIP is an AI tool developed by OpenAI that connects images to text with zero-shot capabilities similar to those of GPT-2 and GPT-3. It uses Natural Language Processing for zero-shot classification.
-
+[![DOI](https://zenodo.org/badge/629312983.svg)](https://zenodo.org/badge/latestdoi/629312983)
 ![CUDA version][cuda-image]
 ![Python version][python-image]
 ![PyTorch version][pytorch-image]
@@ -9,6 +9,7 @@
 ![Matplotlib version][matplotlib-image]
 ![Pandas version][pandas-image]
 ![NumPy version][numpy-image]
+
 
 This project implements the ground-breaking paper by OpenAI on
 test-image connection and zero-shot classification: CLIP. This
